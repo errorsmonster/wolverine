@@ -56,7 +56,7 @@ async def public_group_filter(client, message):
     if await is_group_connected(group_id):
         if await is_api_available(group_id):
             api = await get_api_from_chat(group_id)
-            await group_filter(client, message, api)
+            await auto_filter(client, message, api)
         else:
             await message.reply_text('API Not Found, Please Contact @iryme')
     else:
@@ -580,7 +580,7 @@ async def paid_filter(client, msg, spoll=False):
     if spoll:
         await msg.message.delete()
 
-
+"""
 async def group_filter(client, msg, api, spoll=False):
     if not spoll:
         message = msg
@@ -633,9 +633,9 @@ async def group_filter(client, msg, api, spoll=False):
     
     if spoll:
         await msg.message.delete()
+"""
 
-
-async def auto_filter(client, msg, spoll=False):
+async def auto_filter(client, msg, api, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
@@ -657,11 +657,12 @@ async def auto_filter(client, msg, spoll=False):
         message = msg.message.reply_to_message  # msg will be callback query
         search, files, offset, total_results = spoll
     pre = 'filep' if settings['file_secure'] else 'file'
-    if settings["button"]:
+    if settings['button']:
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'{pre}#{file.file_id}'
+                    text=f"[{get_size(file.file_size)}] {file.file_name}", 
+                    url=await short_links((f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}"), api)
                 ),
             ]
             for file in files
@@ -671,11 +672,11 @@ async def auto_filter(client, msg, spoll=False):
             [
                 InlineKeyboardButton(
                     text=f"{file.file_name}",
-                    callback_data=f'{pre}#{file.file_id}',
+                    url=await short_links((f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}"), api)
                 ),
                 InlineKeyboardButton(
                     text=f"{get_size(file.file_size)}",
-                    callback_data=f'{pre}#{file.file_id}',
+                    url=await short_links((f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}"), api)
                 ),
             ]
             for file in files

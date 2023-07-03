@@ -244,7 +244,7 @@ async def start(client, message):
             )
         )
     del_msg = await client.send_message(
-        text="This Files Will Be Deleted Within 10 Mins..\nPlease Make Sure That You Forward These Files To Your Saved Message or Friends.",
+        text="Files Will Be Deleted Within 10 Mins..\n__Please Make Sure That You Forward These Files To Your Saved Message or Friends.__",
         chat_id=message.from_user.id)    
     await asyncio.sleep(600)
     await media_id.delete()
