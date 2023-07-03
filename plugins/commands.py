@@ -233,9 +233,9 @@ async def start(client, message):
     media_id = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
-        caption=f_caption,
         protect_content=True if pre == 'filep' else False,
-        # added buttons & auto delete
+        # /////////////////////////////////////////////////////added buttons & auto delete /////////////////////////////////////////////////////////////////////////////
+        caption=f"<code>{f_caption}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
         reply_markup=InlineKeyboardMarkup(
             [[
                 InlineKeyboardButton('Support', url=f"https://t.me/iPrimehub"),
@@ -243,7 +243,6 @@ async def start(client, message):
                 ]]
             )
         )
-    
     del_msg = await client.send_message(
         text="This Files Will Be Deleted Within 10 Mins..\nPlease Make Sure That You Forward These Files To Your Saved Message or Friends.",
         chat_id=message.from_user.id)    
