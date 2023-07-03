@@ -526,7 +526,7 @@ async def paid_filter(client, msg, spoll=False):
 
     pre = 'file'
     btn = [
-        [InlineKeyboardButton(text=f"[{get_size(file.file_size)}] {file.file_name}", url=f"https://telegram.me/{temp.U_NAME}?start={pre}#{file.file_id}")]
+        [InlineKeyboardButton(text=f"[{get_size(file.file_size)}] {file.file_name}", url=f"https://telegram.me/{temp.U_NAME}?start=file#{file.file_id}")]
         for file in files
     ]
 
