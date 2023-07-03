@@ -22,7 +22,7 @@ class Database:
             ),
         )
 
-    async def check_premium_status(self, user_id):
+    async def is_premium_status(self, user_id):
         user = await self.col.find_one({"id": user_id})
         if user is None:
             return False  # User not found in the database
@@ -43,12 +43,7 @@ class Database:
         expired_users = await self.col.find({'premium_expiry': {'$lte': now}}).to_list(None)
         for user in expired_users:
             user_id = user['id']
-            await self.notify_expired_user(user_id)
             await self.col.update_one({'id': user_id}, {'$set': {'Premium': False}})
-
-    async def notify_expired_user(self, user_id):
-        # Logic to notify the user about their expired premium status
-        pass
 
     def new_group(self, id, title):
         return dict(
@@ -67,16 +62,6 @@ class Database:
     async def is_user_exist(self, id):
         user = await self.col.find_one({'id':int(id)})
         return bool(user)
-    
-    async def check_premium_status(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        if user is None:
-            return False  # User not found in the database
-        return user.get("Premium", False)
-
-    async def add_user_as_premium(self, user_id):
-        result = await self.col.update_one({"id": user_id}, {"$set": {"Premium": True}})
-        return result.modified_count > 0
    
     async def total_users_count(self):
         count = await self.col.count_documents({})
