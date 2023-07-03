@@ -15,6 +15,7 @@ class Database:
         return dict(
             id = id,
             name = name,
+            Premium=False,
             ban_status=dict(
                 is_banned=False,
                 ban_reason="",
@@ -40,6 +41,16 @@ class Database:
         user = await self.col.find_one({'id':int(id)})
         return bool(user)
     
+    async def check_premium_status(self, user_id):
+        user = await self.col.find_one({"id": user_id})
+        if user is None:
+            return False  # User not found in the database
+        return user.get("Premium", False)
+
+    async def add_user_as_premium(self, user_id):
+        result = await self.col.update_one({"id": user_id}, {"$set": {"Premium": True}})
+        return result.modified_count > 0
+   
     async def total_users_count(self):
         count = await self.col.count_documents({})
         return count
