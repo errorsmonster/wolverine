@@ -230,12 +230,26 @@ async def start(client, message):
             f_caption=f_caption
     if f_caption is None:
         f_caption = f"{files.file_name}"
-    await client.send_cached_media(
+    media_id = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
         caption=f_caption,
         protect_content=True if pre == 'filep' else False,
+        # added buttons & auto delete
+        reply_markup=InlineKeyboardMarkup(
+            [[
+                InlineKeyboardButton('Support', url=f"https://t.me/iPrimehub"),
+                InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
+                ]]
+            )
         )
+    
+    timeout_msg = await client.send_message(
+        text="This Files Will Be Deleted Within 10 Mins..\nPlease Make Sure That You Forward These Files To Your Saved Message or Friends.",
+        chat_id=message.from_user.id)    
+    await asyncio.sleep(600)
+    await media_id.delete()
+    await timeout_msg.edit("__⊘ This message was deleted__")
                     
 
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
