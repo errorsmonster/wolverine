@@ -244,12 +244,12 @@ async def start(client, message):
             )
         )
     
-    timeout_msg = await client.send_message(
+    del_msg = await client.send_message(
         text="This Files Will Be Deleted Within 10 Mins..\nPlease Make Sure That You Forward These Files To Your Saved Message or Friends.",
         chat_id=message.from_user.id)    
     await asyncio.sleep(600)
     await media_id.delete()
-    await timeout_msg.edit("__⊘ This message was deleted__")
+    await del_msg.edit("__⊘ This message was deleted__")
                     
 
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
