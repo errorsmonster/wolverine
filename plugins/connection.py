@@ -81,7 +81,6 @@ async def addconnection(client, message):
     except Exception as e:
         logger.exception(e)
         await message.reply_text('Some error occurred! Try again later.', quote=True)
-        
 
 
 @Client.on_message((filters.private | filters.group) & filters.command('disconnect'))

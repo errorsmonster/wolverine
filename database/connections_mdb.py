@@ -1,6 +1,8 @@
 import pymongo
-from info import DATABASE_URI, DATABASE_NAME
 import logging
+
+DATABASE_URI = "<your_database_uri>"
+DATABASE_NAME = "<your_database_name>"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -52,7 +54,6 @@ async def add_connection(group_id, user_id, api):
             logger.exception('Some error occurred!', exc_info=True)
 
 
-        
 async def active_connection(user_id):
     query = mycol.find_one(
         {"_id": user_id},
@@ -128,6 +129,7 @@ async def delete_connection(user_id, group_id):
         logger.exception(f'Some error occurred! {e}', exc_info=True)
         return False
 
+
 async def is_api_available(chat_id):
     query = mycol.find_one(
         {"_id": str(chat_id)},
@@ -137,6 +139,7 @@ async def is_api_available(chat_id):
         return True
     else:
         return False
+
 
 async def get_api_from_chat(chat_id):
     query = mycol.find_one(
@@ -148,9 +151,11 @@ async def get_api_from_chat(chat_id):
     else:
         return None
 
+
 async def is_group_connected(group_id):
     query = mycol.find_one(
         {"group_details.group_id": group_id},
         {"_id": 0}
     )
     return query is not None
+

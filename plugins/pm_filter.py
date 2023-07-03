@@ -60,8 +60,7 @@ async def public_group_filter(client, message):
         else:
             await message.reply_text('API Not Found, Please Contact @iryme')
     else:
-        await message.reply_text('Group is Not Connected, Please Contact @iryme')        
-
+        await message.reply_text('Group is Not Connected, Please Contact @iryme')
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming & filters.chat(AUTH_GROUPS))
