@@ -158,14 +158,32 @@ async def search_gagala(text):
     usr_agent = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
         'Chrome/61.0.3163.100 Safari/537.36'
-        }
+    }
     text = text.replace(" ", '+')
+
+    # First, try searching with Google
     url = f'https://www.google.com/search?q={text}'
     response = requests.get(url, headers=usr_agent)
-    response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
-    titles = soup.find_all( 'h3' )
-    return [title.getText() for title in titles]
+    titles = soup.find_all('h3')
+    google_results = [title.getText() for title in titles[:10]]  # Limit to 10 results
+
+    # Check if any results were found with Google
+    if len(google_results) > 0:
+        return google_results
+    else:
+        # If no results are found with Google, try searching with Yahoo
+        url = f'https://search.yahoo.com/search?q={text}'
+        response = requests.get(url, headers=usr_agent)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        titles = soup.find_all('a', class_='d-ib fz-20 lh-26 td-hu tc va-bot mxw-100p')
+        ntitle = []
+        for i in range(len(titles)):
+            g = titles[i]
+            ty = [kit for kit in g]
+            ntitle.append(ty[1])
+        yahoo_results = [title.getText() for title in ntitle[:10]]  # Limit to 10 results
+        return yahoo_results
 
 
 async def get_settings(group_id):
