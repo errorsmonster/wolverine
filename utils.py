@@ -165,7 +165,7 @@ async def search_gagala(text):
     response = requests.get(url, headers=usr_agent)
     soup = BeautifulSoup(response.text, 'html.parser')
     titles = soup.find_all('h3')
-    google_results = [title.getText() for title in titles[:1]]  # Limit to 10 results
+    google_results = [title.getText() for title in titles[:5]]  # Limit to 10 results
 
     # Check if any results were found with Google
     if len(google_results) > 0:
@@ -181,7 +181,7 @@ async def search_gagala(text):
             g = titles[i]
             ty = [kit for kit in g]
             ntitle.append(ty[1])
-        yahoo_results = [title.getText() for title in ntitle[:1]]  # Limit to 10 results
+        yahoo_results = [title.getText() for title in ntitle[:5]]  # Limit to 10 results
         return yahoo_results
 
 
