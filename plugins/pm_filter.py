@@ -8,7 +8,7 @@ from Script import script
 import pyrogram
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION
+from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from users_chats_db import db
@@ -31,19 +31,34 @@ SPELL_CHECK = {}
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_filter(client, message):
     user_id = message.from_user.id
+    search = message.text
+    
+    files = await get_search_results(search.lower(), offset=0, filter=True)
+    markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton('🔍 Check Your Spellings', url=f'https://www.google.com/search?q={message.text.replace(" ", "%20").replace("#request", "").replace("#Request", "")}%20movie')],
+                [InlineKeyboardButton('🗓️ Check Release Date', url=f'https://www.google.com/search?q={message.text.replace(" ", "%20").replace("#request", "")}%20movie%20release%20date')]
+            ])
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id)
-    if not await db.is_premium_status(user_id):
-        await paid_filter(client, message)
+    if files:
+        if not await db.is_premium_status(user_id):
+            await paid_filter(client, message)
+        else:
+            await auto_filter(client, message)   
     else:
-        await auto_filter(client, message)    
+        await message.reply_text('No Results Found', reply_markup=markup)
+
+
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
+    if message.chat.id not in AUTH_GROUPS:
+        return  # Skip processing if not in authorized group
     k = await manual_filters(client, message)
     if k == False:
         await auto_filter(client, message)
+
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
