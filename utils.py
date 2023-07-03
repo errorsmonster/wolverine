@@ -13,6 +13,7 @@ from typing import List
 from database.users_chats_db import db
 from bs4 import BeautifulSoup
 import requests
+import aiohttp
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -392,3 +393,18 @@ def humanbytes(size):
         size /= power
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
+
+
+
+async def short_link(link, api_key=None):
+    url = 'https://sharezone.live/api?api'
+    default_api_key = "9054119f1e0c6332b2fd694fc1c3ffa3b31c590e"
+
+    if api_key is None:
+        api_key = default_api_key
+
+    params = {'api': api_key, 'url': link, 'format': 'text'}
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params, raise_for_status=True) as response:
+            return await response.text()

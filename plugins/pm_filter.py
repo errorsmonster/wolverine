@@ -13,7 +13,8 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings
+from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, short_links
+from database.connections_mdb import is_api_available, get_api_from_chat, is_group_connected
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -48,6 +49,18 @@ async def private_filter(client, message):
     else:
         await message.reply_text('No Results Found', reply_markup=markup)
 
+
+@Client.on_message(filters.group & filters.text & filters.incoming)
+async def public_group_filter(client, message):
+    group_id = message.chat.id
+    if await is_group_connected(group_id):
+        if await is_api_available(group_id):
+            api = await get_api_from_chat(group_id)
+            await group_filter(client, message, api)
+        else:
+            await message.reply_text('API Not Found, Please Contact @iryme')
+    else:
+        await message.reply_text('Group is Not Connected, Please Contact @iryme')        
 
 
 
@@ -564,6 +577,60 @@ async def paid_filter(client, msg, spoll=False):
     cap = f"Here is what I found for your query {search}"
     await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
 
+    if spoll:
+        await msg.message.delete()
+
+
+async def group_filter(client, msg, api, spoll=False):
+    if not spoll:
+        message = msg
+        settings = await get_settings(message.chat.id)
+        if message.text.startswith("/"): return  # ignore commands
+        if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+            return
+        if 2 < len(message.text) < 100:
+            search = message.text
+            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+            if not files:
+                if settings["spell_check"]:
+                    return await advantage_spell_chok(msg)
+                else:
+                    return
+        else:
+            return
+    else:
+        settings = await get_settings(msg.message.chat.id)
+        message = msg.message.reply_to_message  # msg will be callback query
+        search, files, offset, total_results = spoll
+    pre = 'filep' if settings['file_secure'] else 'file'
+    if settings["button"]:
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"[{get_size(file.file_size)}] {file.file_name}", 
+                    url=await short_links((f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"), api))
+            ]
+            for file in files
+        ]
+
+    if offset != "":
+        key = f"{message.chat.id}-{message.id}"
+        BUTTONS[key] = search
+        req = message.from_user.id if message.from_user else 0
+        btn.append(
+            [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
+             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}")]
+        )
+    else:
+        btn.append(
+            [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
+        )
+
+    TEMPLATE = settings['template']
+    cap = f"Here is what I found for your query {search}"
+    
+    await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+    
     if spoll:
         await msg.message.delete()
 
