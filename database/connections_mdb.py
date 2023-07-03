@@ -17,7 +17,7 @@ async def add_connection(group_id, user_id, api):
         {"_id": 0, "active_group": 0}
     )
     if query is not None:
-        group_ids = [x["group_id"] for x in query["group_details"]]
+        group_ids = [x["group_id"] for x in query.get("group_details", [])]
         if group_id in group_ids:
             return False
 
@@ -36,7 +36,7 @@ async def add_connection(group_id, user_id, api):
         try:
             mycol.insert_one(data)
             return True
-        except:
+        except Exception as e:
             logger.exception('Some error occurred!', exc_info=True)
 
     else:
@@ -49,9 +49,9 @@ async def add_connection(group_id, user_id, api):
                 }
             )
             return True
-        except:
+        except Exception as e:
             logger.exception('Some error occurred!', exc_info=True)
-
+            
 
 async def active_connection(user_id):
     query = mycol.find_one(

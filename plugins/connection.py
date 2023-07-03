@@ -18,7 +18,7 @@ async def addconnection(client, message):
     if chat_type == enums.ChatType.PRIVATE:
         try:
             cmd, group_id, api = message.text.split(" ", 2)
-        except:
+        except Exception as e:
             await message.reply_text(
                 "<b>Enter in correct format!</b>\n\n"
                 "<code>/connect groupid api</code>\n\n"
@@ -81,6 +81,7 @@ async def addconnection(client, message):
     except Exception as e:
         logger.exception(e)
         await message.reply_text('Some error occurred! Try again later.', quote=True)
+
 
 
 @Client.on_message((filters.private | filters.group) & filters.command('disconnect'))
