@@ -41,8 +41,6 @@ async def start(client, message):
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
     if len(message.command) != 2:
         buttons = [[
-                    InlineKeyboardButton('➕ Add Me In Your Groups ➕', url='http://t.me/Netflimbot?startgroup=true')
-                    ],[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickNotify/3")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
