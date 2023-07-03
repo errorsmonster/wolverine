@@ -1,6 +1,6 @@
-# https://github.com/odysseusmax/animated-lamp/blob/master/bot/database/database.py
 import motor.motor_asyncio
 from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT
+from datetime import datetime
 
 class Database:
     
@@ -10,18 +10,45 @@ class Database:
         self.col = self.db.users
         self.grp = self.db.groups
 
-
     def new_user(self, id, name):
         return dict(
-            id = id,
-            name = name,
+            id=id,
+            name=name,
             Premium=False,
+            premium_expiry=None,
             ban_status=dict(
                 is_banned=False,
                 ban_reason="",
             ),
         )
 
+    async def check_premium_status(self, user_id):
+        user = await self.col.find_one({"id": user_id})
+        if user is None:
+            return False  # User not found in the database
+        return user.get("Premium", False)
+
+    async def add_user_as_premium(self, user_id, expiry_date):
+        result = await self.col.update_one({"id": user_id}, {"$set": {"Premium": True, "premium_expiry": expiry_date}})
+        return result.modified_count > 0
+
+    async def premium_expiry(self, user_id):
+        user = await self.col.find_one({"id": user_id})
+        if user is None:
+            return None  # User not found in the database
+        return user.get("premium_expiry")
+
+    async def remove_expired_users(self):
+        now = datetime.utcnow()
+        expired_users = await self.col.find({'premium_expiry': {'$lte': now}}).to_list(None)
+        for user in expired_users:
+            user_id = user['id']
+            await self.notify_expired_user(user_id)
+            await self.col.update_one({'id': user_id}, {'$set': {'Premium': False}})
+
+    async def notify_expired_user(self, user_id):
+        # Logic to notify the user about their expired premium status
+        pass
 
     def new_group(self, id, title):
         return dict(
