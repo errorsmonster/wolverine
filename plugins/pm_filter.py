@@ -51,10 +51,8 @@ async def private_filter(client, message):
 
 
 
-@Client.on_message(filters.group & filters.text & filters.incoming)
+@Client.on_message(filters.group & filters.text & filters.incoming & filters.chat(AUTH_GROUPS))
 async def give_filter(client, message):
-    if message.chat.id not in AUTH_GROUPS:
-        return  # Skip processing if not in authorized group
     k = await manual_filters(client, message)
     if k == False:
         await auto_filter(client, message)
