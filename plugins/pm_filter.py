@@ -56,11 +56,12 @@ async def public_group_filter(client, message):
     if await is_group_connected(group_id):
         if await is_api_available(group_id):
             api = await get_api_from_chat(group_id)
+            # Replace the following line with your desired implementation for auto filtering
             await auto_filter(client, message, api)
         else:
-            await message.reply_text('API Not Found, Please Contact @iryme')
+            await message.reply_text("API Not Found, Please Contact @iryme", quote=True)
     else:
-        await message.reply_text('Group is Not Connected, Please Contact @iryme')
+        await message.reply_text("Group is Not Connected, Please Contact @iryme", quote=True)
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming & filters.chat(AUTH_GROUPS))

@@ -8,17 +8,18 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
 
-@Client.on_message((filters.private | filters.group) & filters.command('connect') & filters.user(ADMINS))
-async def addconnection(client, message):
+@Client.on_message((filters.private | filters.group) & filters.command("connect") & filters.user(ADMINS))
+async def add_connection_handler(client, message):
     userid = message.from_user.id if message.from_user else None
     if not userid:
-        return await message.reply(f"You are an anonymous admin. Use /connect {message.chat.id} in PM")
+        return await message.reply("You are an anonymous admin. Use /connect {message.chat.id} in PM")
+
     chat_type = message.chat.type
 
     if chat_type == enums.ChatType.PRIVATE:
         try:
-            cmd, group_id, api = message.text.split(" ", 2)
-        except Exception as e:
+            _, group_id, api = message.text.split(" ", 2)
+        except ValueError:
             await message.reply_text(
                 "<b>Enter in correct format!</b>\n\n"
                 "<code>/connect groupid api</code>\n\n"
@@ -26,26 +27,18 @@ async def addconnection(client, message):
                 quote=True
             )
             return
-
     elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         group_id = message.chat.id
-        api = ""  # Empty string if API is not provided
+        api = ""
 
     try:
         st = await client.get_chat_member(group_id, userid)
-        if (
-                st.status != enums.ChatMemberStatus.ADMINISTRATOR
-                and st.status != enums.ChatMemberStatus.OWNER
-                and userid not in ADMINS
-        ):
+        if st.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] and userid not in ADMINS:
             await message.reply_text("You should be an admin in the given group!", quote=True)
             return
     except Exception as e:
         logger.exception(e)
-        await message.reply_text(
-            "Invalid Group ID!\n\nIf correct, make sure I'm present in your group!!",
-            quote=True,
-        )
+        await message.reply_text("Invalid Group ID!\n\nIf correct, make sure I'm present in your group!!", quote=True)
         return
 
     try:
@@ -58,29 +51,26 @@ async def addconnection(client, message):
                 await message.reply_text("Please provide the API when connecting to the group!", quote=True)
                 return
 
-            addcon = await add_connection(str(group_id), str(userid), api)
-            if addcon:
+            if await add_connection(str(group_id), str(userid), api):
                 await message.reply_text(
-                    f"Successfully connected to **{title}**\nNow manage your group from my PM!",
+                    f"Successfully connected to <b>{title}</b>\nNow manage your group from my PM!",
                     quote=True,
-                    parse_mode=enums.ParseMode.MARKDOWN
+                    parse_mode=enums.ParseMode.HTML,
                 )
                 if chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
                     await client.send_message(
                         userid,
-                        f"Connected to **{title}**!",
-                        parse_mode=enums.ParseMode.MARKDOWN
+                        f"Connected to <b>{title}</b>!",
+                        parse_mode=enums.ParseMode.HTML,
                     )
             else:
-                await message.reply_text(
-                    "You're already connected to this chat!",
-                    quote=True
-                )
+                await message.reply_text("You're already connected to this chat!", quote=True)
         else:
             await message.reply_text("Add me as an admin in the group", quote=True)
     except Exception as e:
         logger.exception(e)
-        await message.reply_text('Some error occurred! Try again later.', quote=True)
+        await message.reply_text("Some error occurred! Try again later.", quote=True)
+
 
 
 

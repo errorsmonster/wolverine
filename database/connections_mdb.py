@@ -12,46 +12,28 @@ mycol = mydb['CONNECTION']
 
 
 async def add_connection(group_id, user_id, api):
-    query = mycol.find_one(
-        {"_id": user_id},
-        {"_id": 0, "active_group": 0}
-    )
-    if query is not None:
-        group_ids = [x["group_id"] for x in query.get("group_details", [])]
-        if group_id in group_ids:
-            return False
+    query = mycol.find_one({"_id": user_id}, {"_id": 0, "active_group": 0})
+    if query and any(x["group_id"] == group_id for x in query.get("group_details", [])):
+        return False
 
-    group_details = {
-        "group_id": group_id,
-        "api": api
-    }
+    group_details = {"group_id": group_id, "api": api}
 
-    data = {
-        '_id': user_id,
-        'group_details': [group_details],
-        'active_group': group_id,
-    }
+    data = {"_id": user_id, "group_details": [group_details], "active_group": group_id}
 
-    if mycol.count_documents({"_id": user_id}) == 0:
-        try:
+    try:
+        if mycol.count_documents({"_id": user_id}) == 0:
             mycol.insert_one(data)
-            return True
-        except Exception as e:
-            logger.exception('Some error occurred!', exc_info=True)
-
-    else:
-        try:
+        else:
             mycol.update_one(
-                {'_id': user_id},
-                {
-                    "$push": {"group_details": group_details},
-                    "$set": {"active_group": group_id}
-                }
+                {"_id": user_id},
+                {"$push": {"group_details": group_details}, "$set": {"active_group": group_id}},
             )
-            return True
-        except Exception as e:
-            logger.exception('Some error occurred!', exc_info=True)
-            
+        return True
+    except Exception as e:
+        logger.exception('Some error occurred!', exc_info=True)
+        return False
+    
+    
 
 async def active_connection(user_id):
     query = mycol.find_one(
@@ -130,31 +112,15 @@ async def delete_connection(user_id, group_id):
 
 
 async def is_api_available(chat_id):
-    query = mycol.find_one(
-        {"_id": str(chat_id)},
-        {"_id": 0, "api": 1}
-    )
-    if query is not None and "api" in query:
-        return True
-    else:
-        return False
+    query = mycol.find_one({"_id": str(chat_id)}, {"_id": 0, "api": 1})
+    return query and "api" in query
 
 
 async def get_api_from_chat(chat_id):
-    query = mycol.find_one(
-        {"_id": str(chat_id)},
-        {"_id": 0}
-    )
-    if query is not None:
-        return query.get("api")
-    else:
-        return None
+    query = mycol.find_one({"_id": str(chat_id)}, {"_id": 0})
+    return query.get("api") if query else None
 
 
 async def is_group_connected(group_id):
-    query = mycol.find_one(
-        {"group_details.group_id": group_id},
-        {"_id": 0}
-    )
+    query = mycol.find_one({"group_details.group_id": group_id}, {"_id": 0})
     return query is not None
-
