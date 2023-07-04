@@ -635,7 +635,7 @@ async def group_filter(client, msg, api, spoll=False):
         await msg.message.delete()
 """
 
-async def auto_filter(client, msg, api, spoll=False):
+async def auto_filter(client, msg, api=None, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
