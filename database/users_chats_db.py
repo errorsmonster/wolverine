@@ -63,7 +63,7 @@ class Database:
         await self.grp.update_one({'id': int(group_id)}, {'$set': {'api': api}})
         
     async def remove_api_for_group(self, group_id):
-        await self.grp.update_one({'id': int(group_id)}, {'$set': {'api': ''}})
+        await self.grp.update_one({'id': group_id}, {'$set': {'api': ''}})
         
     async def get_api_from_chat(self, group_id):
         group = await self.grp.find_one({'id': int(group_id)})
