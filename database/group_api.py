@@ -24,8 +24,10 @@ class Database:
         return group is not None
 
     async def is_api_available(self, group_id):
-        group = await self.grp.find_one({'id': group_id, 'sapi': {'$ne': ''}})
-        return group is not None
+        group = await self.grp.find_one({'id': group_id})
+        if group is None or not group.get('sapi', ''):
+            return False
+        return True
 
     async def get_api_from_chat(self, group_id):
         group = await self.grp.find_one({'id': group_id})

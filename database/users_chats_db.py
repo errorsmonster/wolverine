@@ -37,6 +37,9 @@ class Database:
         if user is None:
             return None  # User not found in the database
         return user.get("premium_expiry")
+    
+    async def remove_user_premium(self, user_id):
+        await self.col.update_one({"id": user_id}, {"$set": {"Premium": False, "premium_expiry": None}})
 
     async def remove_expired_users(self):
         now = datetime.utcnow()

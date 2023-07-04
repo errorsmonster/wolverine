@@ -14,7 +14,7 @@ from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, short_links
-from database.connections_mdb import is_api_available, get_api_from_chat, is_group_connected
+from database.group_api import gdb
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -53,15 +53,15 @@ async def private_filter(client, message):
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
     group_id = message.chat.id
-    if await is_group_connected(group_id):
-        if await is_api_available(group_id):
-            api = await get_api_from_chat(group_id)
-            # Replace the following line with your desired implementation for auto filtering
+    if await gdb.is_group_connected(group_id):
+        if await gdb.is_api_available(group_id):
+            api = await gdb.get_api_from_chat(group_id)
             await auto_filter(client, message, api)
         else:
             await message.reply_text("API Not Found, Please Contact @iryme", quote=True)
     else:
-        await message.reply_text("Group is Not Connected, Please Contact @iryme", quote=True)
+        logging.info(f"Group {group_id} is not connected with any API")
+        return
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming & filters.chat(AUTH_GROUPS))
