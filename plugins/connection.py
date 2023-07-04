@@ -59,11 +59,11 @@ async def addconnection(client, message):
                 await message.reply_text("Please provide the API when connecting to the group!", quote=True)
                 return
             
-            if not gdb.is_group_connected(str(group_id)):
-                await gdb.add_group(str(group_id))
+            if not gdb.is_group_connected(group_id):
+                await gdb.add_group(group_id)
 
             # addcon = await add_connection(str(group_id), str(userid))
-            addcon = await gdb.update_api_for_group(str(group_id), api)            
+            addcon = await gdb.update_api_for_group((group_id), api)          
             if addcon:
                 await message.reply_text(
                     f"Successfully connected to **{title}**",
