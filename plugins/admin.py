@@ -60,3 +60,36 @@ async def remove_paid(client, message):
     else:
         await db.remove_user_premium(k.id)
         await message.reply(DEL_PAID_TEXT.format(k.first_name))
+        
+        
+        
+@Client.on_message(filters.private & filters.command("add_api") & filters.user(ADMINS))
+async def update_api_command(client, message):
+    # ...
+
+    # Extract the group ID and API from the command message
+    command_parts = message.text.split(" ")
+    if len(command_parts) < 3:
+        await message.reply_text("Invalid command format. Please use /update_api <group_id> <api>")
+        return
+    group_id = command_parts[1]
+    api = command_parts[2]
+
+    # Update the API for the group in the database
+    await db.update_api_for_group(group_id, api)
+    await message.reply_text("API updated successfully!")
+
+
+@Client.on_message(filters.private & filters.command("remove_api") & filters.user(ADMINS))
+async def remove_api_command(client, message):
+    # Extract the group ID from the command message
+    command_parts = message.text.split(" ")
+    if len(command_parts) < 2:
+        await message.reply_text("Invalid command format. Please use /remove_api <group_id>")
+        return
+    group_id = command_parts[1]
+
+    # Remove the API for the group from the database
+    await db.remove_api_for_group(group_id)
+    await message.reply_text("API removed successfully!")
+        

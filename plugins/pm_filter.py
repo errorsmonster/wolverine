@@ -53,15 +53,20 @@ async def private_filter(client, message):
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
     group_id = message.chat.id
-    if await gdb.is_group_connected(group_id):
-        if await gdb.is_api_available(group_id):
-            api = await gdb.get_api_from_chat(group_id)
+    title = message.chat.title
+    
+    if message.text.startswith("/"):
+        return
+    
+    if await db.get_chat(group_id):
+        api = await db.get_api_from_chat(group_id)
+        if api:
             await auto_filter(client, message, api)
         else:
-            await message.reply_text("API Not Found, Please Contact @iryme", quote=True)
+            await message.reply_text("Group is not configured, Please Contact @iryme", quote=True)
     else:
-        logging.info(f"Group {group_id} is not connected with any API")
-        return
+        await db.add_chat(group_id, title)
+        logging.info(f"Group - {title} {group_id} is not connected with any API")
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming & filters.chat(AUTH_GROUPS))
@@ -69,7 +74,6 @@ async def give_filter(client, message):
     k = await manual_filters(client, message)
     if k == False:
         await auto_filter(client, message)
-
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
