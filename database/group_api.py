@@ -35,6 +35,9 @@ class Database:
 
     async def update_api_for_group(self, group_id, sapi):
         await self.grp.update_one({'id': group_id}, {'$set': {'sapi': sapi}})
+        
+    async def remove_api_for_group(self, group_id):
+        await self.grp.update_one({'id': group_id}, {'$set': {'sapi': ''}})
 
 
 gdb = Database(DATABASE_URI, DATABASE_NAME)

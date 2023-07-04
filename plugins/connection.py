@@ -90,31 +90,34 @@ async def addconnection(client, message):
 
 
 @Client.on_message((filters.private | filters.group) & filters.command('disconnect') & filters.user(ADMINS))
-async def deleteconnection(client, message):
-    userid = message.from_user.id if message.from_user else None
-    if not userid:
-        return await message.reply(f"You are anonymous admin. Use /connect {message.chat.id} in PM")
+async def removeconnection(client, message):
     chat_type = message.chat.type
 
     if chat_type == enums.ChatType.PRIVATE:
-        await message.reply_text("Run /connections to view or disconnect from groups!", quote=True)
-
+        try:
+            cmd, group_id = message.text.split(" ", 1)
+        except ValueError:
+            await message.reply_text(
+                "<b>Enter in correct format!</b>\n\n"
+                "<code>/disconnect groupid</code>",
+                quote=True
+            )
+            return
     elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         group_id = message.chat.id
 
-        st = await client.get_chat_member(group_id, userid)
-        if (
-                st.status != enums.ChatMemberStatus.ADMINISTRATOR
-                and st.status != enums.ChatMemberStatus.OWNER
-                and str(userid) not in ADMINS
-        ):
-            return
-
-        delcon = await delete_connection(str(userid), str(group_id))
-        if delcon:
-            await message.reply_text("Successfully disconnected from this chat", quote=True)
-        else:
-            await message.reply_text("This chat isn't connected to me!\nDo /connect to connect.", quote=True)
+    if await gdb.is_group_connected(str(group_id)):
+        await gdb.remove_api_for_group(str(group_id))
+        await message.reply_text(
+            f"Successfully disconnected from group {group_id}",
+            quote=True,
+            parse_mode=enums.ParseMode.HTML
+        )
+    else:
+        await message.reply_text(
+            "You're not connected to this chat!",
+            quote=True
+        )
 
 
 @Client.on_message(filters.private & filters.command(["connections"]))
