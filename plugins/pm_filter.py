@@ -42,7 +42,7 @@ async def private_filter(client, message):
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id)
     if files:
-        if not await db.is_premium_status(user_id):
+        if await db.is_premium_status(user_id) is True:
             await paid_filter(client, message)
         else:
             await auto_filter(client, message)   
