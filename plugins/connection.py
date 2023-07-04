@@ -106,8 +106,8 @@ async def removeconnection(client, message):
     elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         group_id = message.chat.id
 
-    if await gdb.is_group_connected(str(group_id)):
-        await gdb.remove_api_for_group(str(group_id))
+    if await gdb.is_group_connected(group_id):
+        await gdb.remove_group(group_id)
         await message.reply_text(
             f"Successfully disconnected from group {group_id}",
             quote=True,
