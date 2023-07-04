@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from users_chats_db import db
+from database.users_chats_db import db
 from info import ADMINS
 
 
