@@ -635,6 +635,7 @@ async def paid_filter(client, msg, spoll=False):
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
 
             if not files:
+                await message.reply_text("No Results Found. Try Another Keyword.")
                 return
 
         else:
