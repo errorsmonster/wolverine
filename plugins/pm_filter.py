@@ -49,7 +49,8 @@ async def private_filter(client, message):
         else:
             await auto_filter(client, message)   
     else:
-        await message.reply_text('No Results Found', reply_markup=markup)
+        logging.info(f"User - {user_id} searched for {search} but no results found")
+        #await message.reply_text('No Results Found', reply_markup=markup)
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
