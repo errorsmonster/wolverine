@@ -162,44 +162,79 @@ async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
     if int(req) not in [query.from_user.id, 0]:
         return await query.answer("oKda", show_alert=True)
+    try:
+        offset = int(offset)
+    except:
+        offset = 0
+    search = BUTTONS.get(key)
+    if not search:
+        await query.answer("You are using one of my old messages, please send the request again.", show_alert=True)
+        return
 
-    offset = int(offset) if offset.isdigit() else 0
-
-    files, n_offset, total = await get_search_results(key, offset=offset, filter=True)
-
-    n_offset = int(n_offset) if n_offset.isdigit() else 0
+    files, n_offset, total = await get_search_results(search, offset=offset, filter=True)
+    try:
+        n_offset = int(n_offset)
+    except:
+        n_offset = 0
 
     if not files:
         return
-
-    btn = [
-        [
-            InlineKeyboardButton(
-                text=f"[{get_size(file.file_size)}] {file.file_name}",
-                callback_data=f'files#{file.file_id}'
-            ),
+    settings = await get_settings(query.message.chat.id)
+    if settings['button']:
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'files#{file.file_id}'
+                ),
+            ]
+            for file in files
         ]
-        for file in files
-    ]
+    else:
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
+                ),
+                InlineKeyboardButton(
+                    text=f"{get_size(file.file_size)}",
+                    callback_data=f'files_#{file.file_id}',
+                ),
+            ]
+            for file in files
+        ]
 
-    off_set = offset - 10 if offset > 10 else 0 if offset > 0 else None
-
-    btn.append([
-        InlineKeyboardButton("⏪ BACK", callback_data=f"pnext_{req}_{key}_{off_set}"),
-        InlineKeyboardButton(f"🗓 {offset // 10 + 1} / {total // 10 + 1}", callback_data="pages"),
-        InlineKeyboardButton("NEXT ⏩", callback_data=f"pnext_{req}_{key}_{n_offset}")
-    ] if n_offset > 0 else [
-        InlineKeyboardButton("⏪ BACK", callback_data=f"pnext_{req}_{key}_{off_set}"),
-        InlineKeyboardButton(f"📃 Pages {offset // 10 + 1} / {total // 10 + 1}", callback_data="pages")
-    ])
-
+    if 0 < offset <= 10:
+        off_set = 0
+    elif offset == 0:
+        off_set = None
+    else:
+        off_set = offset - 10
+    if n_offset == 0:
+        btn.append(
+            [InlineKeyboardButton("⏪ BACK", callback_data=f"pnext_{req}_{key}_{off_set}"),
+             InlineKeyboardButton(f"📃 Pages {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}",
+                                  callback_data="pages")]
+        )
+    elif off_set is None:
+        btn.append(
+            [InlineKeyboardButton(f"🗓 {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
+             InlineKeyboardButton("NEXT ⏩", callback_data=f"pnext_{req}_{key}_{n_offset}")])
+    else:
+        btn.append(
+            [
+                InlineKeyboardButton("⏪ BACK", callback_data=f"pnext_{req}_{key}_{off_set}"),
+                InlineKeyboardButton(f"🗓 {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
+                InlineKeyboardButton("NEXT ⏩", callback_data=f"pnext_{req}_{key}_{n_offset}")
+            ],
+        )
     try:
-        await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+        await query.edit_message_reply_markup(
+            reply_markup=InlineKeyboardMarkup(btn)
+        )
     except MessageNotModified:
         pass
-
     await query.answer()
-
+    
     
 @Client.on_callback_query(filters.regex(r"^spolling"))
 async def advantage_spoll_choker(bot, query):
