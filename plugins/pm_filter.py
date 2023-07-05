@@ -34,22 +34,14 @@ blacklist = script.BLACKLIST
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_filter(client, message):
     user_id = message.from_user.id
-    search = message.text
     
-    files = await get_search_results(search.lower(), offset=0, filter=True)
-    markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton('🔍 Check Your Spellings', url=f'https://www.google.com/search?q={message.text.replace(" ", "%20").replace("#request", "").replace("#Request", "")}%20movie')],
-                [InlineKeyboardButton('🗓️ Check Release Date', url=f'https://www.google.com/search?q={message.text.replace(" ", "%20").replace("#request", "")}%20movie%20release%20date')]
-            ])
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id)
+        
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
     else:
         await auto_filter(client, message)
-    if not files:
-        logging.info(f"User - {user_id} searched for {search} but no results found")
-        #await message.reply_text('No Results Found', reply_markup=markup)
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
