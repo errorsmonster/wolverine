@@ -32,10 +32,10 @@ async def add_paid(client, message):
         if duration > 365:
             await message.reply("Duration can't be more than 365 days.")
                 
-        if not db.is_user_exist(k.id):
+        if not await db.is_user_exist(k.id):
             await db.add_user(k.id, name)
                         
-        if db.is_premium_status(k.id) is True:
+        if await db.is_premium_status(k.id) is True:
             await message.reply(f"**{name}** is already a premium user.")
         else:
             await db.add_user_as_premium(k.id, duration)
