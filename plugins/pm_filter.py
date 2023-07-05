@@ -13,7 +13,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, short_links
+from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, short_links, replace_blacklist
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -27,6 +27,9 @@ logger.setLevel(logging.ERROR)
 
 BUTTONS = {}
 SPELL_CHECK = {}
+blacklist = script.blacklist
+
+
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_filter(client, message):
@@ -152,8 +155,52 @@ async def next_page(bot, query):
     except MessageNotModified:
         pass
     await query.answer()
+    
+    
+@Client.on_callback_query(filters.regex(r"^pnext"))
+async def next_page(bot, query):
+    ident, req, key, offset = query.data.split("_")
+    if int(req) not in [query.from_user.id, 0]:
+        return await query.answer("oKda", show_alert=True)
 
+    offset = int(offset) if offset.isdigit() else 0
 
+    files, n_offset, total = await get_search_results(key, offset=offset, filter=True)
+
+    n_offset = int(n_offset) if n_offset.isdigit() else 0
+
+    if not files:
+        return
+
+    btn = [
+        [
+            InlineKeyboardButton(
+                text=f"[{get_size(file.file_size)}] {file.file_name}",
+                callback_data=f'files#{file.file_id}'
+            ),
+        ]
+        for file in files
+    ]
+
+    off_set = offset - 10 if offset > 10 else 0 if offset > 0 else None
+
+    btn.append([
+        InlineKeyboardButton("⏪ BACK", callback_data=f"pnext_{req}_{key}_{off_set}"),
+        InlineKeyboardButton(f"🗓 {offset // 10 + 1} / {total // 10 + 1}", callback_data="pages"),
+        InlineKeyboardButton("NEXT ⏩", callback_data=f"pnext_{req}_{key}_{n_offset}")
+    ] if n_offset > 0 else [
+        InlineKeyboardButton("⏪ BACK", callback_data=f"pnext_{req}_{key}_{off_set}"),
+        InlineKeyboardButton(f"📃 Pages {offset // 10 + 1} / {total // 10 + 1}", callback_data="pages")
+    ])
+
+    try:
+        await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+    except MessageNotModified:
+        pass
+
+    await query.answer()
+
+    
 @Client.on_callback_query(filters.regex(r"^spolling"))
 async def advantage_spoll_choker(bot, query):
     _, user, movie_ = query.data.split('#')
@@ -537,8 +584,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.edit_reply_markup(reply_markup)
     await query.answer('Piracy Is Crime')
     
-    
-blacklist = ["mkv", "@Filmy"]
 
 async def paid_filter(client, msg, spoll=False):
     if not spoll:
@@ -579,7 +624,7 @@ async def paid_filter(client, msg, spoll=False):
         req = message.from_user.id if message.from_user else 0
         btn.append(
             [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
-             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}")]
+             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"pnext_{req}_{key}_{offset}")]
         )
     else:
         btn.append([InlineKeyboardButton(text="🗓 1/1", callback_data="pages")])
@@ -589,12 +634,6 @@ async def paid_filter(client, msg, spoll=False):
 
     if spoll:
         await msg.message.delete()
-
-
-async def replace_blacklist(file_name, blacklist):
-    for word in blacklist:
-        file_name = file_name.replace(word, "")
-    return file_name
 
 """
 async def group_filter(client, msg, api, spoll=False):

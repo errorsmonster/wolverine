@@ -395,6 +395,11 @@ def humanbytes(size):
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
 
+async def replace_blacklist(file_name, blacklist):
+    for word in blacklist:
+        file_name = file_name.replace(word, "")
+    return file_name
+
 
 async def short_links(link, api_key=None):
     url = 'https://sharezone.live/api?api'
@@ -408,3 +413,4 @@ async def short_links(link, api_key=None):
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params, raise_for_status=True) as response:
             return await response.text()
+
