@@ -66,7 +66,7 @@ Name - {}
 <a href=https://www.voot.com>Voot</a>
 """
 
-blacklist = ['@Filmy', 'ott', 'www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
+    BLACKLIST = ['@Filmy', 'ott', 'www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'bot', 'flix',
                 '4u', 'prime', 'hub', 'movies', 'otthd', 'telegram', 'com', 'hoichoihok',
                 'mkv', 'mp4', '@', 'filmy', 'films', 'cinema', 'join', 'club', 'apd',

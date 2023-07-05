@@ -27,7 +27,7 @@ logger.setLevel(logging.ERROR)
 
 BUTTONS = {}
 SPELL_CHECK = {}
-blacklist = script.blacklist
+blacklist = script.BLACKLIST
 
 
 
