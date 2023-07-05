@@ -536,7 +536,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
     await query.answer('Piracy Is Crime')
-
+    
+    
+blacklist = ["mkv", "@Filmy"]
 
 async def paid_filter(client, msg, spoll=False):
     if not spoll:
@@ -562,9 +564,14 @@ async def paid_filter(client, msg, spoll=False):
 
     pre = 'file'
     btn = [
-        [InlineKeyboardButton(text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'{pre}#{file.file_id}')]
+        [
+            InlineKeyboardButton(
+                text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
+                callback_data=f'{pre}#{file.file_id}'
+                )
+            ]
         for file in files
-    ]
+        ]
 
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
@@ -582,6 +589,12 @@ async def paid_filter(client, msg, spoll=False):
 
     if spoll:
         await msg.message.delete()
+
+
+async def replace_blacklist(file_name, blacklist):
+    for word in blacklist:
+        file_name = file_name.replace(word, "")
+    return file_name
 
 """
 async def group_filter(client, msg, api, spoll=False):
