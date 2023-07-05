@@ -182,12 +182,13 @@ async def next_page(bot, query):
     settings = await get_settings(query.message.chat.id)
     if settings['button']:
         btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'files#{file.file_id}'
-                ),
+        [
+            InlineKeyboardButton(
+                text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
+                callback_data=f'files#{file.file_id}'
+                )
             ]
-            for file in files
+        for file in files
         ]
     else:
         btn = [
