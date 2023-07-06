@@ -666,7 +666,7 @@ async def paid_filter(client, msg, spoll=False):
         await msg.message.delete()
 
 
-async def auto_filter(client, msg, spoll=False):
+async def auto_filter(client, msg, api=None, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
@@ -693,7 +693,7 @@ async def auto_filter(client, msg, spoll=False):
             [
                 InlineKeyboardButton(
                     text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    callback_data=f'{pre}#{file.file_id}'
+                    url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
             ]
             for file in files
@@ -703,11 +703,11 @@ async def auto_filter(client, msg, spoll=False):
             [
                 InlineKeyboardButton(
                     text=f"{await replace_blacklist(file.file_name, blacklist)}",
-                    callback_data=f'{pre}#{file.file_id}',
+                    url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
                 InlineKeyboardButton(
                     text=f"{get_size(file.file_size)}",
-                    callback_data=f'{pre}#{file.file_id}',
+                    url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
             ]
             for file in files
