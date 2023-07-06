@@ -747,7 +747,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
             [
                 InlineKeyboardButton(
                     text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}", 
-                    url=await short_links((f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}"), api)
+                    url=await short_links(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
             ]
             for file in files
@@ -756,16 +756,17 @@ async def auto_filter(client, msg, api=None, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{await replace_blacklist(file.file_name, blacklist)}",
-                    url=await short_links((f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"), api)
+                    text=await replace_blacklist(file.file_name, blacklist),
+                    url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
                 InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)}",
-                    url=await short_links((f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"), api)
+                    text=get_size(file.file_size),
+                    url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
             ]
             for file in files
         ]
+
 
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
