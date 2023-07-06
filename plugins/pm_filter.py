@@ -195,9 +195,7 @@ async def next_page(bot, query):
             ]
             for file in files
         ]
-        btn.append(
-            [InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickNotify/3"),]
-            )
+    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickNotify/3"),])
 
     if 0 < offset <= 10:
         off_set = 0
@@ -714,9 +712,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
             ]
             for file in files
         ]
-        btn.append(
-            [InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickNotify/3"),]
-            )        
+    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickNotify/3"),])        
 
 
     if offset != "":
