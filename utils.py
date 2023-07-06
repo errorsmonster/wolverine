@@ -416,6 +416,7 @@ async def replace_blacklist(file_name, blacklist):
 
 async def get_shortlink(link, api_key=None):
     api = await decrypt_api(api_key)
+    print(api)
     url = 'https://sharezone.live/api?api'
     default_api_key = "9054119f1e0c6332b2fd694fc1c3ffa3b31c590e"
 
