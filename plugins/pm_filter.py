@@ -40,7 +40,7 @@ async def private_paid_filter(client, message):
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
     else:
-        await paid_filter(client, message)
+        await auto_filter(client, message)
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
@@ -175,7 +175,8 @@ async def next_page(bot, query):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'files#{file.file_id}'
+                    text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
+                    callback_data=f'files#{file.file_id}'
                 ),
             ]
             for file in files
@@ -184,7 +185,8 @@ async def next_page(bot, query):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
+                    text=f"{await replace_blacklist(file.file_name, blacklist)}",
+                    callback_data=f'files#{file.file_id}'
                 ),
                 InlineKeyboardButton(
                     text=f"{get_size(file.file_size)}",
@@ -690,7 +692,8 @@ async def auto_filter(client, msg, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'{pre}#{file.file_id}'
+                    text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
+                    callback_data=f'{pre}#{file.file_id}'
                 ),
             ]
             for file in files
@@ -699,7 +702,7 @@ async def auto_filter(client, msg, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{file.file_name}",
+                    text=f"{await replace_blacklist(file.file_name, blacklist)}",
                     callback_data=f'{pre}#{file.file_id}',
                 ),
                 InlineKeyboardButton(
