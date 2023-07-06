@@ -693,7 +693,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
             [
                 InlineKeyboardButton(
                     text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    url=f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}",
                 ),
             ]
             for file in files
