@@ -686,7 +686,7 @@ async def private_dm_filter(client, msg, spoll=False):
     btn = [
         [
             InlineKeyboardButton(
-                text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'file_{file.file_id}'
+                text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'file#{file.file_id}'
             ),
         ]
         for file in files
