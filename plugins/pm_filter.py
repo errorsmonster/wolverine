@@ -13,7 +13,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, get_shortlink, replace_blacklist, encrypt_api 
+from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, get_shortlink, replace_blacklist, encrypt_api, decrypt_api
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -54,7 +54,7 @@ async def public_group_filter(client, message):
     if await db.get_chat(group_id):
         api = await db.get_api_from_chat(group_id)
         if api:
-            await auto_filter(client, message, group_id)
+            await auto_filter(client, message, api)
         else:
             await message.reply_text("Group is not configured, Please Contact @iryme", quote=True)
     else:
@@ -150,8 +150,7 @@ async def paid_next_page(bot, query):
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
-    ident, req, key, offset, api = query.data.split("_")
-    eapi = await db.get_api_from_chat(api)
+    ident, req, key, offset = query.data.split("_")
     if int(req) not in [query.from_user.id, 0]:
         return await query.answer("oKda", show_alert=True)
     try:
@@ -177,7 +176,7 @@ async def next_page(bot, query):
             [
                 InlineKeyboardButton(
                     text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", eapi)
+                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}")
                 ),
             ]
             for file in files
@@ -187,11 +186,11 @@ async def next_page(bot, query):
             [
                 InlineKeyboardButton(
                     text=f"{await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", eapi)
+                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}")
                 ),
                 InlineKeyboardButton(
                     text=f"{get_size(file.file_size)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", eapi)
+                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}")
                 ),
             ]
             for file in files
@@ -212,13 +211,13 @@ async def next_page(bot, query):
     elif off_set is None:
         btn.append(
             [InlineKeyboardButton(f"🗓 {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
-             InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}_{api}")])
+             InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}")])
     else:
         btn.append(
             [
                 InlineKeyboardButton("⏪ BACK", callback_data=f"next_{req}_{key}_{off_set}"),
                 InlineKeyboardButton(f"🗓 {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
-                InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}_{api}")
+                InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}")
             ],
         )
     try:
@@ -667,7 +666,6 @@ async def paid_filter(client, msg, spoll=False):
         await msg.message.delete()
 
 async def auto_filter(client, msg, api=None, spoll=False):
-    eapi = await db.get_api_from_chat(api)
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
@@ -694,7 +692,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
             [
                 InlineKeyboardButton(
                     text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", eapi)
+                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
             ]
             for file in files
@@ -704,11 +702,11 @@ async def auto_filter(client, msg, api=None, spoll=False):
             [
                 InlineKeyboardButton(
                     text=await replace_blacklist(file.file_name, blacklist),
-                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", eapi)
+                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
                 InlineKeyboardButton(
                     text=get_size(file.file_size),
-                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", eapi)
+                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
             ]
             for file in files
@@ -721,7 +719,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
         req = message.from_user.id if message.from_user else 0
         btn.append(
             [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
-             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}_{api}")]
+             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}")]
         )
     else:
         btn.append(
