@@ -746,7 +746,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {file.file_name}", 
+                    text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}", 
                     url=f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}",
                 ),
             ]
