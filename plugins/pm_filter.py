@@ -747,7 +747,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
             [
                 InlineKeyboardButton(
                     text=f"[{get_size(file.file_size)}] {file.file_name}", 
-                    url=await short_links(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    url=await short_links((f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}"), api)
                 ),
             ]
             for file in files
