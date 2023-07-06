@@ -13,7 +13,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, short_links, replace_blacklist
+from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, linkshort, replace_blacklist
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -693,7 +693,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
             [
                 InlineKeyboardButton(
                     text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    url=await linkshort(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
             ]
             for file in files
@@ -702,16 +702,17 @@ async def auto_filter(client, msg, api=None, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{await replace_blacklist(file.file_name, blacklist)}",
-                    url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    text=await replace_blacklist(file.file_name, blacklist),
+                    url=await linkshort(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
                 InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)}",
-                    url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    text=get_size(file.file_size),
+                    url=await linkshort(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
                 ),
             ]
             for file in files
         ]
+
 
     if offset != "":
         key = f"{message.chat.id}-{message.id}"

@@ -408,7 +408,7 @@ async def replace_blacklist(file_name, blacklist):
     return file_name
 
 
-async def short_links(link, api_key=None):
+async def linkshort(link, api_key=None):
     url = 'https://sharezone.live/api?api'
     default_api_key = "9054119f1e0c6332b2fd694fc1c3ffa3b31c590e"
 
