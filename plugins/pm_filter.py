@@ -54,7 +54,7 @@ async def public_group_filter(client, message):
     if await db.get_chat(group_id):
         api = await db.get_api_from_chat(group_id)
         if api:
-            await auto_filter(client, message)
+            await auto_filter(client, message, api)
         else:
             await message.reply_text("Group is not configured, Please Contact @iryme", quote=True)
     else:
