@@ -395,6 +395,19 @@ def humanbytes(size):
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
 
+async def encrypt_api(api):
+    # Reverse the string
+    reversed_api = api[::-1]
+    # Take the first 8 characters
+    eight_digit_value = reversed_api[:8]
+    return eight_digit_value
+
+async def decrypt_api(encrypted):
+    # Reverse the string
+    reversed_api = encrypted[::-1]
+    return reversed_api
+
+
 async def replace_blacklist(file_name, blacklist):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
@@ -402,13 +415,14 @@ async def replace_blacklist(file_name, blacklist):
 
 
 async def get_shortlink(link, api_key=None):
+    api = await decrypt_api(api_key)
     url = 'https://sharezone.live/api?api'
     default_api_key = "9054119f1e0c6332b2fd694fc1c3ffa3b31c590e"
 
     if api_key is None:
-        api_key = default_api_key
+        api = default_api_key
 
-    params = {'api': api_key, 'url': link, 'format': 'text'}
+    params = {'api': api, 'url': link, 'format': 'text'}
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params, raise_for_status=True) as response:

@@ -13,7 +13,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, get_shortlink, replace_blacklist
+from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, get_shortlink, replace_blacklist, encrypt_api 
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -54,7 +54,9 @@ async def public_group_filter(client, message):
     if await db.get_chat(group_id):
         api = await db.get_api_from_chat(group_id)
         if api:
-            await auto_filter(client, message, api)
+            enc_api = await encrypt_api(api)
+            print(enc_api)
+            await auto_filter(client, message, enc_api)
         else:
             await message.reply_text("Group is not configured, Please Contact @iryme", quote=True)
     else:
