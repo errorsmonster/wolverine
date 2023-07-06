@@ -18,7 +18,7 @@ blacklist = script.BLACKLIST
 
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
-async def private_filter(client, message):
+async def private_paid_filter(client, message):
     user_id = message.from_user.id
     
     if not await db.is_user_exist(user_id):
@@ -32,7 +32,7 @@ async def private_filter(client, message):
         
         
 @Client.on_callback_query(filters.regex(r"^pnext"))
-async def pnext_page(bot, query):
+async def paid_next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
     if int(req) not in [query.from_user.id, 0]:
         return await query.answer("oKda", show_alert=True)
