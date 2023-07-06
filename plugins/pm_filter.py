@@ -54,9 +54,7 @@ async def public_group_filter(client, message):
     if await db.get_chat(group_id):
         api = await db.get_api_from_chat(group_id)
         if api:
-            enc_api = await encrypt_api(api)
-            print(enc_api)
-            await auto_filter(client, message, enc_api)
+            await auto_filter(client, message, group_id)
         else:
             await message.reply_text("Group is not configured, Please Contact @iryme", quote=True)
     else:
@@ -153,6 +151,7 @@ async def paid_next_page(bot, query):
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset, api = query.data.split("_")
+    eapi = await db.get_api_from_chat(api)
     if int(req) not in [query.from_user.id, 0]:
         return await query.answer("oKda", show_alert=True)
     try:
@@ -178,7 +177,7 @@ async def next_page(bot, query):
             [
                 InlineKeyboardButton(
                     text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", eapi)
                 ),
             ]
             for file in files
@@ -188,11 +187,11 @@ async def next_page(bot, query):
             [
                 InlineKeyboardButton(
                     text=f"{await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", eapi)
                 ),
                 InlineKeyboardButton(
                     text=f"{get_size(file.file_size)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", eapi)
                 ),
             ]
             for file in files
@@ -667,8 +666,8 @@ async def paid_filter(client, msg, spoll=False):
     if spoll:
         await msg.message.delete()
 
-
 async def auto_filter(client, msg, api=None, spoll=False):
+    eapi = await db.get_api_from_chat(api)
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
@@ -695,7 +694,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
             [
                 InlineKeyboardButton(
                     text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", eapi)
                 ),
             ]
             for file in files
@@ -705,11 +704,11 @@ async def auto_filter(client, msg, api=None, spoll=False):
             [
                 InlineKeyboardButton(
                     text=await replace_blacklist(file.file_name, blacklist),
-                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", eapi)
                 ),
                 InlineKeyboardButton(
                     text=get_size(file.file_size),
-                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
+                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", eapi)
                 ),
             ]
             for file in files
