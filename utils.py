@@ -394,13 +394,6 @@ def humanbytes(size):
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
-"""
-async def replace_blacklist(file_name, blacklist):
-    for word in blacklist:
-        file_name = file_name.replace(word, "")
-    return file_name"""
-
-
 
 async def replace_blacklist(file_name, blacklist):
     for word in blacklist:
@@ -408,7 +401,7 @@ async def replace_blacklist(file_name, blacklist):
     return file_name
 
 
-async def linkshort(link, api_key=None):
+async def get_shortlink(link, api_key=None):
     url = 'https://sharezone.live/api?api'
     default_api_key = "9054119f1e0c6332b2fd694fc1c3ffa3b31c590e"
 
