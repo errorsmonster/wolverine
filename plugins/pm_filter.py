@@ -41,7 +41,7 @@ async def private_filter(client, message):
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
     else:
-        await auto_filter(client, message, api=False)
+        await auto_filter(client, message, api=None)
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
