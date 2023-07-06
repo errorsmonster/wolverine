@@ -27,8 +27,7 @@ async def private_filter(client, message):
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
     else:
-        return
-        #await private_dm_filter(client, message)
+        await paid_filter(client, message)
         
         
         
