@@ -150,8 +150,7 @@ async def paid_next_page(bot, query):
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
-    ident, req, key, offset, api_str = query.data.split("_")
-    api = eval(api_str)
+    ident, req, key, offset, api = query.data.split("_")
     if int(req) not in [query.from_user.id, 0]:
         return await query.answer("oKda", show_alert=True)
     try:
@@ -212,13 +211,13 @@ async def next_page(bot, query):
     elif off_set is None:
         btn.append(
             [InlineKeyboardButton(f"🗓 {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
-             InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}_{str(api)}")])
+             InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}_{api}")])
     else:
         btn.append(
             [
                 InlineKeyboardButton("⏪ BACK", callback_data=f"next_{req}_{key}_{off_set}"),
                 InlineKeyboardButton(f"🗓 {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
-                InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}_{str(api)}")
+                InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}_{api}")
             ],
         )
     try:
@@ -721,7 +720,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
         req = message.from_user.id if message.from_user else 0
         btn.append(
             [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
-             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}_{str(api)}")]
+             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}_{api}")]
         )
     else:
         btn.append(
