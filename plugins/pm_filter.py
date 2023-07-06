@@ -41,7 +41,7 @@ async def private_filter(client, message):
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
     else:
-        await auto_filter(client, message, api=None)
+        await private_dm_filter(client, message)
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
@@ -665,12 +665,60 @@ async def paid_filter(client, msg, spoll=False):
     if spoll:
         await msg.message.delete()
 
-"""
-async def group_filter(client, msg, api, spoll=False):
+async def private_dm_filter(client, msg, spoll=False):
+    if not spoll:
+        message = msg
+        if message.text.startswith("/"):
+            return  # ignore commands
+        if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+            return
+        if 2 < len(message.text) < 100:
+            search = message.text
+            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+            if not files:
+                return
+        else:
+            return
+    else:
+        message = msg.message.reply_to_message  # msg will be callback query
+        search, files, offset, total_results = spoll
+
+    btn = [
+        [
+            InlineKeyboardButton(
+                text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'file_{file.file_id}'
+            ),
+        ]
+        for file in files
+    ]
+
+    if offset != "":
+        key = f"{message.chat.id}-{message.id}"
+        BUTTONS[key] = search
+        req = message.from_user.id if message.from_user else 0
+        btn.append(
+            [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
+             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}")]
+        )
+    else:
+        btn.append(
+            [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
+        )
+
+    cap = f"Here is what I found for your query: {search}"
+
+    await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+
+    if spoll:
+        await msg.message.delete()
+
+
+async def auto_filter(client, msg, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
-        if message.text.startswith("/"): return  # ignore commands
+        if message.text.startswith("/"):
+            return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
             return
         if 2 < len(message.text) < 100:
@@ -692,8 +740,22 @@ async def group_filter(client, msg, api, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {file.file_name}", 
-                    url=await short_links((f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"), api))
+                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'{pre}#{file.file_id}'
+                ),
+            ]
+            for file in files
+        ]
+    else:
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"{file.file_name}",
+                    callback_data=f'{pre}#{file.file_id}',
+                ),
+                InlineKeyboardButton(
+                    text=f"{get_size(file.file_size)}",
+                    callback_data=f'{pre}#{file.file_id}',
+                ),
             ]
             for file in files
         ]
@@ -710,84 +772,14 @@ async def group_filter(client, msg, api, spoll=False):
         btn.append(
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
-
-    TEMPLATE = settings['template']
-    cap = f"Here is what I found for your query {search}"
+    
+    cap = f"Here is what I found for your query: {search}"
     
     await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
     
     if spoll:
         await msg.message.delete()
-"""
 
-async def auto_filter(client, msg, api=None, spoll=False):
-    if not spoll:
-        message = msg
-        settings = await get_settings(message.chat.id)
-        if message.text.startswith("/"): return  # ignore commands
-        if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
-            return
-        if 2 < len(message.text) < 100:
-            search = message.text
-            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
-            if not files:
-                if settings["spell_check"]:
-                    return await advantage_spell_chok(msg)
-                else:
-                    return
-        else:
-            return
-    else:
-        settings = await get_settings(msg.message.chat.id)
-        message = msg.message.reply_to_message  # msg will be callback query
-        search, files, offset, total_results = spoll
-    pre = 'filep' if settings['file_secure'] else 'file'
-    if settings['button']:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}", 
-                    url=f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}",
-                ),
-            ]
-            for file in files
-        ]
-    else:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=await replace_blacklist(file.file_name, blacklist),
-                    url=await short_links(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
-                ),
-                InlineKeyboardButton(
-                    text=get_size(file.file_size),
-                    url=await short_links(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
-                ),
-            ]
-            for file in files
-        ]
-
-
-    if offset != "":
-        key = f"{message.chat.id}-{message.id}"
-        BUTTONS[key] = search
-        req = message.from_user.id if message.from_user else 0
-        btn.append(
-            [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
-             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}")]
-        )
-    else:
-        btn.append(
-            [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
-        )
-
-    TEMPLATE = settings['template']
-    cap = f"Here is what I found for your query {search}"
-    
-    await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-    
-    if spoll:
-        await msg.message.delete()
 
 
 async def advantage_spell_chok(msg):
