@@ -419,9 +419,9 @@ async def get_shortlink(link, api_key=None):
     default_api_key = "9054119f1e0c6332b2fd694fc1c3ffa3b31c590e"
 
     if api_key is None:
-        api = default_api_key
+        api_key = default_api_key
 
-    params = {'api': api, 'url': link, 'format': 'text'}
+    params = {'api': api_key, 'url': link, 'format': 'text'}
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params, raise_for_status=True) as response:
