@@ -95,23 +95,22 @@ async def next_page(bot, query):
     settings = await get_settings(query.message.chat.id)
     if settings['button']:
         btn = [
-        [
-            InlineKeyboardButton(
-                text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                url= await short_links(f"https://telegram.me/{temp.U_NAME}?start='files_{file.file_id}")
-                )
+            [
+                InlineKeyboardButton(
+                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'files#{file.file_id}'
+                ),
             ]
-        for file in files
+            for file in files
         ]
     else:
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{await replace_blacklist(file.file_name, blacklist)}", url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+                    text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
                 ),
                 InlineKeyboardButton(
                     text=f"{get_size(file.file_size)}",
-                    url=await short_links(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+                    callback_data=f'files_#{file.file_id}',
                 ),
             ]
             for file in files
