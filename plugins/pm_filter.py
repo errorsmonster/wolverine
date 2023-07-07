@@ -62,7 +62,7 @@ async def public_group_filter(client, message):
             if api:
                 await auto_filter(client, message, api)
             else:
-                await message.reply_text("This group is not configured, To configure, please Contact <a href=https://t.me/lemx4>LEMON</a>", quote=True)
+                await message.reply_text("This group is not configured, To configure, please Contact <a href=https://t.me/lemx4>LEMON</a>", disable_web_page_preview=True)
         else:
             await db.add_chat(group_id, title)
             logging.info(f"Group - {title} {group_id} is not connected with any API")
