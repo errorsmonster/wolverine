@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 from database.users_chats_db import db
 from info import ADMINS
+import asyncio
 
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
@@ -92,4 +93,29 @@ async def remove_api_command(client, message):
     # Remove the API for the group from the database
     await db.remove_api_for_group(group_id)
     await message.reply_text("API removed successfully!")
-        
+    
+    
+    
+# configure group
+@Client.on_message(filters.group & filters.command("config"))
+async def configure_command(client, message):
+    r=await message.reply_text("Please wait...")
+    group_id = message.chat.id
+    group_name = message.chat.title
+    members_count = await client.get_chat_members_count(group_id)
+    try:
+        if members_count < 1000:
+            await r.edit("Minimum 1000 members required to configure the group.")
+            return
+        else:
+            m=await r.edit("Configuring the group...")
+            await asyncio.sleep(5)
+            await m.edit(f"Error: Failed to configure {group_name}. Please contact @iryme")
+    except Exception as e:
+        await r.edit(f"Error: {e}")
+        return
+    
+    # config msg
+    @Client.on_message(filters.group & filters.command("configure"))
+    async def config_msg_command(client, message):
+        await message.reply_text(f"Now You Can **Earn Money** By Adding This Bot To Your Group\n\nRequirements: \n1. Your Group Must Have Minimum 1000 Members\n2. Your Group Must Be Active\n3. Basic Knowledge about Telegram\n4. And a Shortner API of <a href=https://sharezone.live/member/tools/api>ShareZone</a>\n\nTo Cofigure the group please send /config")
