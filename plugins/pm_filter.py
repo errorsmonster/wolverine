@@ -51,6 +51,9 @@ async def public_group_filter(client, message):
     if message.text.startswith("/"):
         return
     
+    if group_id in AUTH_GROUPS:
+        return
+        
     if await db.get_chat(group_id):
         api = await db.get_api_from_chat(group_id)
         if api:
