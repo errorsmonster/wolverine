@@ -55,7 +55,6 @@ async def public_group_filter(client, message):
         k = await manual_filters(client, message)
         if k == False:
             await auto_filter(client, message)
-        return    
 
     if await db.get_chat(group_id):
         api = await db.get_api_from_chat(group_id)
