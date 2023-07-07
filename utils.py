@@ -395,19 +395,6 @@ def humanbytes(size):
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
 
-async def encrypt_api(api):
-    # Reverse the string
-    reversed_api = api[::-1]
-    # Take the first 8 characters
-    eight_digit_value = reversed_api[:14]
-    return eight_digit_value
-
-async def decrypt_api(encrypted):
-    # Reverse the string
-    reversed_api = encrypted[::-1]
-    return reversed_api
-
-
 async def replace_blacklist(file_name, blacklist):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
