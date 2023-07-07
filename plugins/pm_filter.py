@@ -67,10 +67,10 @@ async def public_group_filter(client, message):
         await db.add_chat(group_id, title)
         logging.info(f"Group - {title} {group_id} is not connected with any API")
 
-
+"""
 @Client.on_message(filters.group & filters.text & filters.incoming & filters.chat(AUTH_GROUPS))
 async def give_filter(client, message):
-
+"""
 
 @Client.on_callback_query(filters.regex(r"^forward"))
 async def paid_next_page(bot, query):
