@@ -33,9 +33,10 @@ blacklist = script.BLACKLIST
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_paid_filter(client, message):
     user_id = message.from_user.id
+    user_name = message.from_user.first_name
     
     if not await db.is_user_exist(user_id):
-        await db.add_user(user_id)
+        await db.add_user(user_id, user_name)
         
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
