@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from info import AUTH_GROUPS
+from info import AUTH_GROUPS as CHAT_IDS
 from pyrogram.types import ChatJoinRequest
 
 
@@ -7,7 +7,7 @@ TEXT = "Hello {}, Welcome To {}"
 APPROVED = True  # set to True by default
 
 # auto approve members 
-@Client.on_chat_join_request((filters.group | filters.channel) & filters.chat(AUTH_GROUPS) if AUTH_GROUPS else (filters.group | filters.channel))
+@Client.on_chat_join_request((filters.group | filters.channel) & filters.chat(CHAT_IDS) if CHAT_IDS else (filters.group | filters.channel))
 async def autoapprove(client: Client, message: ChatJoinRequest):
     chat=message.chat
     user=message.from_user
