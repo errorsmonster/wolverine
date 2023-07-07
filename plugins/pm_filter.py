@@ -49,6 +49,8 @@ async def public_group_filter(client, message):
     group_id = message.chat.id
     title = message.chat.title
     
+    button = InlineKeyboardMarkup([[InlineKeyboardButton("Request Movies", url="https://t.me/PrimeHubReq")]])
+    
     if message.text.startswith("/"):
         return
     
@@ -62,7 +64,7 @@ async def public_group_filter(client, message):
             if api:
                 await auto_filter(client, message, api)
             else:
-                await message.reply_text("This group is not configured, To configure, please send /configure\nJoin <a href=https://t.me/PrimeHubReq>PrimeHub</a> for requesting movies", disable_web_page_preview=True)
+                await message.reply_text("This group is not configured, To configure, please send /configure", reply_markup=button, disable_web_page_preview=True)
         else:
             await db.add_chat(group_id, title)
             logging.info(f"Group - {title} {group_id} is not connected with any API")
