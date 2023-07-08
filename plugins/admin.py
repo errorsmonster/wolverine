@@ -118,4 +118,4 @@ async def configure_command(client, message):
 # config msg
 @Client.on_message(filters.group & filters.command("configure"))
 async def config_msg_command(client, message):
-    await message.reply_text(f"Now You Can **Earn Money** By Adding This Bot To Your Group\n\nRequirements: \n1. Your Group Must Have Minimum 1000 Members\n2. Your Group Must Be Active\n3. Basic Knowledge about Telegram\n4. And a Shortner API of <a href=https://sharezone.live/member/tools/api>ShareZone</a>\n\nTo Cofigure the group please send /config")
+    await message.reply_text(f"Now You Can **Earn Money** By Adding This Bot To Your Group\n\nRequirements: \n1. Your Group Must Have Minimum 1000 Members\n2. Your Group Must Be Active\n3. Basic Knowledge about Telegram\n4. And a Shortner API of <a href=https://sharezone.live/member/tools/api>ShareZone</a>\n\nTo Cofigure the group please send /config", disable_web_page_preview=True)
