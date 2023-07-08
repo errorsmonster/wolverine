@@ -235,7 +235,7 @@ async def start(client, message):
         file_id=file_id,
         protect_content=True if pre == 'filep' else False,
         # /////////////////////////////////////////////////////added buttons & auto delete /////////////////////////////////////////////////////////////////////////////
-        caption=f"{await replace_blacklist(f_caption, blacklist)}\nUploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
+        caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
         reply_markup=InlineKeyboardMarkup(
             [[
                 InlineKeyboardButton('Support', url=f"https://t.me/iPrimehub"),
