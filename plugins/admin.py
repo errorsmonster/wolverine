@@ -2,7 +2,9 @@ from pyrogram import Client, filters
 from database.users_chats_db import db
 from info import ADMINS
 import asyncio
-
+from Script import script
+from info import LOG_CHANNEL
+from utils import temp
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
@@ -119,3 +121,22 @@ async def configure_command(client, message):
 @Client.on_message(filters.group & filters.command("configure"))
 async def config_msg_command(client, message):
     await message.reply_text(f"Now You Can **Earn Money** By Adding This Bot To Your Group\n\nRequirements: \n1. Your Group Must Have Minimum 1000 Members\n2. Your Group Must Be Active\n3. Basic Knowledge about Telegram\n4. And a Shortner API of <a href=https://sharezone.live/member/tools/api>ShareZone</a>\n\nTo Cofigure the group please send /config", disable_web_page_preview=True)
+    
+    
+#request command 
+@Client.on_message(filters.command("request") & filters.private)
+async def request(client, message): 
+    if len(message.command) == 1:
+       await message.reply_text(script.REQM,
+        disable_web_page_preview=True,
+        )
+    else:
+        await message.reply_text(
+         script.REQ_REPLY.format(message.text.replace("/request", "").replace("/Request", "")),
+         disable_web_page_preview=True,
+         )
+        await client.send_message(LOG_CHANNEL,
+         script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, message.text.replace("/request", "").replace("/Request", "")), 
+         disable_web_page_preview=True,
+         )
+    
