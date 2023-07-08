@@ -50,7 +50,7 @@ Name - {}
 
     #remove ads
     REMADS_TEXT = """
-**Free**\nAds & no direct links, 10 min auto deletion\n\n**Premium**\nDirect files & no creepy ads, 30 min auto deletion, premium access\n\n**Plan Cost - ₹29/month & ₹99/6-month **\nPrices may increase in the future.\n**UPI** -\n    <code>iPrimeHub@axl</code>
+**Free**\nAds & no direct links\n\n**Premium**\nDirect files & no creepy ads, premium access of our other services\n\n**Plan Cost - ₹19/month & ₹90/6-Month **\nPrices may increase in the future.\n**UPI** -\n    <code>iPrimeHub@axl</code>
 """
     #confirm text
     CNFRM_TEXT = """
@@ -59,11 +59,7 @@ Name - {}
 
     #ott
     OTT = """
-**This bot now allows you to stream ott content directly. Simply send the links from the supported site, and the bot will provide you with watchable links in return.**
-
-**Supported Site :-**
-<a href=https://hoichoi.tv>Hoichoi</a>
-<a href=https://www.voot.com>Voot</a>
+**This bot now allows you to stream hoichoi content directly. Simply send the episode links from hoichoi.tv, and the bot will provide you with watchable links in return.**
 """
 
     BLACKLIST = ['@Filmy', 'ott', 'www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
