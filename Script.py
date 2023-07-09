@@ -62,9 +62,9 @@ Name - {}
 **This bot now allows you to stream hoichoi content directly. Simply send the episode links from hoichoi.tv, and the bot will provide you with watchable links in return.**
 """
 
-    BLACKLIST = ['@Filmy', 'ott', 'www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
+    BLACKLIST = ['ott', 'www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'bot', 'flix',
                 '4u', 'prime', 'hub', 'movies', 'otthd', 'telegram', 'com', 'hoichoihok',
                 'mkv', 'mp4', '@', 'filmy', 'films', 'cinema', 'join', 'club', 'apd',
                 'backup', 'primeroom', 'theprofffesorr', 'premium', 'vip', '4wap', 'toonworld4all', 'mlwbd'
-                'Telegram@alpacinodump']
+                'Telegram@alpacinodump', 'bollywood']
