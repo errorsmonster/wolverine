@@ -73,8 +73,7 @@ class Database:
                 reason="",
             ),
         )
-
-# ////////////////////////////////////////////////////////////////////////////////////////////////////////////           
+         
     async def update_api_for_group(self, group_id, api):
         await self.grp.update_one({'id': int(group_id)}, {'$set': {'api': api}})
         
@@ -88,7 +87,6 @@ class Database:
             return False
         return api
 
-# //////////////////////////////////////////////////////////////////////////////////////////////////////////
     async def add_user(self, id, name):
         user = self.new_user(id, name)
         await self.col.insert_one(user)
