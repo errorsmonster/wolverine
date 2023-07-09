@@ -42,7 +42,6 @@ async def private_paid_filter(client, message):
         await db.add_user(user_id, user_name)
         
     if await db.is_premium_status(user_id) is True:
-        await db.check_expired_users(user_id)
         await paid_filter(client, message)
     else:
         a = await auto_filter(client, message)
