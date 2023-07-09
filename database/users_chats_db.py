@@ -40,8 +40,7 @@ class Database:
     
     async def remove_user_premium(self, user_id):
         await self.col.update_one({"id": user_id}, {"$set": {"Premium": False, "premium_expiry": None}})
-        
-        
+                
     async def check_expired_users(self, user_id):
         user = await self.col.find_one({"id": user_id})
         now = datetime.utcnow()
