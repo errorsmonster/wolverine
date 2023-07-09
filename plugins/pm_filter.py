@@ -35,13 +35,19 @@ async def private_paid_filter(client, message):
     user_id = message.from_user.id
     user_name = message.from_user.first_name
     
+    if message.text.startswith("/"):
+        return
+    
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id, user_name)
         
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
     else:
-        await auto_filter(client, message)
+        a = await auto_filter(client, message)
+        if not a:
+            await message.reply_text(text=f"I couldn't find anything for your query, please try with another keyword.", disable_web_page_preview=True)
+        
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
@@ -68,6 +74,7 @@ async def public_group_filter(client, message):
         else:
             await db.add_chat(group_id, title)
             logging.info(f"Group - {title} {group_id} is not connected with any API")
+            
 
 @Client.on_callback_query(filters.regex(r"^forward"))
 async def paid_next_page(bot, query):
