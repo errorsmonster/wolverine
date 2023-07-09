@@ -50,7 +50,7 @@ Name - {}
 
     #remove ads
     REMADS_TEXT = """
-**Free**\nAds & no direct links\n\n**Premium**\nDirect files & no creepy ads, premium access of our other services\n\n**Plan Cost - ₹19/month & ₹90/6-Month **\nPrices may increase in the future.\n**UPI** -\n    <code>iPrimeHub@axl</code>
+**Free**\nAds & no direct links\n\n**Premium**\nDirect files & no creepy ads, faster response time, premium access of our other services\n\n**Plan Cost - ₹19/month & ₹90/6-Month **\nPrices may increase in the future.\n**UPI** -\n    <code>iPrimeHub@axl</code>
 """
     #confirm text
     CNFRM_TEXT = """
