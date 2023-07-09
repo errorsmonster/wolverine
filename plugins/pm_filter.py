@@ -45,7 +45,7 @@ async def private_paid_filter(client, message):
         await paid_filter(client, message)
     else:
         a = await auto_filter(client, message)
-        if not a:
+        if a == False:
             await message.reply_text(text=f"I couldn't find anything for your query, please try with another keyword.", disable_web_page_preview=True)
         
 
