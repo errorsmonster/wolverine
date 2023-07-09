@@ -44,10 +44,7 @@ async def private_paid_filter(client, message):
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
     else:
-        a = await auto_filter(client, message)
-        if a == False:
-            await message.reply_text(text=f"I couldn't find anything for your query, please try with another keyword.", disable_web_page_preview=True)
-        
+        await auto_filter(client, message)
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
