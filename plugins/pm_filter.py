@@ -689,8 +689,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
                 if settings["spell_check"]:
                     return await advantage_spell_chok(msg)
                 else:
-                    return
-        else:
+                    await message.reply(f"No Results Found For {search}, Try Another Keyword.")
             return
     else:
         settings = await get_settings(msg.message.chat.id)
