@@ -41,6 +41,7 @@ async def start(client, message):
         await db.add_user(message.from_user.id, message.from_user.first_name)
     if len(message.command) != 2:
         buttons = [[
+                    InlineKeyboardButton('📢 Add Me And Earn Money', callback_data="addme"),
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickNotify/3")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
@@ -81,7 +82,7 @@ async def start(client, message):
             parse_mode=enums.ParseMode.MARKDOWN
             )
         return
-    if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
+    if len(message.command) == 2 and message.command[1] in ["subscribe", "upgrade", "error", "okay", "help"]:
         buttons = [[
                 InlineKeyboardButton('💫 Confirm', callback_data="confirm"),
                 InlineKeyboardButton('◀️ Back', callback_data="home")

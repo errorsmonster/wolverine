@@ -579,6 +579,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup=InlineKeyboardMarkup(buttons),
         disable_web_page_preview=True,
         )
+    elif query.data == "addme":
+        buttons = [[
+                    InlineKeyboardButton('➕ Add Me', url=f"https://t.me/{temp.U_NAME}?startgroup=true"),
+                    InlineKeyboardButton('◀️ Back', callback_data="home"),
+                ]]  
+        await query.message.edit(
+            text=script.GROUP_PROMO,
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )       
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         grpid = await active_connection(str(query.from_user.id))
