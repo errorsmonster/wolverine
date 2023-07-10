@@ -70,4 +70,4 @@ Name - {}
                 '4u', 'prime', 'hub', 'movies', 'otthd', 'telegram', 'com', 'hoichoihok',
                 'mkv', 'mp4', '@', 'filmy', 'films', 'cinema', 'join', 'club', 'apd',
                 'backup', 'primeroom', 'theprofffesorr', 'premium', 'vip', '4wap', 'toonworld4all', 'mlwbd'
-                'Telegram@alpacinodump', 'bollywood']
+                'Telegram@alpacinodump', 'bollywood', "AllNewEnglishMovie", "7MovieRulz", "1TamilMV"]
