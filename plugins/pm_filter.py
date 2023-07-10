@@ -526,6 +526,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer('Share & Support Us♥️')
     elif query.data == "home":
         buttons = [[
+                    InlineKeyboardButton('📢 Add Me And Earn Money', callback_data="addme")
+                    ],[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickNotify/3")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),

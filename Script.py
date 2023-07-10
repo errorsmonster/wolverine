@@ -63,7 +63,7 @@ Name - {}
 """
 
     #paid group
-    GROUP_PROMO = """Now You Can **Earn Money** By Adding This Bot In Your Group.\n\nRequirements:\n1. Your Group Must Have Minimum 1000 Members.\n2. Your Group Must Be Active.\n3. Your Group Must Be Public. \n\n If You Are Interested Then Contact <a href=https://t.me/iryme>ｒｙｍｅ</a>"""
+    GROUP_PROMO = """Now You Can **Earn Money** By Adding This Bot In Your Group.\n\n**Requirements:**\n1. Your Group Must Have Minimum 1000 Members.\n2. Your Group Must Be Active.\n3. Your Group Must Be Public. \n\n If You Are Interested Then Contact <a href=https://t.me/iryme>ｒｙｍｅ</a>"""
 
     BLACKLIST = ['ott', 'www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'bot', 'flix',
