@@ -24,8 +24,8 @@ async def start(client, message):
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         buttons = [
             [
-                InlineKeyboardButton('➕ Updates ', url=f"https://t.me/iPrimeHub"),
-                InlineKeyboardButton('📢 Channel', url=f"https://t.me/iPrimeHub")
+                InlineKeyboardButton('Channel', url=f"https://t.me/iPrimeHub"),
+                InlineKeyboardButton('Group', url=f"https://t.me/PrimeHubReq")
             ]
             ]
 
@@ -41,9 +41,9 @@ async def start(client, message):
         await db.add_user(message.from_user.id, message.from_user.first_name)
     if len(message.command) != 2:
         buttons = [[
-                    InlineKeyboardButton('📢 Add Me And Earn Money', callback_data="addme")
-                    ],[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickNotify/3")
+                    ],[
+                    InlineKeyboardButton('📢 Add & Earn', callback_data="addme")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🌼 More', callback_data="ott")
