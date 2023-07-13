@@ -41,8 +41,6 @@ async def private_paid_filter(client, message):
         time_diff = int(time.time()) - user_timestamps
         if time_diff < slow_mode:
             return await message.reply_text(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
-        
-    await db.update_timestamps(user_id, int(time.time()))
     
     if message.text.startswith("/"):
         return
@@ -54,7 +52,7 @@ async def private_paid_filter(client, message):
         await paid_filter(client, message)
     else:
         await auto_filter(client, message)
-
+        await db.update_timestamps(user_id, int(time.time()))       
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
