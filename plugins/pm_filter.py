@@ -52,7 +52,6 @@ async def private_paid_filter(client, message):
         await paid_filter(client, message)
     else:
         await auto_filter(client, message)
-        await db.update_timestamps(user_id, int(time.time()))       
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
@@ -788,6 +787,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
         )
     else:
         cap = f"Here is what i found for your query {search}"
+        await db.update_timestamps(message.from_user.id, int(time.time()))
     if imdb and imdb.get('poster'):
         try:
             await message.reply_photo(photo=imdb.get('poster'), caption=cap[:1024],
