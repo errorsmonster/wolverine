@@ -3,12 +3,13 @@ import asyncio
 import re
 import ast
 import math
+import time
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 import pyrogram
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS
+from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -28,12 +29,18 @@ logger.setLevel(logging.ERROR)
 BUTTONS = {}
 SPELL_CHECK = {}
 blacklist = script.BLACKLIST
-
+slow_mode = SLOW_MODE_DELAY 
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_paid_filter(client, message):
     user_id = message.from_user.id
     user_name = message.from_user.first_name
+    user_timestamps = await db.get_timestamps(user_id)
+    
+    if user_timestamps:
+        time_diff = int(time.time()) - user_timestamps
+        if time_diff < slow_mode:
+            return await message.reply_text(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
     
     if message.text.startswith("/"):
         return
@@ -45,7 +52,6 @@ async def private_paid_filter(client, message):
         await paid_filter(client, message)
     else:
         await auto_filter(client, message)
-
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
@@ -583,7 +589,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
     elif query.data == "addme":
         buttons = [[
-                    InlineKeyboardButton('➕ Add Me', url=f"https://t.me/{temp.U_NAME}?startgroup=true"),
+                    InlineKeyboardButton('➕ Add Me', url=f"https://t.me/{temp.U_NAME}?startgroup=none&admin=ban_users+restrict_members+delete_messages+add_admins+change_info+invite_users+pin_messages+manage_call+manage_chat+manage_video_chats+promote_members"),
                     InlineKeyboardButton('◀️ Back', callback_data="home"),
                 ]]  
         await query.message.edit(
@@ -781,6 +787,7 @@ async def auto_filter(client, msg, api=None, spoll=False):
         )
     else:
         cap = f"Here is what i found for your query {search}"
+        await db.update_timestamps(message.from_user.id, int(time.time()))
     if imdb and imdb.get('poster'):
         try:
             await message.reply_photo(photo=imdb.get('poster'), caption=cap[:1024],
