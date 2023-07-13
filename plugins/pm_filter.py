@@ -3,12 +3,13 @@ import asyncio
 import re
 import ast
 import math
+import time
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 import pyrogram
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS
+from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -28,12 +29,20 @@ logger.setLevel(logging.ERROR)
 BUTTONS = {}
 SPELL_CHECK = {}
 blacklist = script.BLACKLIST
-
+slow_mode = SLOW_MODE_DELAY 
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_paid_filter(client, message):
     user_id = message.from_user.id
     user_name = message.from_user.first_name
+    user_timestamps = await db.get_timestamps(user_id)
+    
+    if user_timestamps:
+        time_diff = int(time.time()) - user_timestamps
+        if time_diff < slow_mode:
+            return await message.reply_text(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
+        
+    await db.update_timestamps(user_id, int(time.time()))
     
     if message.text.startswith("/"):
         return

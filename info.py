@@ -37,6 +37,7 @@ DATABASE_NAME = environ.get('DATABASE_NAME', "Rajappan")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'netflimsbot')
 
 # Others
+SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 300))
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001956882347'))
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'iPrimeHub')
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)

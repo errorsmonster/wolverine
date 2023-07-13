@@ -9,18 +9,30 @@ class Database:
         self.db = self._client[database_name]
         self.col = self.db.users
         self.grp = self.db.groups
-
+        
+        
     def new_user(self, id, name):
         return dict(
             id=id,
             name=name,
             Premium=False,
             premium_expiry=None,
+            timestamps=0,
             ban_status=dict(
                 is_banned=False,
                 ban_reason="",
             ),
         )
+        
+    async def get_timestamps(self, id):
+        user = await self.col.find_one({"id": id})
+        if user is None:
+            return None
+        return user.get("timestamps")
+
+    async def update_timestamps(self, id, time):
+        await self.col.update_one({"id": id}, {"$set": {"timestamps": time}})
+
 
     async def is_premium_status(self, user_id):
         user = await self.col.find_one({"id": user_id})
