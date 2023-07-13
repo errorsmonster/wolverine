@@ -589,7 +589,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
     elif query.data == "addme":
         buttons = [[
-                    InlineKeyboardButton('➕ Add Me', url=f"https://t.me/{temp.U_NAME}?startgroup=true"),
+                    InlineKeyboardButton('➕ Add Me', url=f"https://t.me/{temp.U_NAME}?startgroup=none&admin=ban_users+restrict_members+delete_messages+add_admins+change_info+invite_users+pin_messages+manage_call+manage_chat+manage_video_chats+promote_members"),
                     InlineKeyboardButton('◀️ Back', callback_data="home"),
                 ]]  
         await query.message.edit(
