@@ -579,7 +579,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
     elif query.data == "confirm":
         buttons = [[
-                    InlineKeyboardButton('📣 Help', url="https://t.me/iryme"),
+                    InlineKeyboardButton('📣 Help', url="https://t.me/lemx4"),
                     InlineKeyboardButton('◀️ Back', callback_data="remads"),
                 ]]
         await query.message.edit(
