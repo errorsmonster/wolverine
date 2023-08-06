@@ -41,7 +41,7 @@ async def start(client, message):
         await db.add_user(message.from_user.id, message.from_user.first_name)
     if len(message.command) != 2:
         buttons = [[
-                    InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickNotify/3")
+                    InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
                     InlineKeyboardButton('📢 Add & Earn', callback_data="addme")
                     ],[
