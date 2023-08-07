@@ -1,11 +1,11 @@
 class script(object):
     #start_group_message
-    START_GRP_TXT = """ **Hi {}**
-☞︎︎︎ **I'm {}**
-☞︎︎︎ **I Can Search Movies**
-☞︎︎︎ **Just Send Movies Name**
-☞︎︎︎ **And See The Magic**
-☞︎︎︎ **Maintained By** <a href=https://t.me/iPRIMEHUB>𝐏𝐫𝐢𝐦𝐞𝐇𝐮𝐛™</a>
+    START_GRP_TXT = """ <b>Hi {}</b>
+☞︎︎︎ <b>I'm {}</b>
+☞︎︎︎ <b>I Can Search Movies</b>
+☞︎︎︎ <b>Just Send Movies Name</b>
+☞︎︎︎ <b>And See The Magic</b>
+☞︎︎︎ <b>Maintained By</b> <a href=https://t.me/iPRIMEHUB>𝐏𝐫𝐢𝐦𝐞𝐇𝐮𝐛™</a>
 """
     #start_text
     START_TXT = """𝐇𝐢 {},
@@ -26,7 +26,7 @@ Total Chats: <code>{}</code>
     REQ_TEXT  = """#NewRequest
 Bot - {}
 Name - {} (<code>{}</code>)
-Request - **{}**
+Request - <b>{}</b>
 """
 
     LOG_TEXT_G = """#NewGroup
@@ -50,7 +50,7 @@ Name - {}
 
     #remove ads
     REMADS_TEXT = """
-**Free**\nAds & no direct links\n\n**Premium**\nDirect files & no creepy ads, faster response time, premium access of our other services\n\n**Plan Cost - ₹19/month & ₹90/6-Month **\nPrices may increase in the future.\n**UPI** -\n    <code>iPrimeHub@axl</code>
+<b>Free</b>\nAds & no direct links\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, premium access of our other services\n\n<b>Plan Cost - ₹19/month & ₹90/6-Month </b>\nPrices may increase in the future.\n<b>UPI</b> -\n    <code>iPrimeHub@axl</code>
 """
     #confirm text
     CNFRM_TEXT = """
