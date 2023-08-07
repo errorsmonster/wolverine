@@ -54,7 +54,7 @@ Name - {}
 """
     #confirm text
     CNFRM_TEXT = """
-**To Confirm Payment Process Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/iryme>ｒｙｍｅ</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
+**To Confirm Payment Process Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/lemx4>ｒｙｍｅ</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
 """
 
     #ott
