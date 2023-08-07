@@ -68,9 +68,8 @@ Name - {}
     # removing blacklisted words
     BLACKLIST = ['ott', 'www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'bot', 'flix',
-                '4u', 'prime', 'hub', 'movies', 'otthd', 'telegram', 'com', 'hoichoihok',
+                '4u', 'hub', 'movies', 'otthd', 'telegram', 'com', 'hoichoihok',
                 'mkv', 'mp4', '@', 'filmy', 'films', 'cinema', 'join', 'club', 'apd',
                 'backup', 'primeroom', 'theprofffesorr', 'premium', 'vip', '4wap', 'toonworld4all', 'mlwbd'
                 'Telegram@alpacinodump', 'bollywood', "AllNewEnglishMovie", "7MovieRulz", "1TamilMV",
-                'Movie Bazar', '✅ Uᴘʟᴏᴀᴅᴇᴅ Bʏ: @Movies_Corner20', 'JOIN & SUPPORT: @CornersOfficial❣️'
-                'iMediaShare', 'Telegram Movies']
+                'Bazar', '_Corner20', 'CornersOfficial❣️', 'support', 'iMediaShare']
