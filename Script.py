@@ -1,15 +1,15 @@
 class script(object):
     #start_group_message
-    START_GRP_TXT = """ **Hi {}**
-☞︎︎︎ **I'm {}**
-☞︎︎︎ **I Can Search Movies**
-☞︎︎︎ **Just Send Movies Name**
-☞︎︎︎ **And See The Magic**
-☞︎︎︎ **Maintained By** <a href=https://t.me/iPRIMEHUB>𝐏𝐫𝐢𝐦𝐞𝐇𝐮𝐛™</a>
+    START_GRP_TXT = """ <b>Hi {}</b>
+☞︎︎︎ <b>I'm {}</b>
+☞︎︎︎ <b>I Can Search Movies</b>
+☞︎︎︎ <b>Just Send Movies Name</b>
+☞︎︎︎ <b>And See The Magic</b>
+☞︎︎︎ <b>Maintained By</b> <a href=https://t.me/iPRIMEHUB>𝐏𝐫𝐢𝐦𝐞𝐇𝐮𝐛™</a>
 """
     #start_text
     START_TXT = """𝐇𝐢 {},
-😎 𝐈'𝐦 **{}**
+😎 𝐈'𝐦 <b>{}</b>
 👌 𝐈 𝐂𝐚𝐧 𝐒𝐞𝐚𝐫𝐜𝐡 𝐌𝐨𝐯𝐢𝐞𝐬 𝐅𝐨𝐫 𝐘𝐨𝐮
 😋 𝐉𝐮𝐬𝐭 𝐒𝐞𝐧𝐝 𝐌𝐞 𝐀𝐧𝐲 𝐌𝐨𝐯𝐢𝐞 𝐍𝐚𝐦𝐞
 🔮 𝐓𝐡𝐞𝐧 𝐒𝐭𝐚𝐧𝐝 𝐁𝐚𝐜𝐤 𝐀𝐧𝐝 𝐒𝐞𝐞 𝐓𝐡𝐞 𝐌𝐚𝐠𝐢𝐜 
@@ -26,7 +26,7 @@ Total Chats: <code>{}</code>
     REQ_TEXT  = """#NewRequest
 Bot - {}
 Name - {} (<code>{}</code>)
-Request - **{}**
+Request - <b>{}</b>
 """
 
     LOG_TEXT_G = """#NewGroup
@@ -50,27 +50,22 @@ Name - {}
 
     #remove ads
     REMADS_TEXT = """
-**Free**\nAds & no direct links\n\n**Premium**\nDirect files & no creepy ads, faster response time, premium access of our other services\n\n**Plan Cost - ₹19/month & ₹90/6-Month **\nPrices may increase in the future.\n**UPI** -\n    <code>iPrimeHub@axl</code>
+<b>Free</b>\nAds & no direct links\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, premium access of our other services\n\n<b>Plan Cost - ₹19/month & ₹90/6-Month </b>\nPrices may increase in the future.\n<b>UPI</b> -\n    <code>iPrimeHub@axl</code>
 """
     #confirm text
     CNFRM_TEXT = """
-**To Confirm Payment Process Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/iryme>ｒｙｍｅ</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
-"""
-
-    #ott
-    OTT = """
-**This bot now allows you to stream hoichoi content directly. Simply send the episode links from hoichoi.tv, and the bot will provide you with watchable links in return.**
+**To Confirm Payment Process Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/lemx4>ｒｙｍｅ</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
 """
 
     #paid group
     GROUP_PROMO = """Now You Can **Earn Money** By Adding This Bot In Your Group.\n\n**Requirements:**\n1. Your Group Must Have Minimum 1000 Members.\n2. Your Group Must Be Active.\n3. Your Group Must Be Public. \n\n If You Are Interested Then Contact <a href=https://t.me/iryme>ｒｙｍｅ</a>"""
 
     # removing blacklisted words
-    BLACKLIST = ['ott', 'www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
+    BLACKLIST = ['www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'bot', 'flix',
-                '4u', 'prime', 'hub', 'movies', 'otthd', 'telegram', 'com', 'hoichoihok',
+                '4u', 'hub', 'movies', 'otthd', 'telegram', 'com', 'hoichoihok',
                 'mkv', 'mp4', '@', 'filmy', 'films', 'cinema', 'join', 'club', 'apd',
                 'backup', 'primeroom', 'theprofffesorr', 'premium', 'vip', '4wap', 'toonworld4all', 'mlwbd'
                 'Telegram@alpacinodump', 'bollywood', "AllNewEnglishMovie", "7MovieRulz", "1TamilMV",
-                'Movie Bazar', '✅ Uᴘʟᴏᴀᴅᴇᴅ Bʏ: @Movies_Corner20', 'JOIN & SUPPORT: @CornersOfficial❣️'
-                'iMediaShare', 'Telegram Movies']
+                'Bazar', '_Corner20', 'CornersOfficial❣️', 'support', 'iMediaShare', '[', ']', '&', '✅',
+                'Uᴘʟᴏᴀᴅᴇᴅ', 'Bʏ', ':']

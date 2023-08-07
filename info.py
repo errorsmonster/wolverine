@@ -14,7 +14,7 @@ def is_enabled(value, default):
 SESSION = environ.get('SESSION', 'Media_search')
 API_ID = environ.get('API_ID', "11948995")
 API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
-BOT_TOKEN = environ.get('BOT_TOKEN', "5207489037:AAEtZTr6Ni-dUsmIC5Eh6ZqA_X46kqUYhvA")
+BOT_TOKEN = environ.get('BOT_TOKEN', "5020124426:AAGLrr0LV38qZaJEw8der1-buTBjMBH3VVM")
 
 # Bot settings
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
@@ -31,13 +31,13 @@ AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_chan
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Prime:Prime@cluster0.tajxlrr.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://ryme:ryme@cluster0.3kwfyam.mongodb.net/?retryWrites=true&w=majority")
 DATABASE_NAME = environ.get('DATABASE_NAME', "Rajappan")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'netflimsbot')
 
 # Others
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 180))
-LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001956882347'))
+LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-10011801500776'))
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'iPrimeHub')
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)
 IMDB = is_enabled((environ.get('IMDB', "False")), True)
@@ -53,5 +53,3 @@ FILE_STORE_CHANNEL = [int(ch) for ch in (environ.get('FILE_STORE_CHANNEL', '')).
 MELCOW_NEW_USERS = is_enabled((environ.get('MELCOW_NEW_USERS', "False")), True)
 PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
 PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "False")), True)
-
-LOG_STR = "Current Cusomized Configurations are:-\n"

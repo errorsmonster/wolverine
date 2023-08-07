@@ -537,7 +537,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
-                    InlineKeyboardButton('🗣️ More', callback_data="ott")
+                    InlineKeyboardButton('🗣️ Request', callback_data="request")
                   ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit(
@@ -547,20 +547,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
     elif query.data == "close_data":
         await query.message.delete()
-    elif query.data == "ott":
-        buttons = [[
-                    InlineKeyboardButton('📽️ Request', callback_data="request"),
-                    InlineKeyboardButton('🏠 Home', callback_data="home")
-                ]]
-        await query.message.edit(
-        text=script.OTT,
-        reply_markup=InlineKeyboardMarkup(buttons),
-        disable_web_page_preview=True,
-        )
     elif query.data == "request":
         buttons = [[
                     InlineKeyboardButton('📽️ Request Group', url="https://t.me/PrimehubReq"),
-                    InlineKeyboardButton('◀️ Back', callback_data="ott")
+                    InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
         await query.message.edit(
         text=script.REQM,
