@@ -72,5 +72,5 @@ Name - {}
                 'mkv', 'mp4', '@', 'filmy', 'films', 'cinema', 'join', 'club', 'apd',
                 'backup', 'primeroom', 'theprofffesorr', 'premium', 'vip', '4wap', 'toonworld4all', 'mlwbd'
                 'Telegram@alpacinodump', 'bollywood', "AllNewEnglishMovie", "7MovieRulz", "1TamilMV",
-                'Bazar', '_Corner20', 'CornersOfficial❣️', 'support', 'iMediaShare', '[', ']', '&', '✅'
+                'Bazar', '_Corner20', 'CornersOfficial❣️', 'support', 'iMediaShare', '[', ']', '&', '✅',
                 'Uᴘʟᴏᴀᴅᴇᴅ', 'Bʏ', ':']
