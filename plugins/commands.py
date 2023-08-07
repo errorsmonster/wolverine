@@ -1,6 +1,5 @@
 import os
 import logging
-import random
 import asyncio
 from Script import script
 from pyrogram import Client, filters, enums
@@ -46,7 +45,7 @@ async def start(client, message):
                     InlineKeyboardButton('📢 Add & Earn', callback_data="addme")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
-                    InlineKeyboardButton('🌼 More', callback_data="ott")
+                    InlineKeyboardButton('🌼 Request', callback_data="request")
                   ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_text(
