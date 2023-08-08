@@ -126,18 +126,18 @@ async def config_msg_command(client, message):
 #request command 
 @Client.on_message(filters.command("request") & filters.private)
 async def request(client, message):
-    movie = message.text.replace("/request", "").replace("/Request", "")
+    movies = message.text.replace("/request", "").replace("/Request", "")
     if len(message.command) == 1:
        await message.reply_text(script.REQM,
         disable_web_page_preview=True,
         )
     else:
         await message.reply_text(
-         script.REQ_REPLY.format(movie),
+         script.REQ_REPLY.format(movies),
          disable_web_page_preview=True,
          )
         await client.send_message(LOG_CHANNEL,
-         script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movie), 
+         script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movies), 
          disable_web_page_preview=True,
          )
     
