@@ -112,7 +112,7 @@ async def configure_command(client, message):
         else:
             m=await r.edit("Configuring the group...")
             await asyncio.sleep(5)
-            await m.edit(f"Error: Failed to configure {group_name}. Please contact @iryme")
+            await m.edit(f"Error: Failed to configure {group_name}. Please contact @lemx4")
     except Exception as e:
         await r.edit(f"Error: {e}")
         return
@@ -125,18 +125,19 @@ async def config_msg_command(client, message):
     
 #request command 
 @Client.on_message(filters.command("request") & filters.private)
-async def request(client, message): 
+async def request(client, message):
+    movie = message.text.replace("/request", "").replace("/Request", "")
     if len(message.command) == 1:
        await message.reply_text(script.REQM,
         disable_web_page_preview=True,
         )
     else:
         await message.reply_text(
-         script.REQ_REPLY.format(message.text.replace("/request", "").replace("/Request", "")),
+         script.REQ_REPLY.format(movie),
          disable_web_page_preview=True,
          )
         await client.send_message(LOG_CHANNEL,
-         script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, message.text.replace("/request", "").replace("/Request", "")), 
+         script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movie), 
          disable_web_page_preview=True,
          )
     

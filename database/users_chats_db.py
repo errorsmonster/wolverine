@@ -65,6 +65,7 @@ class Database:
         
         if premium_expiry <= now:
             await self.remove_user_premium(user_id)
+            return "Your Subscription has been expired."
 
               
     async def remove_expired_users(self):
