@@ -10,7 +10,7 @@ APPROVED = True  # set to True by default
 def auto_approve(client: Client, message: ChatJoinRequest):
     if APPROVED:
         try:
-            client.approve_chat_join_request(message.chat.id, message.user.id)
+            client.approve_chat_join_request(CHAT_IDS, message.user.id)
             client.send_message(
                 message.chat.id,
                 TEXT.format(message.from_user.first_name, message.chat.title),

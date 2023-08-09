@@ -139,3 +139,11 @@ async def request(client, message):
         await message.reply_text(script.REQ_REPLY.format(movie_name), disable_web_page_preview=True)
         log_message = script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movie_name)
         await client.send_message(LOG_CHANNEL, log_message, disable_web_page_preview=True)
+
+
+@Client.on_message(filters.command("remove_expired") & filters.user(ADMINS))
+async def check_paid(client, message):
+    m = await message.reply_text("Checking...")        
+    await asyncio.sleep(2)
+    await db.remove_expired_users()
+    await m.edit("Removed expired users from database.")
