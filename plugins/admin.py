@@ -135,13 +135,6 @@ async def request(client, message):
         await message.reply_text(script.REQM, disable_web_page_preview=True)
         return
 
-    # Fetch search results for the movie
-    files = await get_search_results(movie_name, offset=0, filter=True)
-
-    # If the movie exists in the database, inform the user
-    if files:
-        await message.reply_text(f"<b>{movie_name}</b> is already available in our database")
-    # Otherwise, send a request message and log it
     else:
         await message.reply_text(script.REQ_REPLY.format(movie_name), disable_web_page_preview=True)
         log_message = script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movie_name)
