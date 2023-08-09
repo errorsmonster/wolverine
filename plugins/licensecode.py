@@ -50,7 +50,16 @@ async def validate_code(client, message):
             if resp.status == 404:
                 await m.edit("Invalid code. Please try again.")
             if resp.status == 403:
-                await m.edit("This code has already been used or expired.")
+                respo = await resp.json()
+                if respo.get('message') == "This code does not belong to the provided access key":
+                    await m.edit("This code does not belong to the provided access key.")
+                    return
+                if respo.get('message') == "This code is already in use":
+                    await m.edit("This redeem code is already in use.")
+                    return
+                if respo.get('message') == "The code has expired":
+                    await m.edit("The redeem code has expired.")
+                    return
             if resp.status == 200:
                 json_response = await resp.json()
                 if json_response.get('message') == "Code validated successfully":
