@@ -133,10 +133,10 @@ async def request(client, message):
        await message.reply_text(script.REQM,
         disable_web_page_preview=True,
         )
+    if files:
+        await message.reply_text(f"<b>{movies}</b> is already available in our database")  
     else:
-        if not files:
-            await message.reply_text(script.REQ_REPLY.format(movies), disable_web_page_preview=True)
-            await client.send_message(LOG_CHANNEL, script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movies), disable_web_page_preview=True)
-        else:
-            await message.reply_text(f"<b>{movies}</b> is already available in our database")    
+        await message.reply_text(script.REQ_REPLY.format(movies), disable_web_page_preview=True)
+        await client.send_message(LOG_CHANNEL, script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movies), disable_web_page_preview=True)    
+          
     

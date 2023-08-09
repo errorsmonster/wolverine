@@ -58,14 +58,13 @@ class Database:
         now = datetime.utcnow()
         if user is None:
             return  # User not found in the database
-        
         premium_expiry = user.get("premium_expiry")
         if premium_expiry is None:
             return  # User does not have a premium expiry date
-        
-        if premium_expiry <= now:
+        if now > premium_expiry:
             await self.remove_user_premium(user_id)
-            return "Your Subscription has been expired."
+            return "Your subscription has expired."
+
 
               
     async def remove_expired_users(self):
