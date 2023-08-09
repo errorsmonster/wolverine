@@ -5,6 +5,7 @@ import asyncio
 from Script import script
 from info import LOG_CHANNEL
 from utils import temp
+from database.ia_filterdb import Media, get_file_details, get_search_results
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
@@ -127,17 +128,15 @@ async def config_msg_command(client, message):
 @Client.on_message(filters.command("request") & filters.private)
 async def request(client, message):
     movies = message.text.replace("/request", "").replace("/Request", "")
+    files = await get_search_results(movies.lower(), offset=0, filter=True)
     if len(message.command) == 1:
        await message.reply_text(script.REQM,
         disable_web_page_preview=True,
         )
     else:
-        await message.reply_text(
-         script.REQ_REPLY.format(movies),
-         disable_web_page_preview=True,
-         )
-        await client.send_message(LOG_CHANNEL,
-         script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movies), 
-         disable_web_page_preview=True,
-         )
+        if not files:
+            await message.reply_text(script.REQ_REPLY.format(movies), disable_web_page_preview=True)
+            await client.send_message(LOG_CHANNEL, script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movies), disable_web_page_preview=True)
+        else:
+            await message.reply_text(f"<b>{movies}</b> is already available in our database")    
     
