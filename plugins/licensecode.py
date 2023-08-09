@@ -1,7 +1,7 @@
 import aiohttp
 from pyrogram import Client, filters
 from info import ADMINS
-from database import db
+from database.users_chats_db import db
 import asyncio
 
 
