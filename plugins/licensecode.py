@@ -34,7 +34,7 @@ async def generate(client, message):
                     return
                 
     codes_str = "\n".join(codes_generated)
-    await message.reply_text(f"<b>Generated redeem codes:</b>\n<code>{codes_str}</code>")
+    await message.reply_text(f"<b>Redeem codes:</b>\n\n<code>{codes_str}</code>")
 
 
 @Client.on_message(filters.regex(r"^[A-Z0-9]{20}$") & filters.private)
@@ -54,7 +54,7 @@ async def validate_code(client, message):
                     await m.edit("Redeem code validated successfully.")
                     await db.add_user_as_premium(user_id, 28)
                     await asyncio.sleep(2)
-                    await message.reply_text(f"Your subscription has been enabled successfully for 28 days.")
+                    await message.reply_text(f"<b>Your subscription has been enabled successfully for 28 days.</b>")
                 else:
                     await m.edit(json_response.get('message'))
             else:
