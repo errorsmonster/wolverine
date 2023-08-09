@@ -22,7 +22,7 @@ async def generate(client, message):
 
     codes_generated = []
     for _ in range(num_codes):
-        async with aiohttp.ClientSession() as session: # https://licensegen.onrender.com/?access_key=ACCESS_KEY&action=generate&days=DAYS
+        async with aiohttp.ClientSession() as session:
             async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=generate&days=30") as resp:
                 if resp.status == 200:
                     json_response = await resp.json()
