@@ -1,2 +1,4 @@
-# Pimon
-<bash!> git clone https://github.com/irymee/Pimon.git && cd Pimon && pip3 install -r requirements.txt && tmux && python3 bot py 
+# Auto Filter Bot
+```python
+git clone https://github.com/irymee/Pimon.git && cd Pimon && pip3 install -r requirements.txt && tmux && python3 bot py
+``` 
