@@ -54,6 +54,6 @@ async def validate_code(client, message):
                 else:
                     await m.edit(json_response.get('message'))
             else:
-                js = json_response.get('message')
-                await m.edit(f"Error validating redeem code.\n\n{js}")
+                jsr = json_response.get('message')
+                await m.edit(f"Error: {jsr}")
 
