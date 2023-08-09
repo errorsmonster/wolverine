@@ -4,7 +4,7 @@ from info import ADMINS
 from database.users_chats_db import db
 import asyncio
 
-ACCESS_KEY = "7W5CDPYOL6VVCN6MP1W9"
+ACCESS_KEY = "F5DDYDRBVEDTQ0CPZDDX"
 
 @Client.on_message(filters.command("licensegen") & filters.user(ADMINS))
 async def generate(client, message):
