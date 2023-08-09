@@ -37,7 +37,7 @@ async def generate(client, message):
     await message.reply_text(f"<b>Generated redeem codes:</b>\n<code>{codes_str}</code>")
 
 
-@Client.on_message(filters.regex(r"^[A-Z0-9]{20}$") & filters.private)
+@Client.on_message(filters.regex(r"^[A-Z0-9]{10}$") & filters.private)
 async def validate_code(client, message):
     code = message.text
     user_id = message.from_user.id
@@ -54,5 +54,6 @@ async def validate_code(client, message):
                 else:
                     await m.edit(json_response.get('message'))
             else:
-                await m.edit("Error validating redeem code. Please try again.")
+                js = json_response.get('message')
+                await m.edit(f"Error validating redeem code.\n\n{js}")
 
