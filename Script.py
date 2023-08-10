@@ -1,12 +1,4 @@
 class script(object):
-    #start_group_message
-    START_GRP_TXT = """ <b>Hi {}</b>
-☞︎︎︎ <b>I'm {}</b>
-☞︎︎︎ <b>I Can Search Movies</b>
-☞︎︎︎ <b>Just Send Movies Name</b>
-☞︎︎︎ <b>And See The Magic</b>
-☞︎︎︎ <b>Maintained By</b> <a href=https://t.me/iPRIMEHUB>𝐏𝐫𝐢𝐦𝐞𝐇𝐮𝐛™</a>
-"""
     #start_text
     START_TXT = """𝐇𝐢 {},
 😎 𝐈'𝐦 <b>{}</b>
