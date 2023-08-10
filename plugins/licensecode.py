@@ -48,7 +48,7 @@ async def validate_code(client, message):
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={code}") as resp:
             if resp.status == 404:
-                await m.edit("Invalid code. Please try again.")
+                await m.edit("Invalid code...")
             if resp.status == 403:
                 respo = await resp.json()
                 if respo.get('message') == "This code does not belong to the provided access key":
@@ -66,6 +66,9 @@ async def validate_code(client, message):
                     s = await m.edit("Redeem code validated successfully.")
                     await db.add_user_as_premium(user_id, 28)
                     await asyncio.sleep(5)
-                    await s.edit(f"Your subscription has been enabled successfully for 28 days.")
+                    a = await s.edit(f"Activating your subscription...")
+                    await asyncio.sleep(3)
+                    await a.edit(f"Your subscription has been enabled successfully for 28 days.")
                 else:
                     await m.edit(json_response.get('message'))
+                    
