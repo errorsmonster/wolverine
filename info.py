@@ -37,7 +37,7 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'netflimsbot')
 
 # Others
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 180))
-LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001956882347'))
+LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'iPrimeHub')
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)
 IMDB = is_enabled((environ.get('IMDB', "False")), True)
@@ -53,3 +53,4 @@ FILE_STORE_CHANNEL = [int(ch) for ch in (environ.get('FILE_STORE_CHANNEL', '')).
 MELCOW_NEW_USERS = is_enabled((environ.get('MELCOW_NEW_USERS', "False")), True)
 PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
 PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "False")), True)
+AUTO_APPROVE = is_enabled((environ.get('AUTO_APPROVE', "False")), False)

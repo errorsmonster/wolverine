@@ -5,6 +5,7 @@ import asyncio
 from Script import script
 from info import LOG_CHANNEL
 from utils import temp
+from database.ia_filterdb import get_search_results
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
@@ -112,7 +113,7 @@ async def configure_command(client, message):
         else:
             m=await r.edit("Configuring the group...")
             await asyncio.sleep(5)
-            await m.edit(f"Error: Failed to configure {group_name}. Please contact @iryme")
+            await m.edit(f"Error: Failed to configure {group_name}. Please contact @lemx4")
     except Exception as e:
         await r.edit(f"Error: {e}")
         return
@@ -125,18 +126,24 @@ async def config_msg_command(client, message):
     
 #request command 
 @Client.on_message(filters.command("request") & filters.private)
-async def request(client, message): 
-    if len(message.command) == 1:
-       await message.reply_text(script.REQM,
-        disable_web_page_preview=True,
-        )
-    else:
-        await message.reply_text(
-         script.REQ_REPLY.format(message.text.replace("/request", "").replace("/Request", "")),
-         disable_web_page_preview=True,
-         )
-        await client.send_message(LOG_CHANNEL,
-         script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, message.text.replace("/request", "").replace("/Request", "")), 
-         disable_web_page_preview=True,
-         )
+async def request(client, message):
+    # Strip the command and normalize the movie name
+    movie_name = message.text.replace("/request", "").strip().lower()
     
+    # If the message only contains the command, send a default response
+    if not movie_name:
+        await message.reply_text(script.REQM, disable_web_page_preview=True)
+        return
+
+    else:
+        await message.reply_text(script.REQ_REPLY.format(movie_name), disable_web_page_preview=True)
+        log_message = script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movie_name)
+        await client.send_message(LOG_CHANNEL, log_message, disable_web_page_preview=True)
+
+
+@Client.on_message(filters.command("remove_expired") & filters.user(ADMINS))
+async def check_paid(client, message):
+    m = await message.reply_text("Checking...")        
+    await asyncio.sleep(2)
+    await db.remove_expired_users()
+    await m.edit("Removed expired users from database.")
