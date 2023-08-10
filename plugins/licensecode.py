@@ -43,7 +43,7 @@ async def validate_code(client, message):
     if await db.is_premium_status(user_id) is True:
         await message.reply_text("You can't redeem this code because you are already a premium user")
         return
-    m = await message.reply_text(f"<b>Please wait, checking your redeem code...</b>")
+    m = await message.reply_text(f"Please wait, checking your redeem code....")
     await asyncio.sleep(3)
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={code}") as resp:
@@ -63,9 +63,9 @@ async def validate_code(client, message):
             if resp.status == 200:
                 json_response = await resp.json()
                 if json_response.get('message') == "Code validated successfully":
-                    await m.edit("Redeem code validated successfully.")
+                    s = await m.edit("Redeem code validated successfully.")
                     await db.add_user_as_premium(user_id, 28)
-                    await asyncio.sleep(2)
-                    await message.reply_text(f"<b>Your subscription has been enabled successfully for 28 days.</b>")
+                    await asyncio.sleep(5)
+                    await s.edit(f"Your subscription has been enabled successfully for 28 days.")
                 else:
                     await m.edit(json_response.get('message'))

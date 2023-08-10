@@ -1,21 +1,17 @@
 from pyrogram import Client, filters
-from info import AUTH_GROUPS
-from pyrogram.errors import FloodWait
+from info import AUTH_GROUPS as CHAT_IDS
 from pyrogram.types import ChatJoinRequest
+
 
 TEXT = "Hello {}, Welcome To {}"
 APPROVED = True  # set to True by default
 
-@Client.on_chat_join_request(filters.chat(AUTH_GROUPS))
-def auto_approve(client: Client, message: ChatJoinRequest):
+# auto approve members 
+@Client.on_chat_join_request((filters.group | filters.channel) & filters.chat(CHAT_IDS) if CHAT_IDS else (filters.group | filters.channel))
+async def autoapprove(client: Client, message: ChatJoinRequest):
+    chat=message.chat
+    user=message.from_user
+    print(f"{user.first_name} Joined")
     if APPROVED:
-        try:
-            client.approve_chat_join_request(AUTH_GROUPS, message.user.id)
-            client.send_message(
-                message.chat.id,
-                TEXT.format(message.from_user.first_name, message.chat.title),
-            )
-        except FloodWait as e:
-            print(f"Rate limit exceeded. Retry after {e.x} seconds.")
-        except Exception as e:
-            print("An error occurred:", e)
+        await client.approve_chat_join_request(chat_id=chat.id, user_id=user.id)
+        await client.send_message(chat_id=chat.id, text=TEXT.format(user.mention, chat.title))
