@@ -5,12 +5,16 @@ import asyncio
 from Script import script
 from info import LOG_CHANNEL
 from utils import temp
-from database.ia_filterdb import get_search_results
+import re
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
+pattern = r"\b(hi+|hello+|hey+)\b"
 
+@Client.on_message(filters.text & filters.private & filters.regex(pattern, flags=re.IGNORECASE))
+async def echo(client, message):
+    await message.reply_text(f"Hello, {message.from_user.first_name}!\n\nI can help you to find movies and series. Just send me the name of the movie or series you want to find.")
 
 # Add paid user to database 
 @Client.on_message(filters.command('add_paid') & filters.user(ADMINS))
@@ -69,8 +73,6 @@ async def remove_paid(client, message):
         
 @Client.on_message(filters.private & filters.command("add_api") & filters.user(ADMINS))
 async def update_api_command(client, message):
-    # ...
-
     # Extract the group ID and API from the command message
     command_parts = message.text.split(" ")
     if len(command_parts) < 3:
@@ -97,8 +99,7 @@ async def remove_api_command(client, message):
     await db.remove_api_for_group(group_id)
     await message.reply_text("API removed successfully!")
     
-    
-    
+
 # configure group
 @Client.on_message(filters.group & filters.command("config"))
 async def configure_command(client, message):
@@ -113,7 +114,7 @@ async def configure_command(client, message):
         else:
             m=await r.edit("Configuring the group...")
             await asyncio.sleep(5)
-            await m.edit(f"Error: Failed to configure {group_name}. Please contact @lemx4")
+            await m.edit(f"Error: Failed to configure {group_name}. Please contact <a href='https://t.me/lemx4'>ｒｙｍｅ</a>")
     except Exception as e:
         await r.edit(f"Error: {e}")
         return
