@@ -23,7 +23,7 @@ class Database:
                 ban_reason="",
             ),
         )
-        
+    
     async def get_timestamps(self, id):
         user = await self.col.find_one({"id": id})
         if user is None:
@@ -32,7 +32,6 @@ class Database:
 
     async def update_timestamps(self, id, time):
         await self.col.update_one({"id": id}, {"$set": {"timestamps": time}})
-
 
     async def is_premium_status(self, user_id):
         user = await self.col.find_one({"id": user_id})
@@ -135,10 +134,8 @@ class Database:
     async def get_all_users(self):
         return self.col.find({})
     
-
     async def delete_user(self, user_id):
         await self.col.delete_many({'id': int(user_id)})
-
 
     async def get_banned(self):
         users = self.col.find({'ban_status.is_banned': True})
