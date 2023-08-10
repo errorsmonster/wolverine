@@ -38,11 +38,9 @@ Name - {}
     #request reply
     REQ_REPLY = """📍 **Your Request for** <code>{}</code> **has been submitted to the admins.**\n\n🚀 **Your Request Will Be Uploaded soon.**\n\n📌 **Please Note that Admins might be busy. So, this may take more time.**"""
 
-    ADDME_TXT = """**To Get Unlimited Movies & Series In Your Groups, Please Add Me In Your Group & Give Me Admin Privilege.**"""
-
     #remove ads
     REMADS_TEXT = """
-<b>Free</b>\nAds & no direct links\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, premium access of our other services\n\n<b>Plan Cost - ₹19/month & ₹90/6-Month </b>\nPrices may increase in the future.\n<b>UPI</b> -\n    <code>iPrimeHub@axl</code>
+<b>Free</b>\nAds & no direct links\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, no waiting time, premium access of our other services\n\n<b>Plan Cost - ₹19/month & ₹90/6-Month </b>\nPrices may increase in the future.\n<b>UPI</b> -\n    <code>iPrimeHub@axl</code>
 """
     #confirm text
     CNFRM_TEXT = """

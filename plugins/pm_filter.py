@@ -29,7 +29,7 @@ logger.setLevel(logging.ERROR)
 BUTTONS = {}
 SPELL_CHECK = {}
 blacklist = script.BLACKLIST
-slow_mode = SLOW_MODE_DELAY 
+slow_mode = SLOW_MODE_DELAY
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_paid_filter(client, message):
