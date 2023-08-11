@@ -18,6 +18,7 @@ class Database:
             Premium=False,
             premium_expiry=None,
             timestamps=0,
+            user_joined=False,
             ban_status=dict(
                 is_banned=False,
                 ban_reason="",
@@ -32,6 +33,15 @@ class Database:
 
     async def update_timestamps(self, id, time):
         await self.col.update_one({"id": id}, {"$set": {"timestamps": time}})
+
+    async def is_user_joined(self, id):
+        user = await self.col.find_one({"id": id})
+        if user is None:
+            return False
+        return user.get("user_joined")
+
+    async def update_user_joined(self, id):
+        await self.col.update_one({"id": id}, {"$set": {"user_joined": True}}) 
 
     async def is_premium_status(self, user_id):
         user = await self.col.find_one({"id": user_id})

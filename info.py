@@ -29,6 +29,7 @@ auth_channel = environ.get('AUTH_CHANNEL', '-1001596389161')
 auth_grp = environ.get('AUTH_GROUP', "-1001522024342")
 AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_channel) else None
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
+FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL'))
 
 # MongoDB information
 DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Prime:Prime@cluster0.tajxlrr.mongodb.net/?retryWrites=true&w=majority")
