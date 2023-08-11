@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import ChatJoinRequest
-from info import AUTO_APPROVE, AUTH_GROUPS
+from info import AUTH_GROUPS
 
 
 TEXT = "Hello {}, Welcome To {}"
