@@ -64,12 +64,13 @@ async def validate_code(client, message):
                 json_response = await resp.json()
                 if json_response.get('message') == "Code validated successfully":
                     s = await m.edit("Redeem code validated successfully.")
-                    await db.add_user_as_premium(user_id, 28)
+                    duration = 28 # added duration for 28 days
+                    await db.add_user_as_premium(user_id, duration)
                     await asyncio.sleep(5)
                     a = await s.edit(f"Activating your subscription...")
-                    await asyncio.sleep(3)
-                    await a.edit(f"Your subscription has been enabled successfully for 28 days.")
-                    await client.send_message(LOG_CHANNEL, f"#redeemed <code>{code}</code>\n{message.from_user.mention} <code>{message.from_user.id}</code> successfully redeemed a code.")
+                    await asyncio.sleep(5)
+                    await a.edit(f"Your subscription has been enabled successfully for {duration} days.")
+                    # send message to log channel
+                    await client.send_message(LOG_CHANNEL, f"#redeem\n<code>{code}</code>\n{message.from_user.mention} <code>{message.from_user.id}</code> successfully redeemed a code.")
                 else:
                     await m.edit(json_response.get('message'))
-                    
