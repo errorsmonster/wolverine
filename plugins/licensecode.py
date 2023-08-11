@@ -1,6 +1,6 @@
 import aiohttp
 from pyrogram import Client, filters
-from info import ADMINS
+from info import ADMINS, LOG_CHANNEL
 from database.users_chats_db import db
 import asyncio
 
@@ -69,6 +69,7 @@ async def validate_code(client, message):
                     a = await s.edit(f"Activating your subscription...")
                     await asyncio.sleep(3)
                     await a.edit(f"Your subscription has been enabled successfully for 28 days.")
+                    await client.send_message(LOG_CHANNEL, f"#redeemed <code>{code}</code>\n{message.from_user.mention} <code>{message.from_user.id}</code> successfully redeemed a code.")
                 else:
                     await m.edit(json_response.get('message'))
                     
