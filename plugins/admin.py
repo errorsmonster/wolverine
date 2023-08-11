@@ -6,11 +6,21 @@ from Script import script
 from info import LOG_CHANNEL
 from utils import temp
 import re
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
 pattern = r"\b(hi+|hello|hey)\b"
+PATTERN_DOWNLOAD = re.compile(r"\b(how to download|how to find|how to search|how to get|how can i download|send me|download link)\b", re.IGNORECASE)
+
+@Client.on_message(filters.regex(PATTERN_DOWNLOAD))
+async def how2download(client, message):
+    # Inline keyboard setup
+    keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("How To Download", url="https://t.me/QuickAnnounce/5")]])
+    # Sending the response message
+    response_text = "<b>Please watch this video to know how to download movies and series from this bot.</b>"
+    await message.reply_text(response_text, reply_markup=keyboard, disable_web_page_preview=True)
 
 @Client.on_message(filters.text & filters.private & filters.regex(pattern, flags=re.IGNORECASE))
 async def echo(client, message):
