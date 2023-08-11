@@ -14,7 +14,7 @@ pattern = r"\b(hi+|hello+|hey+)\b"
 
 @Client.on_message(filters.text & filters.private & filters.regex(pattern, flags=re.IGNORECASE))
 async def echo(client, message):
-    await message.reply_text(f"Hello, {message.from_user.first_name}!\n\nI can help you to find movies and series. Just send me the name of the movie or series you want to find.")
+    await message.reply_text(f"Hello, <b>{message.from_user.first_name}!</b>\nI can help you to find movies and series. Just send me the name of the movie or series you want to find.")
 
 # Add paid user to database 
 @Client.on_message(filters.command('add_paid') & filters.user(ADMINS))
