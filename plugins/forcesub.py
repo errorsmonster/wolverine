@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import ChatJoinRequest
 from info import FORCESUB_CHANNEL
-from databbase.users_chats_db import db
+from database.users_chats_db import db
 
 
 @Client.on_chat_join_request(filters.channel & filters.chat(FORCESUB_CHANNEL))
