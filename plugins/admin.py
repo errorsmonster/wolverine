@@ -10,7 +10,7 @@ import re
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
-pattern = r"\b(hi+|hello+|hey+)\b"
+pattern = r"\b(hi+|hello|hey)\b"
 
 @Client.on_message(filters.text & filters.private & filters.regex(pattern, flags=re.IGNORECASE))
 async def echo(client, message):
