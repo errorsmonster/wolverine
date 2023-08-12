@@ -40,8 +40,8 @@ class Database:
             return False
         return user.get("user_joined")
 
-    async def update_user_joined(self, id):
-        await self.col.update_one({"id": id}, {"$set": {"user_joined": True}}) 
+    async def update_user_joined(self, id, status):
+        await self.col.update_one({"id": id}, {"$set": {"user_joined": status}}) 
 
     async def is_premium_status(self, user_id):
         user = await self.col.find_one({"id": user_id})
