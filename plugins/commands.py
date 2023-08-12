@@ -54,7 +54,7 @@ async def start(client, message):
             disable_web_page_preview=True
         )
         return
-    if AUTH_CHANNEL and not await is_subscribed(client, message):
+    if FORCESUB_CHANNEL and not await is_subscribed(client, message):
         try:
             invite_link = await client.create_chat_invite_link(int(FORCESUB_CHANNEL), creates_join_request=True)
         except Exception as e:
@@ -81,7 +81,7 @@ async def start(client, message):
             parse_mode=enums.ParseMode.MARKDOWN
             )
         return
-    if len(message.command) == 2 and message.command[1] in ["subscribe", "upgrade", "error", "okay", "help"]:
+    if len(message.command) == 2 and message.command[1] in ["subscribe", "upgrade", "help"]:
         buttons = [[
                 InlineKeyboardButton('💫 Confirm', callback_data="confirm"),
                 InlineKeyboardButton('◀️ Back', callback_data="home")
