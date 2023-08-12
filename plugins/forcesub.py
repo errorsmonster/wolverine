@@ -15,5 +15,3 @@ async def private_fsub(client: Client, message: ChatJoinRequest):
     except Exception as e:
         print(e)
         pass
-
-    
