@@ -6,15 +6,25 @@ from Script import script
 from info import LOG_CHANNEL
 from utils import temp
 import re
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
-pattern = r"\b(hi+|hello+|hey+)\b"
+pattern = r"\b(hi+|hello|hey)\b"
+PATTERN_DOWNLOAD = re.compile(r"\b(how to download|how to find|how to search|how to get|how can i download|send me|download link)\b", re.IGNORECASE)
+
+@Client.on_message(filters.regex(PATTERN_DOWNLOAD))
+async def how2download(client, message):
+    # Inline keyboard setup
+    keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("How To Download", url="https://t.me/QuickAnnounce/5")]])
+    # Sending the response message
+    response_text = "<b>Please watch this video to know how to download movies and series from this bot.</b>"
+    await message.reply_text(response_text, reply_markup=keyboard, disable_web_page_preview=True)
 
 @Client.on_message(filters.text & filters.private & filters.regex(pattern, flags=re.IGNORECASE))
 async def echo(client, message):
-    await message.reply_text(f"Hello, {message.from_user.first_name}!\n\nI can help you to find movies and series. Just send me the name of the movie or series you want to find.")
+    await message.reply_text(f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you to find movies and series. Just send me the name of the movie or series you want to find.</b>")
 
 # Add paid user to database 
 @Client.on_message(filters.command('add_paid') & filters.user(ADMINS))
@@ -118,12 +128,6 @@ async def configure_command(client, message):
     except Exception as e:
         await r.edit(f"Error: {e}")
         return
-    
-# config msg
-@Client.on_message(filters.group & filters.command("configure"))
-async def config_msg_command(client, message):
-    await message.reply_text(f"Now You Can **Earn Money** By Adding This Bot To Your Group\n\nRequirements: \n1. Your Group Must Have Minimum 1000 Members\n2. Your Group Must Be Active\n3. Basic Knowledge about Telegram\n4. And a Shortner API of <a href=https://sharezone.live/member/tools/api>ShareZone</a>\n\nTo Cofigure the group please send /config", disable_web_page_preview=True)
-    
     
 #request command 
 @Client.on_message(filters.command("request") & filters.private)

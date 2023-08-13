@@ -14,6 +14,9 @@ from database.users_chats_db import db
 from bs4 import BeautifulSoup
 import requests
 import aiohttp
+from urllib.parse import quote_plus
+import lxml
+import json
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -157,34 +160,55 @@ async def broadcast_messages(user_id, message):
 async def search_gagala(text):
     usr_agent = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/61.0.3163.100 Safari/537.36'
+                      'Chrome/61.0.3163.100 Safari/537.36'
     }
-    text = text.replace(" ", '+')
+    text = quote_plus(text)
 
-    # First, try searching with Google
-    url = f'https://www.google.com/search?q={text}'
-    response = requests.get(url, headers=usr_agent)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    titles = soup.find_all('h3')
-    google_results = [title.getText() for title in titles[:5]]  # Limit to 10 results
+    async with aiohttp.ClientSession(headers=usr_agent) as session:
+        # First, try searching with Google
+        url = f'https://www.google.com/search?q={text}'
+        async with session.get(url) as response:
+            html_content = await response.text()
+            soup = BeautifulSoup(html_content, 'html.parser')
+            google_results = [title.getText() for title in soup.find_all('h3')]
 
-    # Check if any results were found with Google
-    if len(google_results) > 0:
-        return google_results
-    else:
-        # If no results are found with Google, try searching with Yahoo
+        # Check if any results were found with Google
+        if google_results:
+            return google_results
+
+        # Try searching with Yahoo
         url = f'https://search.yahoo.com/search?q={text}'
-        response = requests.get(url, headers=usr_agent)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        titles = soup.find_all('a', class_='d-ib fz-20 lh-26 td-hu tc va-bot mxw-100p')
-        ntitle = []
-        for i in range(len(titles)):
-            g = titles[i]
-            ty = [kit for kit in g]
-            ntitle.append(ty[1])
-        yahoo_results = [title.getText() for title in ntitle[:5]]  # Limit to 10 results
-        return yahoo_results
+        async with session.get(url) as response:
+            html_content = await response.text()
+            soup = BeautifulSoup(html_content, 'html.parser')
+            titles = soup.find_all('a', class_='d-ib fz-20 lh-26 td-hu tc va-bot mxw-100p')
+            ntitle = [kit.contents[1] for kit in titles]
 
+        if ntitle:
+            return ntitle
+
+        # If no results, try searching with Brave
+        brave_results = []
+        params = {
+            'q': text,
+            'source': 'web',
+            'tf': 'at',
+            'offset': 0
+        }
+
+        while True:
+            async with session.get('https://search.brave.com/search', params=params) as response:
+                html_content = await response.text()
+                soup = BeautifulSoup(html_content, 'lxml')
+
+            if soup.select_one('.ml-15'):
+                params['offset'] += 1
+            else:
+                break
+
+            brave_results.extend([result.select_one('.snippet-title').get_text().strip() for result in soup.select('.snippet')])
+
+        return brave_results
 
 async def get_settings(group_id):
     settings = temp.SETTINGS.get(group_id)
