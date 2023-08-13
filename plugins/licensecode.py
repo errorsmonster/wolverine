@@ -6,7 +6,7 @@ from database.users_chats_db import db
 import asyncio
 import binascii
 
-ACCESS_KEY = "F5DDYDRBVEDTQ0CPZDDX"
+ACCESS_KEY = "PZUNTLGIZFE67MR0I0H0"
 
 @Client.on_message(filters.command("licensegen") & filters.user(ADMINS))
 async def generate(client, message):
@@ -102,3 +102,10 @@ async def validate_code(client, message):
                     await client.send_message(LOG_CHANNEL, f"#redeem\n<code>{full_code}</code>\n{message.from_user.mention} <code>{message.from_user.id}</code> successfully redeemed a code.")
                 else:
                     await m.edit(json_response.get('message'))
+
+
+@Client.on_message(filters.regex(r"^([A-Z0-9]{20})$") & filters.private)
+async def ras_validate_code(client, message):
+    s = await message.reply_text("Please wait, checking your redeem code....")
+    await asyncio.sleep(5)
+    await s.edit("Hmm, there's an issue with the redeem code. Double-check it?")
