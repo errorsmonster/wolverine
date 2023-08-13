@@ -99,7 +99,7 @@ async def validate_code(client, message):
                     await asyncio.sleep(5)
                     await a.edit(f"Your subscription has been enabled successfully for {duration} days.")
                     # send message to log channel
-                    await client.send_message(LOG_CHANNEL, f"#redeem\n<code>{full_code}</code>\n{message.from_user.mention} <code>{message.from_user.id}</code> successfully redeemed a code.")
+                    await client.send_message(LOG_CHANNEL, f"#redeem\n<code>{full_code}</code>\n{message.from_user.mention} <code>{message.from_user.id}</code> successfully redeemed a code for {duration} days.")
                 else:
                     await m.edit(json_response.get('message'))
 
