@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import ChatJoinRequest
-from info import FORCESUB_CHANNEL
+from info import FORCESUB_CHANNEL, ADMINS
 from database.users_chats_db import db
 
 
@@ -14,7 +14,7 @@ async def private_fsub(client: Client, message: ChatJoinRequest):
         print(e)
         pass    
 
-@Client.on_message(filters.private & filters.command("resetforcesub"))
+@Client.on_message(filters.private & filters.command("resetforcesub") & filters.user(ADMINS))
 async def reset_forcesub(client, message):
     m = await message.reply_text("Resetting Force Sub...")
     try:
