@@ -8,8 +8,6 @@ from database.users_chats_db import db
 async def private_fsub(client: Client, message: ChatJoinRequest):
     user = message.from_user
     print(user.first_name)
-    if user is None:
-        return
     try:
         await db.update_user_joined(user.id, True)
     except Exception as e:
