@@ -486,13 +486,19 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
                 return
             else:
-                await client.send_cached_media(
+                media_id=await client.send_cached_media(
                     chat_id=query.from_user.id,
                     file_id=file_id,
                     caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
                     protect_content=True if ident == "filep" else False 
                 )
                 await query.answer('Check PM, I have sent files in pm', show_alert=True)
+                del_msg = await client.send_message(
+                    text="Files Will Be Deleted Within 10 Mins..\n__Please Make Sure That You Forward These Files To Your Saved Message or Friends.__",
+                    chat_id=query.from_user.id)
+                await asyncio.sleep(600)
+                await media_id.delete()
+                await del_msg.edit("__⊘ This message was deleted__")
         except UserIsBlocked:
             await query.answer('Unblock the bot mahn !', show_alert=True)
         except PeerIdInvalid:
@@ -522,12 +528,18 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if f_caption is None:
             f_caption = f"{title}"
         await query.answer()
-        await client.send_cached_media(
+        md_id=await client.send_cached_media(
             chat_id=query.from_user.id,
             file_id=file_id,
             caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
             protect_content=True if ident == 'checksubp' else False
         )
+        del_msg = await client.send_message(
+            text="Files Will Be Deleted Within 10 Mins..\n__Please Make Sure That You Forward These Files To Your Saved Message or Friends.__",
+            chat_id=query.from_user.id)
+        await asyncio.sleep(600)
+        await md_id.delete()
+        await del_msg.edit("__⊘ This message was deleted__")
     elif query.data == "pages":
         await query.answer('Share & Support Us♥️')
     elif query.data == "home":

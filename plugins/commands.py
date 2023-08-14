@@ -249,7 +249,6 @@ async def start(client, message):
     await media_id.delete()
     await del_msg.edit("__⊘ This message was deleted__")
                     
-
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
 async def channel_info(bot, message):
            
