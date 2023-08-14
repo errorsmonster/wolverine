@@ -489,7 +489,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 await client.send_cached_media(
                     chat_id=query.from_user.id,
                     file_id=file_id,
-                    caption=f_caption,
+                    caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
                     protect_content=True if ident == "filep" else False 
                 )
                 await query.answer('Check PM, I have sent files in pm', show_alert=True)
@@ -525,7 +525,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await client.send_cached_media(
             chat_id=query.from_user.id,
             file_id=file_id,
-            caption=f_caption,
+            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
             protect_content=True if ident == 'checksubp' else False
         )
     elif query.data == "pages":
