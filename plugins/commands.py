@@ -7,7 +7,7 @@ from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT
+from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, FORCESUB_CHANNEL
 from utils import get_settings, get_size, is_subscribed, temp, replace_blacklist
 from database.connections_mdb import active_connection
 import re
@@ -54,12 +54,11 @@ async def start(client, message):
             disable_web_page_preview=True
         )
         return
-    if AUTH_CHANNEL and not await is_subscribed(client, message):
+    if FORCESUB_CHANNEL and not await is_subscribed(client, message):
         try:
-            invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL))
-        except ChatAdminRequired:
-            logger.error("Make sure Bot is admin in Forcesub channel")
-            return
+            invite_link = await client.create_chat_invite_link(int(FORCESUB_CHANNEL), creates_join_request=True)
+        except Exception as e:
+            logger.error(e)
         btn = [
             [
                 InlineKeyboardButton(
@@ -82,7 +81,7 @@ async def start(client, message):
             parse_mode=enums.ParseMode.MARKDOWN
             )
         return
-    if len(message.command) == 2 and message.command[1] in ["subscribe", "upgrade", "error", "okay", "help"]:
+    if len(message.command) == 2 and message.command[1] in ["subscribe", "upgrade", "help"]:
         buttons = [[
                 InlineKeyboardButton('💫 Confirm', callback_data="confirm"),
                 InlineKeyboardButton('◀️ Back', callback_data="home")

@@ -1,6 +1,6 @@
 import logging
 from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM
+from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, FORCESUB_CHANNEL, ADMINS
 from imdb import IMDb
 import asyncio
 from pyrogram.types import Message, InlineKeyboardButton
@@ -8,15 +8,11 @@ from pyrogram import enums
 from typing import Union
 import re
 import os
-from datetime import datetime
 from typing import List
 from database.users_chats_db import db
 from bs4 import BeautifulSoup
-import requests
 import aiohttp
 from urllib.parse import quote_plus
-import lxml
-import json
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -45,18 +41,18 @@ class temp(object):
     SETTINGS = {}
 
 async def is_subscribed(bot, query):
+    if not FORCESUB_CHANNEL:
+        return True
+    if query.from_user.id in ADMINS:
+        return True
     try:
-        user = await bot.get_chat_member(AUTH_CHANNEL, query.from_user.id)
-    except UserNotParticipant:
-        pass
+        if await db.is_user_joined(query.from_user.id)==True:
+            return True
     except Exception as e:
         logger.exception(e)
-    else:
-        if user.status != 'kicked':
-            return True
-
+        pass
     return False
-
+    
 async def get_poster(query, bulk=False, id=False, file=None):
     if not id:
         # https://t.me/GetTGLink/4183
