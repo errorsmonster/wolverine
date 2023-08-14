@@ -13,3 +13,12 @@ async def private_fsub(client: Client, message: ChatJoinRequest):
     except Exception as e:
         print(e)
         pass    
+
+@Client.on_message(filters.private & filters.command("resetforcesub"))
+async def reset_forcesub(client, message):
+    m = await message.reply_text("Resetting Force Sub...")
+    try:
+        await db.reset_all_users_joined()
+        await m.edit("Resetted Force Sub!")
+    except Exception as e:
+        await m.edit(f"Error:\n{e}")

@@ -40,7 +40,7 @@ async def generate(client, message):
                     license_code = f"{json_response.get('license_code')[:10]}{encoded_duration}{json_response.get('license_code')[10:]}"
                     codes_generated.append(license_code)
                 else:
-                    await message.reply_text("Error generating license code. Please try again.")
+                    await message.reply_text(f"Error generating license code. Please try again.{resp.status}")
                     return
                 
     codes_str = "\n".join(f"`{code}`" for code in codes_generated)

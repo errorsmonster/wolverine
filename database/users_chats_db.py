@@ -43,6 +43,9 @@ class Database:
     async def update_user_joined(self, id, status):
         await self.col.update_one({"id": id}, {"$set": {"user_joined": status}}) 
 
+    async def reset_all_users_joined(self):
+        await self.col.update_many({}, {"$set": {"user_joined": False}})
+
     async def is_premium_status(self, user_id):
         user = await self.col.find_one({"id": user_id})
         if user is None:
