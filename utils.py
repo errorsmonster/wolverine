@@ -46,7 +46,7 @@ async def is_subscribed(bot, query):
     if query.from_user.id in ADMINS:
         return True
     try:
-        if await db.is_user_joined(query.from_user.id):
+        if await db.is_user_joined(query.from_user.id)==True:
             return True
     except Exception as e:
         logger.exception(e)
