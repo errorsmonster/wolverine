@@ -103,6 +103,32 @@ async def validate_code(client, message):
                 else:
                     await m.edit(json_response.get('message'))
 
+@Client.on_message(filters.private & filters.command("revokecode") & filters.user(ADMINS))
+async def revokelicensecode(client, message):
+    if len(message.command) != 2:
+        await message.reply_text("Invalid command format. Use /revokecode <code>")
+        return
+    code = message.text.split(None, 1)[1]
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=revoke&code={code}") as resp:
+            if resp.status == 404:
+                await message.reply_text("Invalid code brrrrrah!...")
+            if resp.status == 403:
+                respo = await resp.json()
+                if respo.get('message') == "This code does not belong to the provided access key":
+                    await message.reply_text("This code does not belong to the provided access key.")
+                    return
+                if respo.get('message') == "This code is already in use":
+                    await message.reply_text("This redeem code's already used.")
+                    return
+                if respo.get('message') == "The code has expired":
+                    await message.reply_text("The redeem code has expired.")
+                    return
+            if resp.status == 200:
+                json_response = await resp.json()
+                if json_response.get('message') == "Code validated successfully":
+                    await message.reply_text("Redeem code revoked successfully.")      
+
 
 @Client.on_message(filters.regex(r"^([A-Z0-9]{20})$") & filters.private)
 async def ras_validate_code(client, message):
