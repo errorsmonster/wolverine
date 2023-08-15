@@ -44,11 +44,10 @@ async def private_paid_filter(client, message):
     
     if message.text.startswith("/"):
         return
-    
+    m = await message.reply_text("Searching...")
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id, user_name)
-
-    m = await client.send_sticker(chat_id=user_id, sticker='AAMCAgADGQEAAQEZ3WTbKTJDOxNmwoAr-hkhC_TmXseMAAJVAAOvxlEaZOf88CXpEL8BAAdtAAMwBA')    
+ 
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
         await m.delete()
