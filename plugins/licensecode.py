@@ -77,7 +77,7 @@ async def validate_code(client, message):
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={full_code}") as resp:
             if resp.status == 404:
-                await m.edit("Invalid code brrrrrah!...")
+                await m.edit("Invalid redeem code!...")
             if resp.status == 403:
                 respo = await resp.json()
                 if respo.get('message') == "This code does not belong to the provided access key":
@@ -112,7 +112,7 @@ async def revokelicensecode(client, message):
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=revoke&code={code}") as resp:
             if resp.status == 404:
-                await message.reply_text("Invalid code brrrrrah!...")
+                await message.reply_text("Invalid code...")
             if resp.status == 403:
                 respo = await resp.json()
                 if respo.get('message') == "This code does not belong to the provided access key":
@@ -127,7 +127,7 @@ async def revokelicensecode(client, message):
             if resp.status == 200:
                 json_response = await resp.json()
                 if json_response.get('message') == "Code validated successfully":
-                    await message.reply_text("Redeem code revoked successfully.")      
+                    await message.reply_text("Redeem code revoked successfully.")     
 
 
 @Client.on_message(filters.regex(r"^([A-Z0-9]{20})$") & filters.private)
