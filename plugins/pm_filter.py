@@ -36,7 +36,7 @@ async def private_paid_filter(client, message):
     user_id = message.from_user.id
     user_name = message.from_user.first_name
     user_timestamps = await db.get_timestamps(user_id)
-    
+
     if user_timestamps:
         time_diff = int(time.time()) - user_timestamps
         if time_diff < slow_mode:
@@ -47,11 +47,14 @@ async def private_paid_filter(client, message):
     
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id, user_name)
-        
+
+    m = await client.send_sticker(chat_id=user_id, sticker='AAMCAgADGQEAAQEZ3WTbKTJDOxNmwoAr-hkhC_TmXseMAAJVAAOvxlEaZOf88CXpEL8BAAdtAAMwBA')    
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
+        await m.delete()
     else:
         await auto_filter(client, message)
+        await m.delete()
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
