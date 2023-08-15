@@ -135,3 +135,4 @@ async def ras_validate_code(client, message):
     s = await message.reply_text("Please wait, checking your redeem code....")
     await asyncio.sleep(5)
     await s.edit("This redeem code's already used.")
+    return
