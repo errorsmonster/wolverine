@@ -11,10 +11,10 @@ def is_enabled(value, default):
         return default
 
 # Bot information
-SESSION = environ.get('SESSION', 'Media_search')
+SESSION = environ.get('SESSION', 'autofilter')
 API_ID = environ.get('API_ID', "11948995")
 API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
-BOT_TOKEN = environ.get('BOT_TOKEN', "5207489037:AAEtZTr6Ni-dUsmIC5Eh6ZqA_X46kqUYhvA")
+BOT_TOKEN = environ.get('BOT_TOKEN', "6496586495:AAFZXdcbC7XANI3lwtmeDTPVs43EHp0HG3I")
 
 # Bot settings
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
@@ -31,12 +31,11 @@ AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_chan
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Prime:Prime@cluster0.tajxlrr.mongodb.net/?retryWrites=true&w=majority")
-DATABASE_NAME = environ.get('DATABASE_NAME', "Rajappan")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'netflimsbot')
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://reen:reen@reen.9aocxh7.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_NAME = environ.get('DATABASE_NAME', "PrimeHub")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'ryu')
 
 # Others
-SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 180))
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'iPrimeHub')
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)
@@ -53,5 +52,6 @@ FILE_STORE_CHANNEL = [int(ch) for ch in (environ.get('FILE_STORE_CHANNEL', '')).
 MELCOW_NEW_USERS = is_enabled((environ.get('MELCOW_NEW_USERS', "False")), True)
 PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
 PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "False")), True)
-AUTO_APPROVE = is_enabled((environ.get('AUTO_APPROVE', "False")), False)
 FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001905287436"))
+SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 60))
+RESPONCE_LIMIT = int(environ.get('RESPONCE_LIMIT', 10))
