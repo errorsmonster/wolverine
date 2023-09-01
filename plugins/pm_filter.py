@@ -38,7 +38,7 @@ async def private_paid_filter(client, message):
     user_id = message.from_user.id
     user_name = message.from_user.first_name
     user_timestamps = await db.get_timestamps(user_id)
-    files_counts = await db.get_files_counts(user_id)
+    files_counts = await db.get_files_count(user_id)
     premium_status = await db.is_premium_status(user_id)
     last_reset = await db.get_last_reset(user_id)
 
