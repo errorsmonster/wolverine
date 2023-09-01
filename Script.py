@@ -48,7 +48,7 @@ Name - {}
 """
 
     #paid group
-    GROUP_PROMO = """Now You Can **Earn Money** By Adding This Bot In Your Group.\n\n**Requirements:**\n1. Your Group Must Have Minimum 1000 Members.\n2. Your Group Must Be Active.\n3. Your Group Must Be Public. \n\n If You Are Interested Then Contact <a href=https://t.me/lemx4>ｒｙｍｅ</a>"""
+    GROUP_PROMO = """Now You Can **Earn Money** By Adding This Bot In Your Group.\n\n**Requirements:**\n1. Your Group Must Have Minimum 500 Members.\n2. Your Group Must Be Active.\n3. Your Group Must Be Public. \n\n If You Are Interested Then Contact <a href=https://t.me/lemx4>ｒｙｍｅ</a>"""
 
     # removing blacklisted words
     BLACKLIST = ['www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
