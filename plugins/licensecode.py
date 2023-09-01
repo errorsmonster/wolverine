@@ -40,7 +40,7 @@ async def generate(client, message):
                     license_code = f"{json_response.get('license_code')[:10]}{encoded_duration}{json_response.get('license_code')[10:]}"
                     codes_generated.append(license_code)
                 else:
-                    await message.reply_text("Error generating license code. Please try again.")
+                    await message.reply_text(f"Error generating license code. Please try again.{resp.status}")
                     return
                 
     codes_str = "\n".join(f"`{code}`" for code in codes_generated)
@@ -77,7 +77,7 @@ async def validate_code(client, message):
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={full_code}") as resp:
             if resp.status == 404:
-                await m.edit("Invalid code brrrrrah!...")
+                await m.edit("Invalid redeem code!...")
             if resp.status == 403:
                 respo = await resp.json()
                 if respo.get('message') == "This code does not belong to the provided access key":
@@ -103,9 +103,30 @@ async def validate_code(client, message):
                 else:
                     await m.edit(json_response.get('message'))
 
+@Client.on_message(filters.private & filters.command("revoke") & filters.user(ADMINS))
+async def revoke_license_code(client, message):
+    if len(message.command) != 2:
+        await message.reply_text("Invalid command format. Use /revoke <code>")
+        return
+    code = message.text.split(None, 1)[1]
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=revoke&code={code}") as resp:
+            try:
+                if resp.status == 200:
+                    json_response = await resp.json()
+                    if json_response.get('message') == "Code validated successfully":
+                        await message.reply_text("Redeem code revoked successfully.")
+                    else:
+                        await message.reply_text(json_response.get('message'))
+                else:
+                    await message.reply_text("Error occured while revoking code.")        
+            except Exception as e:
+                await message.reply_text(f"Error occured while revoking code.\n{e}") 
+
 
 @Client.on_message(filters.regex(r"^([A-Z0-9]{20})$") & filters.private)
 async def ras_validate_code(client, message):
     s = await message.reply_text("Please wait, checking your redeem code....")
     await asyncio.sleep(5)
-    await s.edit("Hmm, there's an issue with the redeem code. Double-check it?")
+    await s.edit("This redeem code's already used.")
+    return

@@ -9,7 +9,7 @@ from Script import script
 import pyrogram
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY
+from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -36,7 +36,7 @@ async def private_paid_filter(client, message):
     user_id = message.from_user.id
     user_name = message.from_user.first_name
     user_timestamps = await db.get_timestamps(user_id)
-    
+
     if user_timestamps:
         time_diff = int(time.time()) - user_timestamps
         if time_diff < slow_mode:
@@ -44,14 +44,16 @@ async def private_paid_filter(client, message):
     
     if message.text.startswith("/"):
         return
-    
+    m = await message.reply_text("Searching...")
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id, user_name)
-        
+ 
     if await db.is_premium_status(user_id) is True:
         await paid_filter(client, message)
+        await m.delete()
     else:
         await auto_filter(client, message)
+        await m.delete()
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
@@ -166,7 +168,7 @@ async def next_page(bot, query):
     k = await bot.get_users(m)
     name = k.first_name if not k.last_name else k.first_name + " " + k.last_name
     if int(req) not in [query.from_user.id, 0]:
-        return await query.answer(f"That's not for you buddy!\nOnly **{name}** can access this query", show_alert=True)
+        return await query.answer(f"That's not for you buddy!\nOnly <b>{name}</b> can access this query", show_alert=True)
     try:
         offset = int(offset)
     except:
@@ -486,13 +488,19 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
                 return
             else:
-                await client.send_cached_media(
+                media_id=await client.send_cached_media(
                     chat_id=query.from_user.id,
                     file_id=file_id,
-                    caption=f_caption,
+                    caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
                     protect_content=True if ident == "filep" else False 
                 )
                 await query.answer('Check PM, I have sent files in pm', show_alert=True)
+                del_msg = await client.send_message(
+                    text="Files Will Be Deleted Within 10 Mins..\n__Please Make Sure That You Forward These Files To Your Saved Message or Friends.__",
+                    chat_id=query.from_user.id)
+                await asyncio.sleep(600)
+                await media_id.delete()
+                await del_msg.edit("__⊘ This message was deleted__")
         except UserIsBlocked:
             await query.answer('Unblock the bot mahn !', show_alert=True)
         except PeerIdInvalid:
@@ -500,7 +508,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         except Exception as e:
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
     elif query.data.startswith("checksub"):
-        if AUTH_CHANNEL and not await is_subscribed(client, query):
+        if FORCESUB_CHANNEL and not await is_subscribed(client, query):
             await query.answer("I Like Your Smartness, But Don't Be Oversmart 😒", show_alert=True)
             return
         ident, file_id = query.data.split("#")
@@ -522,12 +530,18 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if f_caption is None:
             f_caption = f"{title}"
         await query.answer()
-        await client.send_cached_media(
+        md_id=await client.send_cached_media(
             chat_id=query.from_user.id,
             file_id=file_id,
-            caption=f_caption,
+            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
             protect_content=True if ident == 'checksubp' else False
         )
+        del_msg = await client.send_message(
+            text="Files Will Be Deleted Within 10 Mins..\n__Please Make Sure That You Forward These Files To Your Saved Message or Friends.__",
+            chat_id=query.from_user.id)
+        await asyncio.sleep(600)
+        await md_id.delete()
+        await del_msg.edit("__⊘ This message was deleted__")
     elif query.data == "pages":
         await query.answer('Share & Support Us♥️')
     elif query.data == "home":
