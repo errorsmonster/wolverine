@@ -4,9 +4,9 @@ import re
 import ast
 import math
 import time
+from datetime import datetime
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
-import pyrogram
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
 from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL
@@ -34,27 +34,49 @@ slow_mode = SLOW_MODE_DELAY
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_paid_filter(client, message):
+
     user_id = message.from_user.id
     user_name = message.from_user.first_name
     user_timestamps = await db.get_timestamps(user_id)
+    files_counts = await db.get_files_counts(user_id)
+    premium_status = await db.is_premium_status(user_id)
+    last_reset = await db.get_last_reset(user_id)
 
-    if user_timestamps:
-        time_diff = int(time.time()) - user_timestamps
-        if time_diff < slow_mode:
-            return await message.reply_text(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
+    if not await db.is_user_exist(user_id):
+        await db.add_user(user_id, user_name)
+        
+    if last_reset:
+        today = datetime.now().strftime("%Y-%m-%d")
+        if last_reset != today:
+            await db.reset_daily_files_count(user_id)
     
     if message.text.startswith("/"):
         return
+    
     m = await message.reply_text("Searching...")
-    if not await db.is_user_exist(user_id):
-        await db.add_user(user_id, user_name)
- 
-    if await db.is_premium_status(user_id) is True:
+
+    if premium_status is True:
         await paid_filter(client, message)
         await m.delete()
+
     else:
-        await auto_filter(client, message)
-        await m.delete()
+        if user_timestamps:
+            time_diff = int(time.time()) - user_timestamps
+            if time_diff < slow_mode:
+                return await message.reply_text(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
+            
+        if files_counts >= 10:
+            await message.reply_text(f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade'>upgrade</a> to premium for unlimited request", disable_web_page_preview=True)
+            await m.delete()
+            return
+        
+        else:
+            if files_counts <= 1:
+                await auto_filter(client, message)
+                await m.delete()
+            else:
+                await paid_filter(client, message)
+
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):

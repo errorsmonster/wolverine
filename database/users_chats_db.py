@@ -50,8 +50,11 @@ class Database:
         return user.get("last_reset")
     
     # reset fiiles count of user
-    async def reset_daily_files_count(self):
-        await self.col.update_many({}, {"$set": {"files_count": 0, "last_reset": datetime.now().strftime("%Y-%m-%d")}})
+    async def reset_daily_files_count(self, user_id):
+        user = await self.col.find_one({"id": user_id})
+        if user is None:
+            return
+        await self.col.update_one({"id": user_id}, {"$set": {"files_count": 0, "last_reset": datetime.now().strftime("%Y-%m-%d")}})
 
     # reset files count for all user forcefully
     async def reset_all_files_count(self):
