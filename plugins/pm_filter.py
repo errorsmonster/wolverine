@@ -66,14 +66,14 @@ async def private_paid_filter(client, message):
                 if time_diff < slow_mode:
                     return await message.reply_text(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
             
-            if files_counts >= 10:
+            if files_counts is not None and files_counts >= 10:
                 await message.reply_text(
                     f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade'>upgrade</a> to premium for unlimited request",
                     disable_web_page_preview=True)
                 return
         
             else:
-                if files_counts <= 1:
+                if files_counts is not None and files_counts <= 1:
                     await auto_filter(client, message)
                 else:
                     await paid_filter(client, message)                
