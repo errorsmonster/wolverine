@@ -11,20 +11,18 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
-pattern = r"\b(hi+|hello|hey)\b"
-PATTERN_DOWNLOAD = re.compile(r"\b(how to download|how to find|how to search|how to get|how can i download|send me|download link)\b", re.IGNORECASE)
+PATTERN_DOWNLOAD = re.compile(r"\b(how to (?:download|find|search|get)|send me|download link)\b", re.IGNORECASE)
 
 @Client.on_message(filters.regex(PATTERN_DOWNLOAD))
-async def how2download(client, message):
-    # Inline keyboard setup
+async def how2download(_, message):
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("How To Download", url="https://t.me/QuickAnnounce/5")]])
-    # Sending the response message
     response_text = "<b>Please watch this video to know how to download movies and series from this bot.</b>"
     await message.reply_text(response_text, reply_markup=keyboard, disable_web_page_preview=True)
 
-@Client.on_message(filters.text & filters.private & filters.regex(pattern, flags=re.IGNORECASE))
-async def echo(client, message):
-    await message.reply_text(f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you to find movies and series. Just send me the name of the movie or series you want to find.</b>")
+@Client.on_message(filters.private & filters.regex(r"\b(hi+|hello|hey)\b", re.IGNORECASE))
+async def echo(_, message):
+    response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>"
+    await message.reply_text(response_text, disable_web_page_preview=True)
 
 # Add paid user to database 
 @Client.on_message(filters.command('add_paid') & filters.user(ADMINS))
