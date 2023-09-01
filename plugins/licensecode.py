@@ -5,6 +5,7 @@ from info import ADMINS, LOG_CHANNEL
 from database.users_chats_db import db
 import asyncio
 import binascii
+from datetime import datetime, timedelta
 
 ACCESS_KEY = "PZUNTLGIZFE67MR0I0H0"
 
@@ -66,6 +67,9 @@ async def validate_code(client, message):
         return
 
     full_code = first_part_code + second_part_code  # Actual code without the duration part.
+    # Get current timestamp
+    provided_date = datetime.now()
+    subscription_date = int(provided_date.timestamp())
 
     user_id = message.from_user.id
     if await db.is_premium_status(user_id) is True:
@@ -93,7 +97,7 @@ async def validate_code(client, message):
                 json_response = await resp.json()
                 if json_response.get('message') == "Code validated successfully":
                     s = await m.edit("Redeem code validated successfully.")
-                    await db.add_user_as_premium(user_id, duration)
+                    await db.add_user_as_premium(user_id, duration, subscription_date)
                     await asyncio.sleep(5)
                     a = await s.edit(f"Activating your subscription...")
                     await asyncio.sleep(5)
