@@ -78,7 +78,6 @@ async def remove_paid(client, message):
         await message.reply(DEL_PAID_TEXT.format(k.first_name))
         
         
-        
 @Client.on_message(filters.private & filters.command("add_api") & filters.user(ADMINS))
 async def update_api_command(client, message):
     # Extract the group ID and API from the command message
@@ -107,25 +106,6 @@ async def remove_api_command(client, message):
     await db.remove_api_for_group(group_id)
     await message.reply_text("API removed successfully!")
     
-
-# configure group
-@Client.on_message(filters.group & filters.command("config"))
-async def configure_command(client, message):
-    r=await message.reply_text("Please wait...")
-    group_id = message.chat.id
-    group_name = message.chat.title
-    members_count = await client.get_chat_members_count(group_id)
-    try:
-        if members_count < 1000:
-            await r.edit("Minimum 1000 members required to configure the group.")
-            return
-        else:
-            m=await r.edit("Configuring the group...")
-            await asyncio.sleep(5)
-            await m.edit(f"Error: Failed to configure {group_name}. Please contact <a href='https://t.me/lemx4'>ｒｙｍｅ</a>")
-    except Exception as e:
-        await r.edit(f"Error: {e}")
-        return
     
 #request command 
 @Client.on_message(filters.command("request") & filters.private)
@@ -142,11 +122,3 @@ async def request(client, message):
         await message.reply_text(script.REQ_REPLY.format(movie_name), disable_web_page_preview=True)
         log_message = script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movie_name)
         await client.send_message(LOG_CHANNEL, log_message, disable_web_page_preview=True)
-
-
-@Client.on_message(filters.command("remove_expired") & filters.user(ADMINS))
-async def check_paid(client, message):
-    m = await message.reply_text("Checking...")        
-    await asyncio.sleep(2)
-    await db.remove_expired_users()
-    await m.edit("Removed expired users from database.")
