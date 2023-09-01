@@ -6,6 +6,7 @@ from Script import script
 from info import LOG_CHANNEL
 from utils import temp
 import re
+from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
@@ -24,41 +25,43 @@ async def echo(_, message):
     response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>"
     await message.reply_text(response_text, disable_web_page_preview=True)
 
-# Add paid user to database 
+# Add paid user to database and send message
 @Client.on_message(filters.command('add_paid') & filters.user(ADMINS))
 async def add_paid(client, message):
-    if len(message.command) < 2:
-        return await message.reply('Please provide a user id and duration')
-    chat = message.command[1]
     try:
-        chat = int(chat)
-    except ValueError:
-        return await message.reply("Invalid user id provided.")
-    try:
-        k = await client.get_users(chat)
-    except IndexError:
-        return await message.reply("This might be a channel, make sure it's a user.")
-    else:
-        name = k.first_name if not k.last_name else k.first_name + " " + k.last_name
-        try:
+        if len(message.command) < 2:
+            raise ValueError
+
+        user_id = int(message.command[1])
+
+        if len(message.command) > 2:
             duration = int(message.command[2])
-        except (IndexError, ValueError):
-            duration = 30  # Set default duration to 30 days
-            
-        if duration > 365:
-            await message.reply("Duration can't be more than 365 days.")
-                
-        if not await db.is_user_exist(k.id):
-            await db.add_user(k.id, name)
-                        
-        if await db.is_premium_status(k.id) is True:
-            await message.reply(f"**{name}** is already a premium user.")
+            if not (1 <= duration <= 365):
+                return await message.reply("Duration should be between 1 and 365 days.")
         else:
-            await db.add_user_as_premium(k.id, duration)
-            await message.reply(ADD_PAID_TEXT.format(name, duration))
-            await client.send_message(chat, f"Your subscription has been enabled successfully for {duration} days.")
+            duration = 30
+
+        if len(message.command) > 3:
+            date_str = message.command[3]
+            provided_date = datetime.strptime(date_str, '%d/%m/%Y')
+        else:
+            provided_date = datetime.now()
+
+        subscription_date= int(provided_date.timestamp())
+
+        user = await client.get_users(user_id)
+        name = user.first_name if not user.last_name else f"{user.first_name} {user.last_name}"
+
+        if await db.is_premium_status(user_id):
+            return await message.reply(f"**{name}** is already a premium user.")
+
+        await db.add_user_as_premium(user_id, duration, subscription_date)
+        await message.reply(f"Premium subscription added for **{name}** for {duration} days.")
+        await client.send_message(user_id, f"Your subscription has been enabled for {duration} days.")
+    except (ValueError, IndexError, ValueError):
+        await message.reply("Invalid input. Please provide a valid user id, optionally a duration (1-365), and optionally a subscription date (dd/mm/yyyy).")
+
                 
-       
 # remove paid user from database
 @Client.on_message(filters.command('remove_paid') & filters.user(ADMINS))
 async def remove_paid(client, message):

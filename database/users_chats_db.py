@@ -1,6 +1,6 @@
 import motor.motor_asyncio
 from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Database:
     
@@ -17,6 +17,7 @@ class Database:
             name=name,
             Premium=False,
             premium_expiry=None,
+            purchase_date=None,
             timestamps=0,
             user_joined=False,
             ban_status=dict(
@@ -52,37 +53,53 @@ class Database:
             return False  # User not found in the database
         return user.get("Premium", False)
 
-    async def add_user_as_premium(self, user_id, expiry_date):
-        result = await self.col.update_one({"id": user_id}, {"$set": {"Premium": True, "premium_expiry": expiry_date}})
-        return result.modified_count > 0
+    # add user as premium
+    async def add_user_as_premium(self, user_id, expiry_date, subscription_date):
+        await self.col.update_one(
+            {"id": user_id},
+            {"$set": {"Premium": True, "premium_expiry": expiry_date, "purchase_date": subscription_date}}
+        )
 
-    async def premium_expiry(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        if user is None:
-            return None  # User not found in the database
-        return user.get("premium_expiry")
-    
+    # remove user from premium
     async def remove_user_premium(self, user_id):
-        await self.col.update_one({"id": user_id}, {"$set": {"Premium": False, "premium_expiry": None}})
-                
+        await self.col.update_one({"id": user_id}, {"$set": {"Premium": False, "premium_expiry": None, "purchase_date": None}})
+         
+    # check user is expired or not if expired then remove premium
     async def check_expired_users(self, user_id):
         user = await self.col.find_one({"id": user_id})
         now_timestamp = int(datetime.now().timestamp())  # Convert now to UNIX timestamp
+
         if user is None:
             return  # User not found in the database
-        premium_expiry = user.get("premium_expiry")
-        if premium_expiry is None:
-            return  # User does not have a premium expiry date
-        if now_timestamp > premium_expiry:  # Compare UNIX timestamps
+        
+        premium_expiry_days = user.get("premium_expiry")
+        purchase_date = user.get("purchase_date")
+
+        if premium_expiry_days is None:
+            return  # User does not have a premium expiry duration
+        
+        # Calculate the expiry timestamp based on premium_expiry_days
+        premium_expiry_timestamp = purchase_date + (premium_expiry_days * 24 * 60 * 60)
+        
+        if now_timestamp > premium_expiry_timestamp:
             await self.remove_user_premium(user_id)
             return "Your subscription has expired."
 
+    # remove all expired user
     async def remove_expired_users(self):
         now = datetime.utcnow()
-        expired_users = await self.col.find({'premium_expiry': {'$lte': now}}).to_list(None)
+        expired_users = await self.col.find({}).to_list(None)
+        
         for user in expired_users:
             user_id = user['id']
-            await self.col.update_one({'id': user_id}, {'$set': {'Premium': False}})
+            purchase_date = user.get('purchase_date')
+            premium_expiry_days = user.get('premium_expiry')
+            
+            if purchase_date is not None and premium_expiry_days is not None:
+                expiry_date = purchase_date + timedelta(days=premium_expiry_days)
+                
+                if expiry_date <= now:
+                    await self.remove_user_premium(user_id)
 
     def new_group(self, id, title):
         return dict(
