@@ -89,6 +89,7 @@ class Database:
             id=id,
             title=title,
             api=0,
+            shortner=None,
             chat_status=dict(
                 is_disabled=False,
                 reason="",
@@ -157,17 +158,14 @@ class Database:
         b_users = [user['id'] async for user in users]
         return b_users, b_chats
     
-
     async def add_chat(self, chat, title):
         chat = self.new_group(chat, title)
         await self.grp.insert_one(chat)
     
-
     async def get_chat(self, chat):
         chat = await self.grp.find_one({'id': int(chat)})
         return False if not chat else chat.get('chat_status')
     
-
     async def re_enable_chat(self, id):
         chat_status=dict(
             is_disabled=False,
@@ -178,7 +176,6 @@ class Database:
     async def update_settings(self, id, settings):
         await self.grp.update_one({'id': int(id)}, {'$set': {'settings': settings}})
         
-    
     async def get_settings(self, id):
         default = {
             'button': SINGLE_BUTTON,
@@ -194,7 +191,6 @@ class Database:
             return chat.get('settings', default)
         return default
     
-
     async def disable_chat(self, chat, reason="No Reason"):
         chat_status=dict(
             is_disabled=True,
@@ -202,18 +198,14 @@ class Database:
         )
         await self.grp.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
     
-
     async def total_chat_count(self):
         count = await self.grp.count_documents({})
         return count
     
-
     async def get_all_chats(self):
         return self.grp.find({})
 
-
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
-
 
 db = Database(DATABASE_URI, DATABASE_NAME)

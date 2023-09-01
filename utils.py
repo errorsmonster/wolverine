@@ -419,30 +419,3 @@ async def replace_blacklist(file_name, blacklist):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
     return file_name
-
-async def get_shortlink(link, api_key=None):
-    url = f'https://api.shareus.io/easy_api'
-    default_api_key = "FKfZIIo3xoRVzjifhePmceCw3rH2"
-
-    if api_key is None:
-        api_key = default_api_key
-
-    params = {'key': api_key, 'link': link}
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params, raise_for_status=True) as response:
-            return await response.text()
-
-"""async def get_shortlink(link, api_key=None):
-    url = 'https://sharezone.live/api?api'
-    default_api_key = "9054119f1e0c6332b2fd694fc1c3ffa3b31c590e"
-
-    if api_key is None:
-        api_key = default_api_key
-
-    params = {'api': api_key, 'url': link, 'format': 'text'}
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params, raise_for_status=True) as response:
-            return await response.text()
-"""

@@ -8,7 +8,7 @@ import binascii
 
 ACCESS_KEY = "PZUNTLGIZFE67MR0I0H0"
 
-@Client.on_message(filters.command("licensegen") & filters.user(ADMINS))
+@Client.on_message(filters.command("license") & filters.user(ADMINS))
 async def generate(client, message):
     num_codes = 1  # default value
     duration = 28  # default duration
@@ -122,11 +122,3 @@ async def revoke_license_code(client, message):
                     await message.reply_text("Error occured while revoking code.")        
             except Exception as e:
                 await message.reply_text(f"Error occured while revoking code.\n{e}") 
-
-
-@Client.on_message(filters.regex(r"^([A-Z0-9]{20})$") & filters.private)
-async def ras_validate_code(client, message):
-    s = await message.reply_text("Please wait, checking your redeem code....")
-    await asyncio.sleep(5)
-    await s.edit("This redeem code's already used.")
-    return
