@@ -54,6 +54,7 @@ async def private_paid_filter(client, message):
         return
     
     msg = await message.reply_text("Searching...")
+    print(files_counts)
 
     try:
         if premium_status is True:
@@ -73,10 +74,10 @@ async def private_paid_filter(client, message):
                 return
         
             else:
-                if files_counts is not None and files_counts <= 1:
-                    await auto_filter(client, message)
+                if files_counts is not None and files_counts >= 1:
+                    await paid_filter(client, message)
                 else:
-                    await paid_filter(client, message)                
+                    await auto_filter(client, message)                
 
     except Exception as e:
         await message.reply_text(f"Error: {e}")

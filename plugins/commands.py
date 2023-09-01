@@ -248,7 +248,7 @@ async def start(client, message):
         await db.update_files_count(message.from_user.id, files_counts + 1)
 
     del_msg = await client.send_message(
-        text="File will be deleted in 10 mins. Save or forward immediately.",
+        text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
         chat_id=message.from_user.id,
         reply_to_message_id=media_id.id)
     await asyncio.sleep(600)
