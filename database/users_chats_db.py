@@ -30,7 +30,7 @@ class Database:
     
     # update files count of user
     async def update_files_count(self, user_id, count):
-        await self.ext.update_one(
+        await self.col.update_one(
         {"id": user_id}, 
         {"$set": {"files_count": count}}
     )
