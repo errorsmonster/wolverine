@@ -13,8 +13,6 @@ Total Users: <code>{}</code>
 Total Chats: <code>{}</code>
 """
 
-    PAID_USER = """Total Paid Users <code>{}</code>"""
-
     REQ_TEXT  = """#NewRequest
 Bot - {}
 Name - {} (<code>{}</code>)
