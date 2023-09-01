@@ -53,29 +53,36 @@ async def private_paid_filter(client, message):
     if message.text.startswith("/"):
         return
     
-    m = await message.reply_text("Searching...")
+    msg = await message.reply_text("Searching...")
 
-    if premium_status is True:
-        await paid_filter(client, message)
-        await m.delete()
-
-    else:
-        if user_timestamps:
-            time_diff = int(time.time()) - user_timestamps
-            if time_diff < slow_mode:
-                return await message.reply_text(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
-            
-        if files_counts >= 10:
-            await message.reply_text(f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade'>upgrade</a> to premium for unlimited request", disable_web_page_preview=True)
-            await m.delete()
+    try:
+        if premium_status is True:
+            await paid_filter(client, message)
             return
-        
+
         else:
-            if files_counts <= 1:
-                await auto_filter(client, message)
-                await m.delete()
+            if user_timestamps:
+                time_diff = int(time.time()) - user_timestamps
+                if time_diff < slow_mode:
+                    return await message.reply_text(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
+            
+            if files_counts >= 10:
+                await message.reply_text(
+                    f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade'>upgrade</a> to premium for unlimited request",
+                    disable_web_page_preview=True)
+                return
+        
             else:
-                await paid_filter(client, message)
+                if files_counts <= 1:
+                    await auto_filter(client, message)
+                else:
+                    await paid_filter(client, message)                
+
+    except Exception as e:
+        await message.reply_text(f"Error: {e}")
+
+    finally:
+        await msg.delete()
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
