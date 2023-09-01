@@ -20,12 +20,43 @@ class Database:
             purchase_date=None,
             timestamps=0,
             user_joined=False,
+            files_count=0,
+            last_reset=datetime.now().strftime("%Y-%m-%d"),
             ban_status=dict(
                 is_banned=False,
                 ban_reason="",
             ),
         )
     
+    # update files count of user
+    async def update_files_count(self, user_id, count):
+        await self.ext.update_one(
+        {"id": user_id}, 
+        {"$set": {"files_count": count}}
+    )
+
+    # get files count of user
+    async def get_files_count(self, user_id):
+        user = await self.col.find_one({"id": user_id})
+        if user is None:
+            return 0
+        return user.get("files_count")
+
+    # check last reset date of user
+    async def get_last_reset(self, user_id):
+        user = await self.col.find_one({"id": user_id})
+        if user is None:
+            return None
+        return user.get("last_reset")
+    
+    # reset fiiles count of user
+    async def reset_daily_files_count(self):
+        await self.col.update_many({}, {"$set": {"files_count": 0, "last_reset": datetime.now().strftime("%Y-%m-%d")}})
+
+    # reset files count for all user forcefully
+    async def reset_all_files_count(self):
+        await self.col.update_many({}, {"$set": {"files_count": 0}})
+
     async def get_timestamps(self, id):
         user = await self.col.find_one({"id": id})
         if user is None:
