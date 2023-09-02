@@ -49,6 +49,7 @@ async def private_paid_filter(client, message):
         today = datetime.now().strftime("%Y-%m-%d")
         if last_reset != today:
             await db.reset_daily_files_count(user_id)
+            await db.check_expired_users(user_id)
     
     if message.text.startswith("/"):
         return

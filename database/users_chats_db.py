@@ -38,9 +38,7 @@ class Database:
     # get files count of user
     async def get_files_count(self, user_id):
         user = await self.col.find_one({"id": user_id})
-        if user is None:
-            return 0
-        return user.get("files_count")
+        return user.get("files_count", 0)
 
     # check last reset date of user
     async def get_last_reset(self, user_id):
