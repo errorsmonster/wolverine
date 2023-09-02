@@ -170,6 +170,7 @@ async def userinfo(client, message):
         purchase_date = "N/A"
         expiry_date = "N/A"
         days_left = "N/A"
+        duration = "N/A"
 
     # Create the message with the information and keyboard.
     message_text = (
