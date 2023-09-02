@@ -118,7 +118,7 @@ async def request(client, message):
     movie_name = message.text.replace("/request", "")
     files = await get_search_results(movie_name.lower(), offset=0, filter=True)
 
-    if files:
+    if not files:
         await message.reply_text("This movie is already available in our database, please search for it by sending movie name directly.")
         return
 
