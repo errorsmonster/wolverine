@@ -125,3 +125,11 @@ async def request(client, message):
         await message.reply_text(script.REQ_REPLY.format(movie_name), disable_web_page_preview=True)
         log_message = script.REQ_TEXT.format(temp.B_NAME, message.from_user.mention, message.from_user.id, movie_name)
         await client.send_message(LOG_CHANNEL, log_message, disable_web_page_preview=True)
+
+
+# reset daily files count        
+@Client.on_message(filters.command("resetdaily") & filters.user(ADMINS))
+async def resetdaily(client, message):
+    m = await message.reply_text("Resetting daily files count...")
+    await db.reset_all_files_count()
+    await m.edit("Successfully reset daily files count!")

@@ -56,8 +56,6 @@ async def private_paid_filter(client, message):
     
     msg = await message.reply_text("Searching...")
     print(files_counts)
-    await db.update_files_count(user_id, files_counts + 1)
-    print(files_counts)
 
     try:
         if premium_status is True:
@@ -72,7 +70,7 @@ async def private_paid_filter(client, message):
                 
             if files_counts is not None and files_counts >= 10:
                 await message.reply_text(
-                    f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade'>upgrade</a> to premium for unlimited request",
+                    f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>upgrade</a> to premium for unlimited request",
                     disable_web_page_preview=True)
                 return
         
