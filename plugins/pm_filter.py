@@ -37,10 +37,11 @@ async def filters_private_handlers(client, message):
 
     user_id = message.from_user.id
     user_name = message.from_user.first_name
-    user_timestamps = await db.get_timestamps(user_id)
-    files_counts = await db.get_files_count(user_id)
+    user = await db.get_user(user_id)
+    user_timestamps = user.get("timestamps")
+    files_counts = user.get("files_count")
     premium_status = await db.is_premium_status(user_id)
-    last_reset = await db.get_last_reset(user_id)
+    last_reset = user.get("last_reset")
 
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id, user_name)
