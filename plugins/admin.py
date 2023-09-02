@@ -138,10 +138,9 @@ async def resetdaily(client, message):
 async def userinfo(client, message):
 
     if len(message.command) < 2:
-        await message.reply_text("Please provide a user id with the command.")
-        return
-
-    user_id = int(message.command[1])
+        user_id = message.from_user.id
+    else:    
+        user_id = int(message.command[1])
 
     try:
         user = await client.get_users(user_id)
@@ -155,6 +154,7 @@ async def userinfo(client, message):
     private_joined = await db.is_user_joined(user_id)
     premium= await db.is_premium_status(user_id)
     user = await db.get_user(user_id)
+    total_files_sent = user.get("lifetime_files")
 
     if premium:
         purchase_date_unix = user.get("purchase_date")
@@ -176,11 +176,12 @@ async def userinfo(client, message):
     message_text = (
         f"<b>User ID:</b> <code>{user_id}</code>\n"
         f"<b>Name:</b> {user_link}\n"
-        f"<b>Joined Channel:</b> {private_joined}\n"
+        f"<b>Subscribed:</b> {private_joined}\n"
         f"<b>Status:</b> {status}\n"
         f"<b>Purchase Date:</b> <code>{purchase_date}</code>\n"
         f"<b>Expiry Date:</b> <code>{expiry_date}</code>\n"
         f"<b>Days Left:</b> <code>{days_left}</code>\n"
+        f"<b>Files Sent:</b> <code>{total_files_sent}</code>\n"
     )
 
     await message.reply_text(
