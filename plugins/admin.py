@@ -169,6 +169,6 @@ async def userinfo(client, message):
         f"<b>Purchase Date:</b> <code>{purchase_date}</code>\n"
         f"<b>Expiry Date:</b> <code>{expiry_date}</code>\n"
         f"<b>Days Left:</b> <code>{days_left}</code>\n"
-        f"<b>Files Sent Today:</b> <code>{total_files_sent_today}</code>\n"    
+        f"<b>Files Sent Today:</b> <code>{total_files_sent_today}</code>\n",
         disable_web_page_preview=True
     )
