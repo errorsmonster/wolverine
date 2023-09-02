@@ -9,7 +9,7 @@ from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidD
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL
+from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -73,9 +73,13 @@ async def filters_private_handlers(client, message):
                     disable_web_page_preview=True)
                 return
         
-            if files_counts is not None and files_counts >= 1:
-                await private_paid_filter(client, message)
-                return
+            if ONE_LINK_ONE_FILE:
+                if files_counts is not None and files_counts >= 1:
+                    await private_paid_filter(client, message)
+                    return
+                else:
+                    await auto_filter(client, message)
+                    return
             else:
                 await auto_filter(client, message)
                 return

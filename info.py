@@ -55,3 +55,4 @@ PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "False")), True
 FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001905287436"))
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 60))
 RESPONCE_LIMIT = int(environ.get('RESPONCE_LIMIT', 10))
+ONE_LINK_ONE_FILE = is_enabled((environ.get('ONE_LINK_ONE_FILE', "True")), False)
