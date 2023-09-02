@@ -2,7 +2,7 @@ import aiohttp
 
 async def get_shortlink(link, api_key=None):
     url = f'https://api.shareus.io/easy_api'
-    default_api_key = "FKfZIIo3xoRVzjifhePmceCw3rH2"
+    default_api_key = "VLuKAPjHgrahNY2zTcWM16lFyTJ2"
 
     if api_key is None:
         api_key = default_api_key
