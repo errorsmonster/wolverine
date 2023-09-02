@@ -32,6 +32,13 @@ SPELL_CHECK = {}
 blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
 
+original_messages = {}
+@Client.on_edited_message(filters.private & filters.text & filters.incoming)
+async def on_message_edit(client, message):
+    user_id = message.from_user.id
+    if user_id in original_messages and original_messages[user_id] != message.message_id:
+        await message.reply("If you want the recipient to see the changes, send the message as new.")
+
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_paid_filter(client, message):
 
