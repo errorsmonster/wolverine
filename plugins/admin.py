@@ -156,15 +156,22 @@ async def userinfo(client, message):
     users = await db.get_user(user_id)
     total_files_sent = users.get("lifetime_files") or "N/A"
     dc_id = user.dc_id or "Invalid DP"
+    today_files_sent = users.get("files_count") or "N/A"
 
     if premium:
         purchase_date_unix = users.get("purchase_date")
-        status = "Premium Member"
+        status = "Premium User"
         purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
         expiry_date = (datetime.fromtimestamp(purchase_date_unix) + timedelta(days=30)).strftime("%d/%m/%Y")
         days_left = (datetime.fromtimestamp(purchase_date_unix + 2592000) - datetime.now()).days
     else:
-        status = "Free User"
+        if today_files_sent >= 10:
+            status = "Freemium User (Daily Limit Reached)"
+        if today_files_sent <= 1:
+            status = "Freemium User"
+        if today_files_sent == 0:
+            status = "Free User"     
+            
         purchase_date = "N/A"
         expiry_date = "N/A"
         days_left = "N/A"
@@ -179,7 +186,7 @@ async def userinfo(client, message):
         f"<b>➲Purchase Date:</b> <code>{purchase_date}</code>\n"
         f"<b>➲Expiry Date:</b> <code>{expiry_date}</code>\n"
         f"<b>➲Days Left:</b> <code>{days_left}</code>\n"
-        f"<b>➲Files Sent:</b> <code>{total_files_sent}</code>\n"
+        f"<b>➲Files Recieved:</b> <code>{total_files_sent}</code>\n"
     )
 
     await message.reply_text(
