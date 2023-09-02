@@ -171,7 +171,7 @@ async def userinfo(client, message):
             status = "Freemium User"
         if today_files_sent == 0:
             status = "Free User"     
-            
+
         purchase_date = "N/A"
         expiry_date = "N/A"
         days_left = "N/A"
