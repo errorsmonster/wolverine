@@ -164,6 +164,7 @@ async def userinfo(client, message):
         purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
         expiry_date = (datetime.fromtimestamp(purchase_date_unix) + timedelta(days=30)).strftime("%d/%m/%Y")
         days_left = (datetime.fromtimestamp(purchase_date_unix + 2592000) - datetime.now()).days
+        duration = users.get("premium_expiry")
     else:
         status = "Free User"
         purchase_date = "N/A"
@@ -179,7 +180,7 @@ async def userinfo(client, message):
         f"<b>➲Status:</b> {status}\n"
         f"<b>➲Purchase Date:</b> <code>{purchase_date}</code>\n"
         f"<b>➲Expiry Date:</b> <code>{expiry_date}</code>\n"
-        f"<b>➲Days Left:</b> <code>{days_left}</code>\n"
+        f"<b>➲Days Left:</b> <code>{days_left}/{duration}</code>\n"
         f"<b>➲Files Recieved:</b> <code>{total_files_sent}</code>\n"
     )
 
