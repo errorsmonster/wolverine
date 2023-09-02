@@ -15,13 +15,14 @@ class Database:
         return dict(
             id=id,
             name=name,
-            Premium=False,
-            premium_expiry=None,
-            purchase_date=None,
-            timestamps=0,
-            user_joined=False,
-            files_count=0,
-            last_reset=datetime.now().strftime("%Y-%m-%d"),
+            Premium=False, # user is premium or not
+            premium_expiry=None, # duration of premium
+            purchase_date=None, # date of purchase
+            timestamps=0, # floodwait time
+            user_joined=False, # user joined or not
+            files_count=0, # Daily files count
+            lifetime_files=0, # Lifetime files count
+            last_reset=datetime.now().strftime("%Y-%m-%d"), # Last reset date
             ban_status=dict(
                 is_banned=False,
                 ban_reason="",
@@ -39,6 +40,19 @@ class Database:
     async def get_files_count(self, user_id):
         user = await self.col.find_one({"id": user_id})
         return user.get("files_count", 0)
+    
+    # update total files count of user
+    async def update_lifetime_files(self, user_id, count):
+        await self.col.update_one(
+        {"id": user_id}, 
+        {"$set": {"lifetime_files": count}}
+    )
+
+    # get total files count of user
+    async def get_lifetime_files(self, user_id):
+        user = await self.col.find_one({"id": user_id})
+        return user.get("lifetime_files", 0)
+
 
     # check last reset date of user
     async def get_last_reset(self, user_id):

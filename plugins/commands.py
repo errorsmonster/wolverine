@@ -242,9 +242,11 @@ async def start(client, message):
                 ]]
             )
         )
-    
+    # for counting each files for user
     files_counts = await db.get_files_count(message.from_user.id)
+    lifetime_files = await db.get_lifetime_files(message.from_user.id)
     await db.update_files_count(message.from_user.id, files_counts + 1)
+    await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
     print(f"File sent {files_counts + 1} to {message.from_user.mention}")
 
     del_msg = await client.send_message(
