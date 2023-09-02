@@ -170,6 +170,19 @@ class Database:
     async def remove_api_for_group(self, group_id):
         await self.grp.update_one({'id': group_id}, {'$set': {'api': 0}})
 
+    async def update_shortner_and_api(self, group_id, shortner, api):
+        await self.grp.update_one({'id': int(group_id)}, {'$set': {'shortner': shortner, 'api': api}})
+
+    async def get_shortner_from_chat(self, group_id):
+        group = await self.grp.find_one({'id': int(group_id)})
+        shortner = group.get('shortner', '')
+        if not shortner or shortner == 0:
+            return False
+        return shortner
+    
+    async def rempove_shortner_for_group(self, group_id, shortner):
+        await self.grp.update_one({'id': int(group_id)}, {'$set': {'shortner': None}})
+
     async def get_api_from_chat(self, group_id):
         group = await self.grp.find_one({'id': int(group_id)})
         api = group.get('api', '')
