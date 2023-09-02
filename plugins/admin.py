@@ -134,7 +134,7 @@ async def resetdaily(client, message):
     await db.reset_all_files_count()
     await m.edit("Successfully reset daily files count!")
 
-@Client.on_message(filters.command("userinfo"))
+@Client.on_message(filters.command("user"))
 async def userinfo(client, message):
 
     if len(message.command) < 2:
@@ -155,7 +155,7 @@ async def userinfo(client, message):
     premium= await db.is_premium_status(user_id)
     users = await db.get_user(user_id)
     total_files_sent = users.get("lifetime_files") or "N/A"
-    dc_id = user.dc_id or "[User Doesn't Have A Valid DP]"
+    dc_id = user.dc_id or "Invalid DP"
 
     if premium:
         purchase_date_unix = users.get("purchase_date")
@@ -171,15 +171,15 @@ async def userinfo(client, message):
 
     # Create the message with the information and keyboard.
     message_text = (
-        f"<b>User ID:</b> <code>{user_id}</code>\n"
-        f"<b>Name:</b> {user_link}\n"
-        f"<b>DC ID:</b> {dc_id}\n"
-        f"<b>Subscribed:</b> {private_joined}\n"
-        f"<b>Status:</b> {status}\n"
-        f"<b>Purchase Date:</b> <code>{purchase_date}</code>\n"
-        f"<b>Expiry Date:</b> <code>{expiry_date}</code>\n"
-        f"<b>Days Left:</b> <code>{days_left}</code>\n"
-        f"<b>Files Sent:</b> <code>{total_files_sent}</code>\n"
+        f"<b>➲User ID:</b> <code>{user_id}</code>\n"
+        f"<b>➲Name:</b> {user_link}\n"
+        f"<b>➲DC ID:</b> {dc_id}\n"
+        f"<b>➲Subscribed:</b> {private_joined}\n"
+        f"<b>➲Status:</b> {status}\n"
+        f"<b>➲Purchase Date:</b> <code>{purchase_date}</code>\n"
+        f"<b>➲Expiry Date:</b> <code>{expiry_date}</code>\n"
+        f"<b>➲Days Left:</b> <code>{days_left}</code>\n"
+        f"<b>➲Files Sent:</b> <code>{total_files_sent}</code>\n"
     )
 
     await message.reply_text(
