@@ -155,6 +155,7 @@ async def userinfo(client, message):
     premium= await db.is_premium_status(user_id)
     user = await db.get_user(user_id)
     total_files_sent = user.get("lifetime_files")
+    dc_id = user.dc_id or "[User Doesn't Have A Valid DP]"
 
     if premium:
         purchase_date_unix = user.get("purchase_date")
@@ -172,6 +173,7 @@ async def userinfo(client, message):
     message_text = (
         f"<b>User ID:</b> <code>{user_id}</code>\n"
         f"<b>Name:</b> {user_link}\n"
+        f"<b>DC ID:</b> {dc_id}\n"
         f"<b>Subscribed:</b> {private_joined}\n"
         f"<b>Status:</b> {status}\n"
         f"<b>Purchase Date:</b> <code>{purchase_date}</code>\n"
