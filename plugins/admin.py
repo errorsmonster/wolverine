@@ -165,13 +165,7 @@ async def userinfo(client, message):
         expiry_date = (datetime.fromtimestamp(purchase_date_unix) + timedelta(days=30)).strftime("%d/%m/%Y")
         days_left = (datetime.fromtimestamp(purchase_date_unix + 2592000) - datetime.now()).days
     else:
-        if today_files_sent >= 10:
-            return status = "Freemium User (Daily Limit Reached)"
-        if today_files_sent <= 1:
-            return status = "Freemium User"
-        if today_files_sent == 0:
-            return status = "Free User"     
-
+        status = "Free User"
         purchase_date = "N/A"
         expiry_date = "N/A"
         days_left = "N/A"
