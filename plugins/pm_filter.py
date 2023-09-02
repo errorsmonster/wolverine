@@ -75,8 +75,10 @@ async def filters_private_handlers(client, message):
         
             if files_counts is not None and files_counts >= 1:
                 await private_paid_filter(client, message)
+                return
             else:
                 await auto_filter(client, message)
+                return
 
     except Exception as e:
         await message.reply_text(f"Error: {e}")

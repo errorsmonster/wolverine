@@ -133,3 +133,44 @@ async def resetdaily(client, message):
     m = await message.reply_text("Resetting daily files count...")
     await db.reset_all_files_count()
     await m.edit("Successfully reset daily files count!")
+
+@Client.on_message(filters.command("userinfo"))
+async def userinfo(client, message):
+
+    if len(message.command) < 2:
+        await message.reply_text("Please provide a user id with the command.")
+        return
+
+    user_id = message.command[1]
+    user = await client.get_users(user_id)
+    name = user.first_name if not user.last_name else f"{user.first_name} {user.last_name}"
+    link = f"<a href='tg://user?id={user_id}'>{name}</a>"
+    total_files_sent = await db.get_lifetime_files(user_id)
+    total_files_sent_today = await db.get_files_count(user_id)
+    private_joined = await db.is_user_joined(user_id)
+
+    if await db.is_premium_status(user_id):
+        status = "Premium Member"
+        purchase_date_unix = await db.get_purchased_date(user_id)
+        purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
+        expiry_date = datetime.fromtimestamp(purchase_date_unix + 2592000).strftime("%d/%m/%Y")
+        days_left = (datetime.fromtimestamp(purchase_date_unix + 2592000) - datetime.now()).days
+        
+    else:
+        status = "Free User"
+        purchase_date = "N/A"
+        expiry_date = "N/A"
+        days_left = "N/A"
+
+    await message.reply_text(
+        f"<b>User ID:</b> <code>{user_id}</code>\n"
+        f"<b>Name:</b> {link}\n"
+        f"<b>Joined Channel:</b> {private_joined}\n"
+        f"<b>Status:</b> {status}\n"
+        f"<b>Purchase Date:</b> <code>{purchase_date}</code>\n"
+        f"<b>Expiry Date:</b> <code>{expiry_date}</code>\n"
+        f"<b>Days Left:</b> <code>{days_left}</code>\n"
+        f"<b>Files Sent Today:</b> <code>{total_files_sent_today}</code>\n"    
+        f"<b>Total Files Sent:</b> <code>{total_files_sent}</code>\n",
+        disable_web_page_preview=True
+    )
