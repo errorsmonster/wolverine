@@ -153,12 +153,12 @@ async def userinfo(client, message):
 
     private_joined = await db.is_user_joined(user_id)
     premium= await db.is_premium_status(user_id)
-    user = await db.get_user(user_id)
-    total_files_sent = user.get("lifetime_files")
+    users = await db.get_user(user_id)
+    total_files_sent = users.get("lifetime_files") or "N/A"
     dc_id = user.dc_id or "[User Doesn't Have A Valid DP]"
 
     if premium:
-        purchase_date_unix = user.get("purchase_date")
+        purchase_date_unix = users.get("purchase_date")
         status = "Premium Member"
         purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
         expiry_date = (datetime.fromtimestamp(purchase_date_unix) + timedelta(days=30)).strftime("%d/%m/%Y")
