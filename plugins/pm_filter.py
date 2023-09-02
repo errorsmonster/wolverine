@@ -33,7 +33,7 @@ blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
 
 original_messages = {}
-@Client.on_edited_message(filters.private & filters.text & filters.incoming)
+@Client.on_edited_message(filters.private)
 async def on_message_edit(client, message):
     user_id = message.from_user.id
     if user_id in original_messages and original_messages[user_id] != message.message_id:
