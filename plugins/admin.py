@@ -145,7 +145,6 @@ async def userinfo(client, message):
     user = await client.get_users(user_id)
     name = user.first_name if not user.last_name else f"{user.first_name} {user.last_name}"
     link = f"<a href='tg://user?id={user_id}'>{name}</a>"
-    total_files_sent_today = await db.get_files_count(user_id)
     private_joined = await db.is_user_joined(user_id)
 
     if await db.is_premium_status(user_id):
@@ -168,7 +167,6 @@ async def userinfo(client, message):
         f"<b>Status:</b> {status}\n"
         f"<b>Purchase Date:</b> <code>{purchase_date}</code>\n"
         f"<b>Expiry Date:</b> <code>{expiry_date}</code>\n"
-        f"<b>Days Left:</b> <code>{days_left}</code>\n"
-        f"<b>Files Sent Today:</b> <code>{total_files_sent_today}</code>\n",
+        f"<b>Days Left:</b> <code>{days_left}</code>\n",
         disable_web_page_preview=True
     )
