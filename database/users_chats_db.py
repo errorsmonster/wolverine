@@ -29,6 +29,11 @@ class Database:
             ),
         )
     
+    #get user from database
+    async def get_user(self, id):
+        user = await self.col.find_one({'id': int(id)})
+        return False if not user else user
+    
     # update files count of user
     async def update_files_count(self, user_id, count):
         await self.col.update_one(

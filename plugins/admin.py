@@ -152,12 +152,12 @@ async def userinfo(client, message):
     user_name = user.first_name if not user.last_name else f"{user.first_name} {user.last_name}"
     user_link = f"<a href='tg://user?id={user_id}'>{user_name}</a>"
 
-    # Assuming you have a way to check if the user joined a private channel.
     private_joined = await db.is_user_joined(user_id)
     premium= await db.is_premium_status(user_id)
+    user = await db.get_user(user_id)
 
     if premium:
-        purchase_date_unix = await db.get_purchased_date(user_id)
+        purchase_date_unix = await user.get("purchase_date")
         status = "Premium Member"
         purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
         expiry_date = (datetime.fromtimestamp(purchase_date_unix) + timedelta(days=30)).strftime("%d/%m/%Y")
