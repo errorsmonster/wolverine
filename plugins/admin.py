@@ -147,7 +147,7 @@ async def userinfo(client, message):
     link = f"<a href='tg://user?id={user_id}'>{name}</a>"
     private_joined = await db.is_user_joined(user_id)
 
-    if await db.is_premium_status(user_id):
+    if await db.is_premium_status(user_id)==True:
         status = "Premium Member"
         purchase_date_unix = await db.get_purchased_date(user_id)
         purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
