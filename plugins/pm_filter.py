@@ -56,6 +56,8 @@ async def private_paid_filter(client, message):
     
     msg = await message.reply_text("Searching...")
     print(files_counts)
+    await db.update_files_count(user_id, files_counts + 1)
+    print(files_counts)
 
     try:
         if premium_status is True:

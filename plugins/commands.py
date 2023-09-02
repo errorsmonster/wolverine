@@ -244,8 +244,7 @@ async def start(client, message):
         )
     
     files_counts = await db.get_files_count(message.from_user.id)
-    if files_counts:
-        await db.update_files_count(message.from_user.id, files_counts + 1)
+    await db.update_files_count(message.from_user.id, files_counts + 1)
 
     del_msg = await client.send_message(
         text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
