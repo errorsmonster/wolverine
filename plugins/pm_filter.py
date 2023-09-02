@@ -55,7 +55,6 @@ async def filters_private_handlers(client, message):
         return
     
     msg = await message.reply_text("Searching...")
-    await asyncio.sleep(2)
 
     try:
         if premium_status is True:
