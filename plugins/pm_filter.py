@@ -33,7 +33,7 @@ blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
-async def private_paid_filter(client, message):
+async def filters_private_handlers(client, message):
 
     user_id = message.from_user.id
     user_name = message.from_user.first_name
@@ -55,6 +55,7 @@ async def private_paid_filter(client, message):
         return
     
     msg = await message.reply_text("Searching...")
+    await asyncio.sleep(2)
 
     try:
         if premium_status is True:
