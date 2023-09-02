@@ -168,10 +168,6 @@ async def userinfo(client, message):
         expiry_date = "N/A"
         days_left = "N/A"
 
-    # Create an inline keyboard with a button to open the user's profile.
-    user_profile_button = InlineKeyboardButton("User Profile", url=f'tg://user?id={user_id}')
-    keyboard = InlineKeyboardMarkup([[user_profile_button]])
-
     # Create the message with the information and keyboard.
     message_text = (
         f"<b>User ID:</b> <code>{user_id}</code>\n"
@@ -186,6 +182,5 @@ async def userinfo(client, message):
 
     await message.reply_text(
         text=message_text,
-        reply_markup=keyboard,
         disable_web_page_preview=True
     )
