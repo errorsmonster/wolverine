@@ -186,6 +186,5 @@ async def userinfo(client, message):
     await message.reply_text(
         text=message_text,
         reply_markup=keyboard,
-        parse_mode="html",
         disable_web_page_preview=True
     )
