@@ -160,13 +160,13 @@ async def userinfo(client, message):
 
     if premium:
         purchase_date_unix = users.get("purchase_date")
-        status = "Premium User"
+        status = "Premium"
         purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
         expiry_date = (datetime.fromtimestamp(purchase_date_unix) + timedelta(days=30)).strftime("%d/%m/%Y")
         days_left = (datetime.fromtimestamp(purchase_date_unix + 2592000) - datetime.now()).days
         duration = users.get("premium_expiry")
     else:
-        status = "Free User"
+        status = "Free"
         purchase_date = "N/A"
         expiry_date = "N/A"
         days_left = "N/A"
