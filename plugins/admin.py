@@ -157,7 +157,7 @@ async def userinfo(client, message):
     user = await db.get_user(user_id)
 
     if premium:
-        purchase_date_unix = await user.get("purchase_date")
+        purchase_date_unix = user.get("purchase_date")
         status = "Premium Member"
         purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
         expiry_date = (datetime.fromtimestamp(purchase_date_unix) + timedelta(days=30)).strftime("%d/%m/%Y")
