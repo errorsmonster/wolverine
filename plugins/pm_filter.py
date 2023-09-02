@@ -32,13 +32,6 @@ SPELL_CHECK = {}
 blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
 
-original_messages = {}
-@Client.on_edited_message(filters.private)
-async def on_message_edit(client, message):
-    user_id = message.from_user.id
-    if user_id in original_messages and original_messages[user_id] != message.message_id:
-        await message.reply("If you want the recipient to see the changes, send the message as new.")
-
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_paid_filter(client, message):
 
@@ -62,7 +55,7 @@ async def private_paid_filter(client, message):
         return
     
     msg = await message.reply_text("Searching...")
-    print(files_counts)
+    await asyncio.sleep(1)
 
     try:
         if premium_status is True:
@@ -82,7 +75,7 @@ async def private_paid_filter(client, message):
                 return
         
             if files_counts is not None and files_counts >= 1:
-                await paid_filter(client, message)
+                await private_paid_filter(client, message)
             else:
                 await auto_filter(client, message)
 
@@ -731,6 +724,61 @@ async def paid_filter(client, msg, spoll=False):
 
     if spoll:
         await msg.message.delete()
+
+
+
+async def private_paid_filter(client, msg, spoll=False):
+    if spoll:
+        message = msg.message.reply_to_message  # msg will be callback query
+        search, files, offset, total_results = spoll
+    else:
+        message = msg
+        if message.text.startswith(("/", ",", "!", ".", "\U0001F600-\U000E007F")):
+            return
+        if 2 < len(message.text) < 100:
+            search = message.text
+            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+            if not files:
+                return await message.reply_text(f"No Results Found For - {search}. Try Another Keyword.")
+        else:
+            return
+        
+    pre = 'file'
+    btn = [
+        [
+            InlineKeyboardButton(
+                text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
+                callback_data=f'{pre}#{file.file_id}'
+                )
+            ]
+        for file in files
+        ]
+
+    page_number = 1 if offset == "" else math.ceil(int(total_results) / 10)
+
+    if page_number > 1:
+        key = f"{message.chat.id}-{message.id}"
+        BUTTONS[key] = search
+        req = message.from_user.id if message.from_user else 0
+        btn.append(
+            [
+                InlineKeyboardButton(text=f"🗓 {page_number}", callback_data="pages"),
+                InlineKeyboardButton(text="NEXT ⏩", callback_data=f"forward_{req}_{key}_{offset}")
+            ]
+        )
+    else:
+        btn.append([InlineKeyboardButton(text="🗓 1/1", callback_data="pages")])
+
+    cap = f"Here is what I found for your query {search}"
+    await db.update_floodtime(message.from_user.id, int(time.time()))
+    m = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+    # delete msg after 1 min
+    await asyncio.sleep(60)
+    await m.delete()
+
+    if spoll:
+        await msg.message.delete()
+
 
 async def auto_filter(client, msg, api=None, spoll=False):
     if not spoll:
