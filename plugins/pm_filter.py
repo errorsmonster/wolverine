@@ -769,7 +769,7 @@ async def private_paid_filter(client, msg, spoll=False):
         btn.append([InlineKeyboardButton(text="🗓 1/1", callback_data="pages")])
 
     cap = f"Here is what I found for your query {search}"
-    await db.update_floodtime(message.from_user.id, int(time.time()))
+    await db.update_timestamps(message.from_user.id, int(time.time()))
     m = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
     # delete msg after 1 min
     await asyncio.sleep(60)
