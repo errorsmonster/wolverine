@@ -115,8 +115,8 @@ async def remove_api_command(client, message):
 @Client.on_message(filters.command("request") & filters.private)
 async def request(client, message):
     # Strip the command and normalize the movie name
-    movie_name = message.text.replace("/request", "").strip().lower()
-    files = await get_search_results(movie_name, offset=0, filter=True)
+    movie_name = message.text.replace("/request", "")
+    files = await get_search_results(movie_name.lower(), offset=0, filter=True)
 
     if files:
         await message.reply_text("This movie is already available in our database, please search for it by sending movie name directly.")
