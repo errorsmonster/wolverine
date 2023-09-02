@@ -141,32 +141,51 @@ async def userinfo(client, message):
         await message.reply_text("Please provide a user id with the command.")
         return
 
-    user_id = message.command[1]
-    user = await client.get_users(user_id)
-    name = user.first_name if not user.last_name else f"{user.first_name} {user.last_name}"
-    link = f"<a href='tg://user?id={user_id}'>{name}</a>"
-    private_joined = await db.is_user_joined(user_id)
+    user_id = int(message.command[1])
 
-    if await db.is_premium_status(user_id)==True:
-        status = "Premium Member"
+    try:
+        user = await client.get_users(user_id)
+    except ValueError:
+        await message.reply_text("Invalid user ID provided.")
+        return
+
+    user_name = user.first_name if not user.last_name else f"{user.first_name} {user.last_name}"
+    user_link = f"<a href='tg://user?id={user_id}'>{user_name}</a>"
+
+    # Assuming you have a way to check if the user joined a private channel.
+    private_joined = await db.is_user_joined(user_id)
+    premium= await db.is_premium_status(user_id)
+
+    if premium:
         purchase_date_unix = await db.get_purchased_date(user_id)
+        status = "Premium Member"
         purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
-        expiry_date = datetime.fromtimestamp(purchase_date_unix + 2592000).strftime("%d/%m/%Y")
+        expiry_date = (datetime.fromtimestamp(purchase_date_unix) + timedelta(days=30)).strftime("%d/%m/%Y")
         days_left = (datetime.fromtimestamp(purchase_date_unix + 2592000) - datetime.now()).days
-        
     else:
         status = "Free User"
         purchase_date = "N/A"
         expiry_date = "N/A"
         days_left = "N/A"
 
-    await message.reply_text(
+    # Create an inline keyboard with a button to open the user's profile.
+    user_profile_button = InlineKeyboardButton("User Profile", url=f'tg://user?id={user_id}')
+    keyboard = InlineKeyboardMarkup([[user_profile_button]])
+
+    # Create the message with the information and keyboard.
+    message_text = (
         f"<b>User ID:</b> <code>{user_id}</code>\n"
-        f"<b>Name:</b> {link}\n"
+        f"<b>Name:</b> {user_link}\n"
         f"<b>Joined Channel:</b> {private_joined}\n"
         f"<b>Status:</b> {status}\n"
         f"<b>Purchase Date:</b> <code>{purchase_date}</code>\n"
         f"<b>Expiry Date:</b> <code>{expiry_date}</code>\n"
-        f"<b>Days Left:</b> <code>{days_left}</code>\n",
+        f"<b>Days Left:</b> <code>{days_left}</code>\n"
+    )
+
+    await message.reply_text(
+        text=message_text,
+        reply_markup=keyboard,
+        parse_mode="html",
         disable_web_page_preview=True
     )
