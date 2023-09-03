@@ -180,8 +180,8 @@ class Database:
             return False
         return shortner
     
-    async def rempove_shortner_for_group(self, group_id, shortner):
-        await self.grp.update_one({'id': int(group_id)}, {'$set': {'shortner': None}})
+    async def rempove_shortner_for_group(self, group_id):
+        await self.grp.update_one({'id': int(group_id)}, {'$set': {'shortner': None, 'api': 0}})
 
     async def get_api_from_chat(self, group_id):
         group = await self.grp.find_one({'id': int(group_id)})

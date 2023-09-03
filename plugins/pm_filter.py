@@ -99,6 +99,7 @@ async def public_group_filter(client, message):
     member_count = message.chat.members_count
     chat = await db.get_chat(group_id)
     api = await db.get_api_from_chat(group_id)
+    shortner = await db.get_shortner_from_chat(group_id)
     
     if message.text.startswith("/"):
         return
