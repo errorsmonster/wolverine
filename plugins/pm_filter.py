@@ -51,6 +51,7 @@ async def filters_private_handlers(client, message):
     if last_reset != today:
         await db.reset_all_files_count()  # Reset the daily files count
         await db.check_expired_users(user_id)
+        print(f"{user_name} files count reseted to 0")
 
     
     if message.text.startswith("/"):
