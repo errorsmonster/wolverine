@@ -15,7 +15,7 @@ from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist
-from plugins.shortlink import get_shortlink
+from plugins.shortner import get_shortlink
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -799,7 +799,7 @@ async def private_paid_filter(client, msg, spoll=False):
         await msg.message.delete()
 
 
-async def auto_filter(client, msg, api=None, sortner=None, spoll=False):
+async def auto_filter(client, msg, api=None, shortner=None, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
