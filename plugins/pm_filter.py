@@ -91,7 +91,6 @@ async def filters_private_handlers(client, message):
     finally:
         await msg.delete()
 
-
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
     group_id = message.chat.id
@@ -114,19 +113,23 @@ async def public_group_filter(client, message):
 
     if member_count < 500:
         if chat:
-            if api:
+            if shortner:
+                await auto_filter(client, message, api, shortner)
+                return
+            elif api:
                 await auto_filter(client, message, api)
                 return
             else:
                 await auto_filter(client, message)
+                return 
         else:
             await db.add_chat(group_id, title)
             return             
     else:
-        await message.reply("Not Sufficent Members To Use This Bot")
+        await message.reply("In-Sufficient Members To Use This Bot, Minimum 500 Members Required. For More Info Contact Me At @CareDesk")
         await client.leave_chat(group_id)
         return
-            
+
 
 @Client.on_callback_query(filters.regex(r"^forward"))
 async def paid_next_page(bot, query):
@@ -796,7 +799,7 @@ async def private_paid_filter(client, msg, spoll=False):
         await msg.message.delete()
 
 
-async def auto_filter(client, msg, api=None, spoll=False):
+async def auto_filter(client, msg, api=None, sortner=None, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
