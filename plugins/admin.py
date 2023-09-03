@@ -158,12 +158,12 @@ async def userinfo(client, message):
     today_files_sent = users.get("files_count") or "N/A"
 
     if premium:
+        duration = users.get("premium_expiry")
         purchase_date_unix = users.get("purchase_date")
         status = "Premium"
         purchase_date = datetime.fromtimestamp(purchase_date_unix).strftime("%d/%m/%Y")
-        expiry_date = (datetime.fromtimestamp(purchase_date_unix) + timedelta(days=30)).strftime("%d/%m/%Y")
+        expiry_date = (purchase_date + timedelta(days=duration)).strftime("%d/%m/%Y")
         days_left = (datetime.fromtimestamp(purchase_date_unix) - datetime.now()).days
-        duration = users.get("premium_expiry")
     else:
         status = "Free"
         purchase_date = "N/A"
