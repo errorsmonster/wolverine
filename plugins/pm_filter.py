@@ -119,7 +119,8 @@ async def public_group_filter(client, message):
             else:
                 await auto_filter(client, message)
         else:
-            await db.add_chat(group_id, title)               
+            await db.add_chat(group_id, title)
+            return             
     else:
         await message.reply("Not Sufficent Members To Use This Bot")
         await client.leave_chat(group_id)
