@@ -9,7 +9,7 @@ from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidD
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE
+from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -49,7 +49,7 @@ async def filters_private_handlers(client, message):
     if last_reset:
         today = datetime.now().strftime("%Y-%m-%d")
         if last_reset != today:
-            await db.reset_daily_files_count(user_id)
+            await db.reset_daily_files_count(user_id, today)
             await db.check_expired_users(user_id)
     
     if message.text.startswith("/"):
@@ -96,8 +96,9 @@ async def filters_private_handlers(client, message):
 async def public_group_filter(client, message):
     group_id = message.chat.id
     title = message.chat.title
-    
-    button = InlineKeyboardMarkup([[InlineKeyboardButton("Request Movies", url="https://t.me/PrimeHubReq")]])
+    member_count = message.chat.members_count
+    chat = await db.get_chat(group_id)
+    api = await db.get_api_from_chat(group_id)
     
     if message.text.startswith("/"):
         return
@@ -106,16 +107,23 @@ async def public_group_filter(client, message):
         k = await manual_filters(client, message)
         if k == False:
             await auto_filter(client, message)
-    else:
-        if await db.get_chat(group_id):
-            api = await db.get_api_from_chat(group_id)
+
+    if group_id in ACCESS_GROUPS:
+        await auto_filter(client, message)        
+
+    if member_count < 500:
+        if chat:
             if api:
                 await auto_filter(client, message, api)
+                return
             else:
-                await message.reply_text(text=f"This group isn't configured. To configure, please contact <a href='https://t.me/lemx4'>ｒｙｍｅ</a>", reply_markup=button, disable_web_page_preview=True)
+                await auto_filter(client, message)
         else:
-            await db.add_chat(group_id, title)
-            logging.info(f"Group - {title} {group_id} is not connected with any API")
+            await db.add_chat(group_id, title)               
+    else:
+        await message.reply("Not Sufficent Members To Use This Bot")
+        await client.leave_chat(group_id)
+        return
             
 
 @Client.on_callback_query(filters.regex(r"^forward"))
