@@ -50,8 +50,10 @@ async def filters_private_handlers(client, message):
 
     if last_reset != today:
         await db.reset_all_files_count()  # Reset the daily files count
-        await db.check_expired_users(user_id)
-        print(f"{user_name} files count reseted to 0")
+        expired=await db.check_expired_users(user_id)
+        if expired:
+            await message.reply_text("Your premium has been expired. Please renew your premium to continue using the bot.")
+        return    
 
     
     if message.text.startswith("/"):
