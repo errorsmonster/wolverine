@@ -180,7 +180,7 @@ async def userinfo(client, message):
         f"<b>➲Status:</b> {status}\n"
         f"<b>➲Purchase Date:</b> <code>{purchase_date}</code>\n"
         f"<b>➲Expiry Date:</b> <code>{expiry_date}</code>\n"
-        f"<b>➲Days Left:</b> <code>{days_left}/{duration}</code>\n"
+        f"<b>➲Days Left:</b> <code>{days_left}/{duration}</code> days\n"
         f"<b>➲Files Recieved:</b> <code>{total_files_sent}</code>\n"
     )
 
