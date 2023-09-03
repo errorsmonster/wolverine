@@ -75,7 +75,7 @@ class Database:
 
     # reset files count for all user forcefully
     async def reset_all_files_count(self):
-        await self.col.update_many({}, {"$set": {"files_count": 0}})
+        await self.col.update_many({}, {"$set": {"files_count": 0, "last_reset": datetime.now().strftime("%Y-%m-%d")}})
 
     async def get_timestamps(self, id):
         user = await self.col.find_one({"id": id})

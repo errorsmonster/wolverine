@@ -46,11 +46,12 @@ async def filters_private_handlers(client, message):
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id, user_name)
         
-    if last_reset:
-        today = datetime.now().strftime("%Y-%m-%d")
-        if last_reset != today:
-            await db.reset_daily_files_count(user_id)
-            await db.check_expired_users(user_id)
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    if last_reset != today:
+        await db.reset_all_files_count()  # Reset the daily files count
+        await db.check_expired_users(user_id)
+
     
     if message.text.startswith("/"):
         return
