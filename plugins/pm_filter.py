@@ -128,7 +128,7 @@ async def public_group_filter(client, message):
         else:
             await db.add_chat(group_id, title)
     else:
-        p = await message.reply("**This bot requires a minimum of 500 members to be operational. If you need more information, please feel free to reach out to me at @CareDesk.", reply_markup=keyboard, disable_web_page_preview=True)
+        p = await message.reply("**This bot requires a minimum of 500 members to be operational. If you need more information, please feel free to reach out to me at** @CareDesk.", reply_markup=keyboard, disable_web_page_preview=True)
         await p.pin()
         await asyncio.sleep(5)
         await client.leave_chat(group_id)
