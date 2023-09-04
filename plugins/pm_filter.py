@@ -104,35 +104,29 @@ async def public_group_filter(client, message):
     api = await db.get_api_from_chat(group_id)
     shortner = await db.get_shortner_from_chat(group_id)
     
+    # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return
     
-    if group_id in AUTH_GROUPS:
-        k = await manual_filters(client, message)
-        if k == False:
-            await auto_filter(client, message)
-
     if group_id in ACCESS_GROUPS:
-        await auto_filter(client, message)        
-
-    if member_count < 500:
+        await auto_filter(client, message)
+    elif group_id in AUTH_GROUPS:
+        k = await manual_filters(client, message)
+        if k is False:
+            await auto_filter(client, message)
+    elif member_count > 500:
         if chat:
             if shortner:
                 await auto_filter(client, message, api, shortner)
-                return
             elif api:
                 await auto_filter(client, message, api)
-                return
             else:
                 await auto_filter(client, message)
-                return 
         else:
             await db.add_chat(group_id, title)
-            return             
     else:
-        await message.reply("In-Sufficient Members To Use This Bot, Minimum 500 Members Required. For More Info Contact Me At @CareDesk")
+        await message.reply("Insufficient Members To Use This Bot, Minimum 500 Members Required. For More Info Contact Me At @CareDesk")
         await client.leave_chat(group_id)
-        return
 
 
 @Client.on_callback_query(filters.regex(r"^forward"))
