@@ -125,7 +125,7 @@ async def public_group_filter(client, message):
         else:
             await db.add_chat(group_id, title)
     else:
-        await message.reply("Insufficient Members To Use This Bot, Minimum 500 Members Required. For More Info Contact Me At @CareDesk")
+        await message.reply("**In-Sufficient Members To Use This Bot, Minimum 500 Members Required.\nFor More Info Contact Me At** @CareDesk")
         await client.leave_chat(group_id)
 
 
