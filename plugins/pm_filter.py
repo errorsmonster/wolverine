@@ -103,6 +103,9 @@ async def public_group_filter(client, message):
     chat = await db.get_chat(group_id)
     api = await db.get_api_from_chat(group_id)
     shortner = await db.get_shortner_from_chat(group_id)
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("📣 Join Request Group", url="https://t.me/PrimeHubReq")]]
+        )
     
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
@@ -125,7 +128,9 @@ async def public_group_filter(client, message):
         else:
             await db.add_chat(group_id, title)
     else:
-        await message.reply("**In-Sufficient Members To Use This Bot, Minimum 500 Members Required.\nFor More Info Contact Me At** @CareDesk")
+        p = await message.reply("**This bot requires a minimum of 500 members to be operational. If you need more information, please feel free to reach out to me at @CareDesk.", reply_markup=keyboard, quote=True)
+        await p.pin()
+        await asyncio.sleep(5)
         await client.leave_chat(group_id)
 
 
