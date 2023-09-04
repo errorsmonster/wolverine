@@ -111,12 +111,11 @@ async def public_group_filter(client, message):
     if message.text.startswith("/"):
         return
     
-    if group_id in ACCESS_GROUPS:
-        await auto_filter(client, message)
-    elif group_id in AUTH_GROUPS:
+    if group_id in ACCESS_GROUPS and group_id in AUTH_GROUPS:
         k = await manual_filters(client, message)
         if k is False:
             await auto_filter(client, message)
+
     elif member_count is not None and member_count > 500:
         if chat:
             if shortner:
@@ -127,6 +126,7 @@ async def public_group_filter(client, message):
                 await auto_filter(client, message)
         else:
             await db.add_chat(group_id, title)
+
     else:
         p = await message.reply("**This bot requires a minimum of 500 members to be operational. If you need more information, please feel free to reach out to me at** @CareDesk.", reply_markup=keyboard, disable_web_page_preview=True)
         await p.pin()

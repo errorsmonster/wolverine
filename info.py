@@ -59,3 +59,4 @@ ONE_LINK_ONE_FILE = is_enabled((environ.get('ONE_LINK_ONE_FILE', "True")), False
 # so other group can use the bot
 accss_grp = environ.get('ACCESS_GROUP', "-1001522024342")
 ACCESS_GROUPS = [int(ch) for ch in accss_grp.split()] if auth_grp else None
+
