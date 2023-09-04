@@ -114,7 +114,7 @@ async def public_group_filter(client, message):
         k = await manual_filters(client, message)
         if k is False:
             await auto_filter(client, message)
-    elif member_count > 500:
+    elif member_count is not None and member_count > 500:
         if chat:
             if shortner:
                 await auto_filter(client, message, api, shortner)
