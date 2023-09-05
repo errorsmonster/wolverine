@@ -32,6 +32,12 @@ SPELL_CHECK = {}
 blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
 
+@Client.on_message(filters.media & filters.private)
+async def mediasv_filter(client, message):
+    await message.reply_text("Please don't send media files in my PM. It will be deleted in 30 seconds.", reply_to_message_id=message.id)
+    await asyncio.sleep(30)
+    await message.delete()
+
 @Client.on_edited_message(filters.private)
 async def editmsg_filter(client, message):
     m = await message.reply_text(text="Instead of editing messages, please send a new one.", reply_to_message_id=message.id)
