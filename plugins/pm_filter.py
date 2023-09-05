@@ -74,7 +74,7 @@ async def filters_private_handlers(client, message):
                     remaining_time = slow_mode - time_diff
                     while remaining_time > 0:
                         await msg.edit(f"Please wait for {remaining_time} seconds before sending another request.")
-                        await asyncio.sleep(2)
+                        await asyncio.sleep(1)
                         current_time = int(time.time())
                         time_diff = current_time - user_timestamps
                         remaining_time = max(0, slow_mode - time_diff)
