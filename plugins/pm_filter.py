@@ -32,6 +32,13 @@ SPELL_CHECK = {}
 blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
 
+@Client.on_message(filters.text & filters.edited & filters.private)
+async def editmsg_filter(client, message):
+    m = await message.reply_text("Please don't edit messages, send a new message instead.")
+    await asyncio.sleep(10)
+    await m.delete()
+    await message.delete()
+
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def filters_private_handlers(client, message):
 
