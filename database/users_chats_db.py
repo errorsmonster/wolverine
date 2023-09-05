@@ -114,6 +114,10 @@ class Database:
     # remove user from premium
     async def remove_user_premium(self, user_id):
         await self.col.update_one({"id": user_id}, {"$set": {"Premium": False, "premium_expiry": None, "purchase_date": None}})
+        
+    # remove all premium users forcefully
+    async def remove_all_premium_users(self):
+        await self.col.update_many({}, {"$set": {"Premium": False, "premium_expiry": None, "purchase_date": None}})
          
     # check user is expired or not if expired then remove premium
     async def check_expired_users(self, user_id):
