@@ -34,7 +34,7 @@ slow_mode = SLOW_MODE_DELAY
 
 @Client.on_edited_message(filters.private)
 async def editmsg_filter(client, message):
-    m = await message.reply_text("Please don't edit messages, send a new message instead.")
+    m = await message.reply_text(text="Instead of editing messages, please send a new one.", reply_to_message_id=message.id)
     await asyncio.sleep(10)
     await m.delete()
     await message.delete()
