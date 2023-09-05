@@ -68,10 +68,18 @@ async def filters_private_handlers(client, message):
 
         else:
             if user_timestamps:
-                time_diff = int(time.time()) - user_timestamps
+                current_time = int(time.time())
+                time_diff = current_time - user_timestamps
                 if time_diff < slow_mode:
-                    return await msg.edit(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
-                
+                    remaining_time = slow_mode - time_diff
+                    while remaining_time > 0:
+                        await msg.edit(f"Please wait for {remaining_time} seconds before sending another request.")
+                        await asyncio.sleep(2)
+                        current_time = int(time.time())
+                        time_diff = current_time - user_timestamps
+                        remaining_time = max(0, slow_mode - time_diff)
+                    return 
+
             if files_counts is not None and files_counts >= 10:
                 await msg.edit(
                     f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>upgrade</a> to premium for unlimited request",
