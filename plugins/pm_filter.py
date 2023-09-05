@@ -34,9 +34,11 @@ slow_mode = SLOW_MODE_DELAY
 
 @Client.on_message(filters.media & filters.private)
 async def mediasv_filter(client, message):
-    await message.reply_text("Please don't send media files in my PM. It will be deleted in 30 seconds.", reply_to_message_id=message.id)
-    await asyncio.sleep(30)
+    m=await message.reply_text("Please don't send any files in my PM. It will be deleted in 60 seconds.", reply_to_message_id=message.id)
+    await asyncio.sleep(60)
     await message.delete()
+    await m.delete()
+    
 
 @Client.on_edited_message(filters.private)
 async def editmsg_filter(client, message):
