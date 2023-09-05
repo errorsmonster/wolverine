@@ -70,7 +70,7 @@ async def filters_private_handlers(client, message):
             if user_timestamps:
                 time_diff = int(time.time()) - user_timestamps
                 if time_diff < slow_mode:
-                    return await message.reply_text(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
+                    return await msg.edit(f"Please wait for {slow_mode - time_diff} seconds before sending another request.")
                 
             if files_counts is not None and files_counts >= 10:
                 await message.reply_text(
