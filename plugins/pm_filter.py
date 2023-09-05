@@ -85,7 +85,9 @@ async def filters_private_handlers(client, message):
                         current_time = int(time.time())
                         time_diff = current_time - user_timestamps
                         remaining_time = max(0, slow_mode - time_diff)
-                    return 
+                        await message.delete()
+                    return
+
 
             if files_counts is not None and files_counts >= 10:
                 await msg.edit(
