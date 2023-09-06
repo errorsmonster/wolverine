@@ -137,12 +137,17 @@ async def public_group_filter(client, message):
     if message.text.startswith("/"):
         return
     
-    if group_id in ACCESS_GROUPS and group_id in AUTH_GROUPS:
+    if group_id in AUTH_GROUPS:
         k = await manual_filters(client, message)
         if k is False:
             await auto_filter(client, message)
+            return
 
-    elif member_count is not None and member_count > 500:
+    if group_id in ACCESS_GROUPS:
+        await auto_filter(client, message)
+        return      
+
+    if member_count is not None and member_count > 500:
         if chat:
             if shortner:
                 await auto_filter(client, message, api, shortner)
