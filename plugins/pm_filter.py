@@ -141,7 +141,7 @@ async def public_group_filter(client, message):
             return
 
     if group_id in ACCESS_GROUPS:
-        await hyper_filter(client, message)
+        await auto_filter(client, message)
         return      
 
     if member_count is not None and member_count > 500:
