@@ -68,7 +68,7 @@ async def filters_private_handlers(client, message):
         await db.reset_all_files_count()  # Reset the daily files count
         expired=await db.check_expired_users(user_id)
         if expired:
-            await message.reply_text("Your premium has been expired. Please renew your premium to continue using the bot.")
+            await message.reply_text(f"**Your premium has been expired. Please renew your premium to continue using the bot.**")
         return    
 
     
@@ -102,6 +102,7 @@ async def filters_private_handlers(client, message):
             if files_counts is not None and files_counts >= 10:
                 await message.reply(
                     f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>upgrade</a> to premium for unlimited request",
+                    reply_to_message_id=message.id,
                     disable_web_page_preview=True)
                 return
         
