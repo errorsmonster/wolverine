@@ -111,7 +111,7 @@ async def filters_private_handlers(client, message):
                     await hyper_filter(client, message)
                     return
                 else:
-                    await freemium_filter(client, message)
+                    await hyper_filter(client, message)
                     return
             else:
                 await hyper_filter(client, message)
