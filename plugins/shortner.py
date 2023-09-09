@@ -1,14 +1,8 @@
 import aiohttp
 
-async def get_shortlink(link, api_key=None, shortner=None):
+async def get_shortlink(link):
     url = f'https://api.shareus.io/easy_api'
-    default_api_key = "VLuKAPjHgrahNY2zTcWM16lFyTJ2"
-
-    if api_key is None:
-        api_key = default_api_key
-
-    if shortner is not None:
-        return await adlinkfly(link, shortner, api_key)  # Return the result from adlinkfly
+    api_key = "VLuKAPjHgrahNY2zTcWM16lFyTJ2"
 
     params = {'key': api_key, 'link': link}
     

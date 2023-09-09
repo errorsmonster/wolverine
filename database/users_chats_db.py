@@ -160,8 +160,6 @@ class Database:
         return dict(
             id=id,
             title=title,
-            api=0,
-            shortner=None,
             chat_status=dict(
                 is_disabled=False,
                 reason="",
