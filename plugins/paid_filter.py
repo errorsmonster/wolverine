@@ -4,13 +4,12 @@ import math
 import time
 from Script import script
 from info import SLOW_MODE_DELAY
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from database.users_chats_db import db
-from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified
+from pyrogram.errors import MessageNotModified
 from utils import get_size, get_settings, replace_blacklist
-from plugins.shortner import get_shortlink
-from database.ia_filterdb import Media, get_file_details, get_search_results
+from database.ia_filterdb import get_search_results
 
 
 BUTTONS = {}
@@ -153,7 +152,7 @@ async def paid_filter(client, msg, spoll=False):
         await msg.message.delete()
 
 # freemium filter for free user only
-async def private_paid_filter(client, msg):
+async def freemium_filter(client, msg):
     message = msg
     if message.text.startswith(("/", ",", "!", ".", "\U0001F600-\U000E007F")):
             return
