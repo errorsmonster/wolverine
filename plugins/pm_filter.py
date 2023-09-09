@@ -647,16 +647,16 @@ async def auto_filter(client, msg, spoll=False):
         message = msg.message.reply_to_message
         search, files, offset, total_results = spoll
     if settings["button"]:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}")
-                ),
-            ]
-            for file in files
-        ]
+        # Construct a text message with hyperlinks
+        search_results_text = []
+        for file in files:
+            shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+            file_link = f"🎬 [[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+            search_results_text.append(file_link)
 
+        search_results_text = "\n\n".join(search_results_text)
+
+    btn = []    
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
         BUTTONS[key] = search
@@ -670,7 +670,7 @@ async def auto_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
     cap = f"Here is what i found for your query {search}"
-    await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+    await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn))
     if spoll:
         await msg.message.delete()
 
