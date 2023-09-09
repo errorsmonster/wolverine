@@ -219,7 +219,9 @@ async def next_page(bot, query):
             ],
         )
     try:
-        await query.edit_message_reply_markup(
+         await query.edit_message_text(
+            text=search_results_text,
+            disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(btn)
         )
     except MessageNotModified:
