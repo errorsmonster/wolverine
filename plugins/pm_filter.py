@@ -662,7 +662,6 @@ async def auto_filter(client, msg, spoll=False):
     cap = f"Here is what i found for your query {search}"
     await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn))
     await db.update_timestamps(message.from_user.id, int(time.time()))
-    m = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
     if spoll:
         await msg.message.delete()
 
