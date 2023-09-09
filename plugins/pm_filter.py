@@ -108,10 +108,10 @@ async def filters_private_handlers(client, message):
         
             if ONE_LINK_ONE_FILE:
                 if files_counts is not None and files_counts >= 1:
-                    await hyper_filter(client, message)
+                    await freemium_filter(client, message)
                     return
                 else:
-                    await freemium_filter(client, message)
+                    await hyper_filter(client, message)
                     return
             else:
                 await hyper_filter(client, message)
