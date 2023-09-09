@@ -111,10 +111,10 @@ async def filters_private_handlers(client, message):
                     await freemium_filter(client, message)
                     return
                 else:
-                    await hyper_filter(client, message)
+                    await auto_filter(client, message)
                     return
             else:
-                await hyper_filter(client, message)
+                await auto_filter(client, message)
                 return
 
     except Exception as e:
@@ -146,7 +146,7 @@ async def public_group_filter(client, message):
 
     if member_count is not None and member_count > 500:
         if chat:
-            await hyper_filter(client, message)
+            await auto_filter(client, message)
         else:
             await db.add_chat(group_id, title)
     else:
