@@ -75,7 +75,7 @@ async def filters_private_handlers(client, message):
     if message.text.startswith("/"):
         return
     
-    msg = await message.reply_text("Searching...")
+    msg = await message.reply_text("Searching for your request...")
 
     try:
         if premium_status is True:
