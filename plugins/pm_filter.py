@@ -17,7 +17,6 @@ from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerId
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist
 from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter, freemium_filter
-from plugins.hyper_filter import hyper_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -661,6 +660,8 @@ async def auto_filter(client, msg, spoll=False):
         )
     cap = f"Here is what i found for your query {search}"
     await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn))
+    await db.update_timestamps(message.from_user.id, int(time.time()))
+    m = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
     if spoll:
         await msg.message.delete()
 
