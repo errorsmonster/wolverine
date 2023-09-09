@@ -149,12 +149,8 @@ async def public_group_filter(client, message):
             await hyper_filter(client, message)
         else:
             await db.add_chat(group_id, title)
-        return    
-
-    if member_count is not None and member_count < 500:
-        await client.leave_chat(group_id)
+    else:
         return
-
 
 
 
