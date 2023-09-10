@@ -172,7 +172,7 @@ async def next_page(bot, query):
         search_results_text = []
         for file in files:
             shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
-            file_link = f"🎬 [[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+            file_link = f"🎬 [{get_size(file.file_size)} ~ {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
             search_results_text.append(file_link)
 
         search_results_text = "\n\n".join(search_results_text)
@@ -626,7 +626,7 @@ async def auto_filter(client, msg, spoll=False):
         search_results_text = []
         for file in files:
             shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
-            file_link = f"🎬 [[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+            file_link = f"🎬 [{get_size(file.file_size)} ~ {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
             search_results_text.append(file_link)
 
         search_results_text = "\n\n".join(search_results_text)
