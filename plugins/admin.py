@@ -102,11 +102,11 @@ async def remove_paid(client, message):
 @Client.on_message(filters.command("request") & filters.private)
 async def request(client, message):
     # Strip the command and normalize the movie name
-    movie_name = message.text.replace("/request", "").strip().lower()
+    movie_name = message.text.replace("/request", "").replace("/Request", "").strip()
 
     files, offset, total_results = await get_search_results(movie_name.lower(), offset=0, filter=True)
     if files:
-        await message.reply_text(f"**This movie is already available in our database. Please send movie name directly**", reply_to_message_id=message.id, disable_web_page_preview=True)
+        await message.reply_text(f"**This movie is already available in our database. Please send movie name directly.**", reply_to_message_id=message.id, disable_web_page_preview=True)
         return
 
     # If the message only contains the command, send a default response
