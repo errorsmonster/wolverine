@@ -220,10 +220,7 @@ async def userinfo(client, message):
 # optional command to list all commands
 @Client.on_message(filters.command("commands") & filters.user(ADMINS))
 async def allcommands(client, message):
-    m= await message.reply_text("Reply with passcode to get all commands")
-    passcode = "0000"
-    if message.reply_to_message and message.reply_to_message.text == passcode:
-        await message.reply_text(
+    await message.reply_text(
         f"<b>Commands:</b>\n"
         f"<b>➲/stats</b> - To get bot stats\n"
         f"<b>➲/user</b> - To get user info\n"
@@ -247,5 +244,3 @@ async def allcommands(client, message):
         f"<b>➲/unban</b> - To unban a user\n"
         f"<b>➲/chats</b> - To get all chats\n"
         )
-    else:
-        await message.reply_text("wrong passcode")  
