@@ -106,7 +106,10 @@ class Database:
     
     async def get_all_premium_users(self):
         return self.col.find({"Premium": True})
-
+    
+    async def total_premium_users_count(self):
+        count = await self.col.count_documents({"Premium": True})
+        return count
 
     # add user as premium
     async def add_user_as_premium(self, user_id, expiry_date, subscription_date):

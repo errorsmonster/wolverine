@@ -133,22 +133,22 @@ async def list_premium(client, message):
     m = await message.reply_text("Listing all premium users...")
     out = "**List of Premium Users:**\n\n"
     users = await db.get_all_premium_users()
+    count = db.total_premium_users_count()
     async for user in users:
         user_id = user.get("id")
         userx = await client.get_users(user_id)
         user_name = userx.first_name if not userx.last_name else f"{userx.first_name} {userx.last_name}"
-        user_link = f"<a href='tg://user?id={user_id}'>{user_name}</a>"
         duration = user.get("premium_expiry")
         purchase_date_unix = user.get("purchase_date")
         purchase_date = datetime.fromtimestamp(purchase_date_unix)
         purchase_date_str = purchase_date.strftime("%d/%m/%Y")
-        out += f"**User ID:** `{user_id}`\n **Name**: {user_link}\n**Purchase Date:**\n`{purchase_date_str}`\n**Duration:** `{duration} days`\n\n"
+        out += f"**User ID:** `{user_id}`\n**Name**: {user_name}\n**Purchase Date:**\n`{purchase_date_str}`\n**Duration:** `{duration} days`\n\n"
     try:
         await m.edit(out, disable_web_page_preview=True)
     except MessageTooLong:
         with open('users.txt', 'w+') as outfile:
             outfile.write(out)
-        await message.reply_document('users.txt', caption="List Of Users")
+        await message.reply_document('users.txt', caption=f"List Of Users - Total {count} Users")
 
 
 @Client.on_message(filters.command("user"))
