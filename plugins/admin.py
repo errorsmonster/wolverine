@@ -134,9 +134,10 @@ async def list_premium(client, message):
     out = "**List of Premium Users:**\n\n"
     users = await db.get_all_premium_users()
     async for user in users:
-        user_name = user.first_name if not user.last_name else f"{user.first_name} {user.last_name}"
-        user_link = f"<a href='tg://user?id={user_id}'>{user_name}</a>"
         user_id = user.get("id")
+        userx = await client.get_users(user_id)
+        user_name = userx.first_name if not userx.last_name else f"{userx.first_name} {userx.last_name}"
+        user_link = f"<a href='tg://user?id={user_id}'>{user_name}</a>"
         duration = user.get("premium_expiry")
         purchase_date_unix = user.get("purchase_date")
         purchase_date = datetime.fromtimestamp(purchase_date_unix)
