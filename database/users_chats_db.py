@@ -103,6 +103,10 @@ class Database:
         if user is None:
             return False  # User not found in the database
         return user.get("Premium", False)
+    
+    async def get_all_premium_users(self):
+        return self.col.find({"Premium": True})
+
 
     # add user as premium
     async def add_user_as_premium(self, user_id, expiry_date, subscription_date):

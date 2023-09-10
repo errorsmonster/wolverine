@@ -8,6 +8,7 @@ from utils import temp
 import re
 from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
@@ -24,6 +25,21 @@ async def how2download(_, message):
 async def echo(_, message):
     response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>"
     await message.reply_text(response_text, disable_web_page_preview=True)
+
+@Client.on_message(filters.media & filters.private)
+async def mediasv_filter(client, message):
+    m=await message.reply_text("Please don't send any files in my PM. It will be deleted in 60 seconds.", reply_to_message_id=message.id)
+    await asyncio.sleep(60)
+    await message.delete()
+    await m.delete()
+    
+@Client.on_edited_message(filters.private)
+async def editmsg_filter(client, message):
+    m = await message.reply_text(text="Instead of editing messages, please send a new one.", reply_to_message_id=message.id)
+    await asyncio.sleep(10)
+    await m.delete()
+    await message.delete()
+
 
 # Add paid user to database and send message
 @Client.on_message(filters.command('add_paid') & filters.user(ADMINS))
@@ -81,35 +97,6 @@ async def remove_paid(client, message):
         await message.reply(DEL_PAID_TEXT.format(k.first_name))
         
         
-@Client.on_message(filters.private & filters.command("add_api") & filters.user(ADMINS))
-async def update_api_command(client, message):
-    # Extract the group ID and API from the command message
-    command_parts = message.text.split(" ")
-    if len(command_parts) < 3:
-        await message.reply_text("Invalid command format. Please use /update_api <group_id> <api>")
-        return
-    group_id = command_parts[1]
-    api = command_parts[2]
-
-    # Update the API for the group in the database
-    await db.update_api_for_group(group_id, api)
-    await message.reply_text("API updated successfully!")
-
-
-@Client.on_message(filters.private & filters.command("remove_api") & filters.user(ADMINS))
-async def remove_api_command(client, message):
-    # Extract the group ID from the command message
-    command_parts = message.text.split(" ")
-    if len(command_parts) < 2:
-        await message.reply_text("Invalid command format. Please use /remove_api <group_id>")
-        return
-    group_id = command_parts[1]
-
-    # Remove the API for the group from the database
-    await db.remove_api_for_group(group_id)
-    await message.reply_text("API removed successfully!")
-    
-    
 #request command 
 @Client.on_message(filters.command("request") & filters.private)
 async def request(client, message):
@@ -139,6 +126,27 @@ async def remove_all_premium(client, message):
     m = await message.reply_text("Removing all premium users...")
     await db.remove_all_premium_users()
     await m.edit("Successfully removed all premium users!")
+
+# list down all premium user from database
+@Client.on_message(filters.command("list_premium") & filters.user(ADMINS))
+async def list_premium(client, message):
+    m = await message.reply_text("Listing all premium users...")
+    out = "**List of Premium Users:**\n\n"
+    users = await db.get_all_premium_users()
+    async for user in users:
+        user_id = user.get("id")
+        duration = user.get("premium_expiry")
+        purchase_date_unix = user.get("purchase_date")
+        purchase_date = datetime.fromtimestamp(purchase_date_unix)
+        purchase_date_str = purchase_date.strftime("%d/%m/%Y")
+        out += f"**User ID:** `{user_id}` **Purchase Date:** `{purchase_date_str}` **Duration:** `{duration}`\n\n"
+    try:
+        await m.edit(out, disable_web_page_preview=True)
+    except MessageTooLong:
+        with open('users.txt', 'w+') as outfile:
+            outfile.write(out)
+        await message.reply_document('users.txt', caption="List Of Users")
+
 
 @Client.on_message(filters.command("user"))
 async def userinfo(client, message):
