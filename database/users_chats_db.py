@@ -103,6 +103,13 @@ class Database:
         if user is None:
             return False  # User not found in the database
         return user.get("Premium", False)
+    
+    async def get_all_premium_users(self):
+        return self.col.find({"Premium": True})
+    
+    async def total_premium_users_count(self):
+        count = await self.col.count_documents({"Premium": True})
+        return count
 
     # add user as premium
     async def add_user_as_premium(self, user_id, expiry_date, subscription_date):
@@ -160,40 +167,12 @@ class Database:
         return dict(
             id=id,
             title=title,
-            api=0,
-            shortner=None,
             chat_status=dict(
                 is_disabled=False,
                 reason="",
             ),
         )
          
-    async def update_api_for_group(self, group_id, api):
-        await self.grp.update_one({'id': int(group_id)}, {'$set': {'api': api}})
-        
-    async def remove_api_for_group(self, group_id):
-        await self.grp.update_one({'id': group_id}, {'$set': {'api': 0}})
-
-    async def update_shortner_and_api(self, group_id, shortner, api):
-        await self.grp.update_one({'id': int(group_id)}, {'$set': {'shortner': shortner, 'api': api}})
-
-    async def get_shortner_from_chat(self, group_id):
-        group = await self.grp.find_one({'id': int(group_id)})
-        shortner = group.get('shortner', '')
-        if not shortner or shortner == 0:
-            return False
-        return shortner
-    
-    async def rempove_shortner_for_group(self, group_id):
-        await self.grp.update_one({'id': int(group_id)}, {'$set': {'shortner': None, 'api': 0}})
-
-    async def get_api_from_chat(self, group_id):
-        group = await self.grp.find_one({'id': int(group_id)})
-        api = group.get('api', '')
-        if not api or api == 0:
-            return False
-        return api
-
     async def add_user(self, id, name):
         user = self.new_user(id, name)
         await self.col.insert_one(user)

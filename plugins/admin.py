@@ -8,6 +8,8 @@ from utils import temp
 import re
 from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
+from database.ia_filterdb import get_search_results
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
@@ -24,6 +26,21 @@ async def how2download(_, message):
 async def echo(_, message):
     response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>"
     await message.reply_text(response_text, disable_web_page_preview=True)
+
+@Client.on_message(filters.media & filters.private)
+async def mediasv_filter(client, message):
+    m=await message.reply_text("Please don't send any files in my PM. It will be deleted in 60 seconds.", reply_to_message_id=message.id)
+    await asyncio.sleep(60)
+    await message.delete()
+    await m.delete()
+    
+@Client.on_edited_message(filters.private)
+async def editmsg_filter(client, message):
+    m = await message.reply_text(text="Instead of editing messages, please send a new one.", reply_to_message_id=message.id)
+    await asyncio.sleep(10)
+    await m.delete()
+    await message.delete()
+
 
 # Add paid user to database and send message
 @Client.on_message(filters.command('add_paid') & filters.user(ADMINS))
@@ -81,40 +98,17 @@ async def remove_paid(client, message):
         await message.reply(DEL_PAID_TEXT.format(k.first_name))
         
         
-@Client.on_message(filters.private & filters.command("add_api") & filters.user(ADMINS))
-async def update_api_command(client, message):
-    # Extract the group ID and API from the command message
-    command_parts = message.text.split(" ")
-    if len(command_parts) < 3:
-        await message.reply_text("Invalid command format. Please use /update_api <group_id> <api>")
-        return
-    group_id = command_parts[1]
-    api = command_parts[2]
-
-    # Update the API for the group in the database
-    await db.update_api_for_group(group_id, api)
-    await message.reply_text("API updated successfully!")
-
-
-@Client.on_message(filters.private & filters.command("remove_api") & filters.user(ADMINS))
-async def remove_api_command(client, message):
-    # Extract the group ID from the command message
-    command_parts = message.text.split(" ")
-    if len(command_parts) < 2:
-        await message.reply_text("Invalid command format. Please use /remove_api <group_id>")
-        return
-    group_id = command_parts[1]
-
-    # Remove the API for the group from the database
-    await db.remove_api_for_group(group_id)
-    await message.reply_text("API removed successfully!")
-    
-    
 #request command 
 @Client.on_message(filters.command("request") & filters.private)
 async def request(client, message):
     # Strip the command and normalize the movie name
-    movie_name = message.text.replace("/request", "")
+    movie_name = message.text.replace("/request", "").replace("/Request", "").strip()
+
+    files, offset, total_results = await get_search_results(movie_name.lower(), offset=0, filter=True)
+    if files:
+        await message.reply_text(f"**This movie is already available in our database. Please send movie name directly.**", reply_to_message_id=message.id, disable_web_page_preview=True)
+        return
+
     # If the message only contains the command, send a default response
     if not movie_name:
         await message.reply_text(script.REQM, disable_web_page_preview=True)
@@ -139,6 +133,30 @@ async def remove_all_premium(client, message):
     m = await message.reply_text("Removing all premium users...")
     await db.remove_all_premium_users()
     await m.edit("Successfully removed all premium users!")
+
+# list down all premium user from database
+@Client.on_message(filters.command("list_premium") & filters.user(ADMINS))
+async def list_premium(client, message):
+    m = await message.reply_text("Listing all premium users...")
+    count = await db.total_premium_users_count()
+    out = f"**List of Premium Users: - {count}**\n\n"
+    users = await db.get_all_premium_users()
+    async for user in users:
+        user_id = user.get("id")
+        userx = await client.get_users(user_id)
+        user_name = userx.first_name if not userx.last_name else f"{userx.first_name} {userx.last_name}"
+        duration = user.get("premium_expiry")
+        purchase_date_unix = user.get("purchase_date")
+        purchase_date = datetime.fromtimestamp(purchase_date_unix)
+        purchase_date_str = purchase_date.strftime("%d/%m/%Y")
+        out += f"**User ID:** `{user_id}`\n**Name**: {user_name}\n**Purchase Date:**\n`{purchase_date_str}`\n**Duration:** `{duration} days`\n\n"
+    try:
+        await m.edit(out, disable_web_page_preview=True)
+    except MessageTooLong:
+        with open('users.txt', 'w+') as outfile:
+            outfile.write(out)
+        await message.reply_document('users.txt', caption=f"List Of Users - Total {count} Users")
+
 
 @Client.on_message(filters.command("user"))
 async def userinfo(client, message):
@@ -197,3 +215,32 @@ async def userinfo(client, message):
         text=message_text,
         disable_web_page_preview=True
     )
+
+
+# optional command to list all commands
+@Client.on_message(filters.command("commands") & filters.user(ADMINS))
+async def allcommands(client, message):
+    await message.reply_text(
+        f"<b>Commands:</b>\n"
+        f"<b>➲/stats</b> - To get bot stats\n"
+        f"<b>➲/user</b> - To get user info\n"
+        f"<b>➲/list_premium</b> - To list all premium users\n"
+        f"<b>➲/remove_all_premium</b> - To remove all premium users\n"
+        f"<b>➲/resetdaily</b> - To reset daily files count\n"
+        f"<b>➲/add_paid</b> - To add a user as premium\n"
+        f"<b>➲/remove_paid</b> - To remove a user from premium\n"
+        f"<b>➲/deleteallfiles</b> - To delete all files from database\n"
+        f"<b>➲/channel</b> - To get channel info\n"
+        f"<b>➲/broadcast</b> - To broadcast a message to all users\n"
+        f"<b>➲/id</b> - To get chat id\n"
+        f"<b>➲/info</b> - To get user info\n"
+        f"<b>➲/license</b> - To get redeem code\n"
+        f"<b>➲/revoke</b> - To revoke redeem code\n"
+        f"<b>➲/leave</b> - To leave a chat\n"
+        f"<b>➲/disable</b> - To disable a chat\n"
+        f"<b>➲/enable</b> - To enable a chat\n"
+        f"<b>➲/invite</b> - To get invite link of a chat\n"
+        f"<b>➲/ban</b> - To ban a user\n"
+        f"<b>➲/unban</b> - To unban a user\n"
+        f"<b>➲/chats</b> - To get all chats\n"
+        )

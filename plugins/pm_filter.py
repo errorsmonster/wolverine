@@ -16,6 +16,7 @@ from database.users_chats_db import db
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist
 from plugins.shortner import get_shortlink
+from plugins.paid_filter import paid_filter, freemium_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -32,20 +33,6 @@ SPELL_CHECK = {}
 blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
 
-@Client.on_message(filters.media & filters.private)
-async def mediasv_filter(client, message):
-    m=await message.reply_text("Please don't send any files in my PM. It will be deleted in 60 seconds.", reply_to_message_id=message.id)
-    await asyncio.sleep(60)
-    await message.delete()
-    await m.delete()
-    
-
-@Client.on_edited_message(filters.private)
-async def editmsg_filter(client, message):
-    m = await message.reply_text(text="Instead of editing messages, please send a new one.", reply_to_message_id=message.id)
-    await asyncio.sleep(10)
-    await m.delete()
-    await message.delete()
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def filters_private_handlers(client, message):
@@ -67,14 +54,21 @@ async def filters_private_handlers(client, message):
         await db.reset_all_files_count()  # Reset the daily files count
         expired=await db.check_expired_users(user_id)
         if expired:
-            await message.reply_text("Your premium has been expired. Please renew your premium to continue using the bot.")
+            await message.reply_text(f"**Your premium has been expired. Please renew your premium to continue using the bot.**")
         return    
 
     
     if message.text.startswith("/"):
         return
     
-    msg = await message.reply_text("Searching...")
+    if 2 < len(message.text) < 100:
+        search = message.text
+        files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+        if not files:
+            await message.reply_text("I couldn't find any movie in that name, please check the spelling or release date and try again.", reply_to_message_id=message.id)
+            return
+    
+    msg = await message.reply_text("Searching for your request...")
 
     try:
         if premium_status is True:
@@ -96,17 +90,15 @@ async def filters_private_handlers(client, message):
                     await message.delete()
                     return
                 
-
-
             if files_counts is not None and files_counts >= 10:
-                await msg.edit(
+                await message.reply(
                     f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>upgrade</a> to premium for unlimited request",
                     disable_web_page_preview=True)
                 return
         
             if ONE_LINK_ONE_FILE:
                 if files_counts is not None and files_counts >= 1:
-                    await private_paid_filter(client, message)
+                    await freemium_filter(client, message)
                     return
                 else:
                     await auto_filter(client, message)
@@ -127,12 +119,7 @@ async def public_group_filter(client, message):
     title = message.chat.title
     member_count = message.chat.members_count
     chat = await db.get_chat(group_id)
-    api = await db.get_api_from_chat(group_id)
-    shortner = await db.get_shortner_from_chat(group_id)
-    keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("📣 Join Request Group", url="https://t.me/PrimeHubReq")]]
-        )
-    
+
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return
@@ -149,100 +136,13 @@ async def public_group_filter(client, message):
 
     if member_count is not None and member_count > 500:
         if chat:
-            if shortner:
-                await auto_filter(client, message, api, shortner)
-            elif api:
-                await auto_filter(client, message, api)
-            else:
-                await auto_filter(client, message)
+            await auto_filter(client, message)
         else:
             await db.add_chat(group_id, title)
-
     else:
-        p = await message.reply("**This bot requires a minimum of 500 members to be operational. If you need more information, please feel free to reach out to me at** @CareDesk.", reply_markup=keyboard, disable_web_page_preview=True)
-        await p.pin()
-        await asyncio.sleep(5)
-        await client.leave_chat(group_id)
-
-
-@Client.on_callback_query(filters.regex(r"^forward"))
-async def paid_next_page(bot, query):
-    ident, req, key, offset = query.data.split("_")
-    if int(req) not in [query.from_user.id, 0]:
-        return await query.answer("ok")
-    try:
-        offset = int(offset)
-    except:
-        offset = 0
-    search = BUTTONS.get(key)
-    if not search:
-        await query.answer("You are using one of my old messages, please send the request again.", show_alert=True)
         return
 
-    files, n_offset, total = await get_search_results(search, offset=offset, filter=True)
-    try:
-        n_offset = int(n_offset)
-    except:
-        n_offset = 0
 
-    if not files:
-        return
-    settings = await get_settings(query.message.chat.id)
-    if settings['button']:
-        btn = [
-        [
-            InlineKeyboardButton(
-                text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                callback_data=f'files#{file.file_id}'
-                )
-            ]
-        for file in files
-        ]
-    else:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
-                ),
-                InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)}",
-                    callback_data=f'files_#{file.file_id}',
-                ),
-            ]
-            for file in files
-        ]
-
-    if 0 < offset <= 10:
-        off_set = 0
-    elif offset == 0:
-        off_set = None
-    else:
-        off_set = offset - 10
-    if n_offset == 0:
-        btn.append(
-            [InlineKeyboardButton("⏪ BACK", callback_data=f"forward_{req}_{key}_{off_set}"),
-             InlineKeyboardButton(f"📃 Pages {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}",
-                                  callback_data="pages")]
-        )
-    elif off_set is None:
-        btn.append(
-            [InlineKeyboardButton(f"🗓 {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
-             InlineKeyboardButton("NEXT ⏩", callback_data=f"forward_{req}_{key}_{n_offset}")])
-    else:
-        btn.append(
-            [
-                InlineKeyboardButton("⏪ BACK", callback_data=f"forward_{req}_{key}_{off_set}"),
-                InlineKeyboardButton(f"🗓 {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
-                InlineKeyboardButton("NEXT ⏩", callback_data=f"forward_{req}_{key}_{n_offset}")
-            ],
-        )
-    try:
-        await query.edit_message_reply_markup(
-            reply_markup=InlineKeyboardMarkup(btn)
-        )
-    except MessageNotModified:
-        pass
-    await query.answer() 
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
@@ -272,29 +172,16 @@ async def next_page(bot, query):
         return
     settings = await get_settings(query.message.chat.id)
     if settings['button']:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}")
-                ),
-            ]
-            for file in files
-        ]
-    else:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}")
-                ),
-                InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}")
-                ),
-            ]
-            for file in files
-        ]
+        # Construct a text message with hyperlinks
+        search_results_text = []
+        for file in files:
+            shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+            file_link = f"🎬 [{get_size(file.file_size)} ~ {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+            search_results_text.append(file_link)
+
+        search_results_text = "\n\n".join(search_results_text)
+
+    btn = []    
     btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5"),])
 
     if 0 < offset <= 10:
@@ -322,19 +209,21 @@ async def next_page(bot, query):
             ],
         )
     try:
-        await query.edit_message_reply_markup(
+         await query.edit_message_text(
+            text=search_results_text,
+            disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(btn)
         )
     except MessageNotModified:
         pass
     await query.answer()
     
-    
+
 @Client.on_callback_query(filters.regex(r"^spolling"))
 async def advantage_spoll_choker(bot, query):
     _, user, movie_ = query.data.split('#')
     if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer("ok")
+        return await query.answer("okDa", show_alert=True)
     if movie_ == "close_spellcheck":
         return await query.message.delete()
     movies = SPELL_CHECK.get(query.message.reply_to_message.id)
@@ -353,6 +242,7 @@ async def advantage_spoll_choker(bot, query):
             await asyncio.sleep(10)
             await k.delete()
 
+    
 
 @Client.on_callback_query()
 async def cb_handler(client: Client, query: CallbackQuery):
@@ -630,8 +520,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer('Share & Support Us♥️')
     elif query.data == "home":
         buttons = [[
-                    InlineKeyboardButton('📢 Add Me And Earn Money', callback_data="addme")
-                    ],[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
@@ -675,16 +563,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup=InlineKeyboardMarkup(buttons),
         disable_web_page_preview=True,
         )
-    elif query.data == "addme":
-        buttons = [[
-                    InlineKeyboardButton('➕ Add Me', url=f"https://t.me/{temp.U_NAME}?startgroup=none&admin=ban_users+restrict_members+delete_messages+add_admins+change_info+invite_users+pin_messages+manage_call+manage_chat+manage_video_chats+promote_members"),
-                    InlineKeyboardButton('◀️ Back', callback_data="home"),
-                ]]  
-        await query.message.edit(
-            text=script.GROUP_PROMO,
-            reply_markup=InlineKeyboardMarkup(buttons),
-            disable_web_page_preview=True,
-        )       
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         grpid = await active_connection(str(query.from_user.id))
@@ -726,114 +604,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('Share & Support Us♥️')
     
 
-
-async def paid_filter(client, msg, spoll=False):
-    if not spoll:
-        message = msg
-        if message.text.startswith("/"):
-            return  # ignore commands
-
-        if re.match(r"(^\/|^,|^!|^\.|^[\U0001F600-\U000E007F])", message.text):
-            return
-
-        if 2 < len(message.text) < 100:
-            search = message.text
-            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
-
-            if not files:
-                await message.reply_text("No Results Found. Try Another Keyword.")
-                return
-
-        else:
-            return
-    else:
-        message = msg.message.reply_to_message  # msg will be callback query
-        search, files, offset, total_results = spoll
-
-    pre = 'file'
-    btn = [
-        [
-            InlineKeyboardButton(
-                text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                callback_data=f'{pre}#{file.file_id}'
-                )
-            ]
-        for file in files
-        ]
-
-    if offset != "":
-        key = f"{message.chat.id}-{message.id}"
-        BUTTONS[key] = search
-        req = message.from_user.id if message.from_user else 0
-        btn.append(
-            [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
-             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"forward_{req}_{key}_{offset}")]
-        )
-    else:
-        btn.append([InlineKeyboardButton(text="🗓 1/1", callback_data="pages")])
-
-    cap = f"Here is what I found for your query {search}"
-    await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-
-    if spoll:
-        await msg.message.delete()
-
-
-
-async def private_paid_filter(client, msg, spoll=False):
-    if spoll:
-        message = msg.message.reply_to_message  # msg will be callback query
-        search, files, offset, total_results = spoll
-    else:
-        message = msg
-        if message.text.startswith(("/", ",", "!", ".", "\U0001F600-\U000E007F")):
-            return
-        if 2 < len(message.text) < 100:
-            search = message.text
-            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
-            if not files:
-                return await message.reply_text(f"No Results Found For - {search}. Try Another Keyword.")
-        else:
-            return
-        
-    pre = 'file'
-    btn = [
-        [
-            InlineKeyboardButton(
-                text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                callback_data=f'{pre}#{file.file_id}'
-                )
-            ]
-        for file in files
-        ]
-
-    page_number = 1 if offset == "" else math.ceil(int(total_results) / 10)
-
-    if page_number > 1:
-        key = f"{message.chat.id}-{message.id}"
-        BUTTONS[key] = search
-        req = message.from_user.id if message.from_user else 0
-        btn.append(
-            [
-                InlineKeyboardButton(text=f"🗓 {page_number}", callback_data="pages"),
-                InlineKeyboardButton(text="NEXT ⏩", callback_data=f"forward_{req}_{key}_{offset}")
-            ]
-        )
-    else:
-        btn.append([InlineKeyboardButton(text="🗓 1/1", callback_data="pages")])
-
-    cap = f"Here is what I found for your query {search}"
-    await db.update_timestamps(message.from_user.id, int(time.time()))
-    m = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-    # delete msg after 1 min
-    await asyncio.sleep(60)
-    await m.delete()
-
-    if spoll:
-        await msg.message.delete()
-
-
-async def auto_filter(client, msg, api=None, shortner=None, spoll=False):
+async def auto_filter(client, msg, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
@@ -847,41 +618,25 @@ async def auto_filter(client, msg, api=None, shortner=None, spoll=False):
                 if settings["spell_check"]:
                     return await advantage_spell_chok(msg)
                 else:
-                    return await message.reply_text(f"No Results Found For - {search}. Try Another Keyword.")
+                    return
         else:
             return
     else:
         settings = await get_settings(msg.message.chat.id)
-        message = msg.message.reply_to_message  # msg will be callback query
+        message = msg.message.reply_to_message
         search, files, offset, total_results = spoll
-    pre = 'filep' if settings['file_secure'] else 'file'
     if settings["button"]:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {await replace_blacklist(file.file_name, blacklist)}",
-                    url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}", api)
-                ),
-            ]
-            for file in files
-        ]
-    else:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=await replace_blacklist(file.file_name, blacklist),
-                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
-                ),
-                InlineKeyboardButton(
-                    text=get_size(file.file_size),
-                    url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}", api)
-                ),
-            ]
-            for file in files
-        ]
-    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5"),])        
+        # Construct a text message with hyperlinks
+        search_results_text = []
+        for file in files:
+            shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+            file_link = f"🎬 [{get_size(file.file_size)} ~ {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+            search_results_text.append(file_link)
 
+        search_results_text = "\n\n".join(search_results_text)
 
+    btn = []  
+    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5"),])
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
         BUTTONS[key] = search
@@ -894,102 +649,55 @@ async def auto_filter(client, msg, api=None, shortner=None, spoll=False):
         btn.append(
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
-    imdb = await get_poster(search, file=(files[0]).file_name) if settings["imdb"] else None
-    TEMPLATE = settings['template']
-    if imdb:
-        cap = TEMPLATE.format(
-            query=search,
-            title=imdb['title'],
-            votes=imdb['votes'],
-            aka=imdb["aka"],
-            seasons=imdb["seasons"],
-            box_office=imdb['box_office'],
-            localized_title=imdb['localized_title'],
-            kind=imdb['kind'],
-            imdb_id=imdb["imdb_id"],
-            cast=imdb["cast"],
-            runtime=imdb["runtime"],
-            countries=imdb["countries"],
-            certificates=imdb["certificates"],
-            languages=imdb["languages"],
-            director=imdb["director"],
-            writer=imdb["writer"],
-            producer=imdb["producer"],
-            composer=imdb["composer"],
-            cinematographer=imdb["cinematographer"],
-            music_team=imdb["music_team"],
-            distributors=imdb["distributors"],
-            release_date=imdb['release_date'],
-            year=imdb['year'],
-            genres=imdb['genres'],
-            poster=imdb['poster'],
-            plot=imdb['plot'],
-            rating=imdb['rating'],
-            url=imdb['url'],
-            **locals()
-        )
-    else:
-        cap = f"Here is what i found for your query {search}"
-        await db.update_timestamps(message.from_user.id, int(time.time()))
-    if imdb and imdb.get('poster'):
-        try:
-            await message.reply_photo(photo=imdb.get('poster'), caption=cap[:1024],
-                                      reply_markup=InlineKeyboardMarkup(btn))
-        except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-            pic = imdb.get('poster')
-            poster = pic.replace('.jpg', "._V1_UX360.jpg")
-            await message.reply_photo(photo=poster, caption=cap[:1024], reply_markup=InlineKeyboardMarkup(btn))
-        except Exception as e:
-            logger.exception(e)
-            await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-    else:
-        await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
+    cap = f"Here is what i found for your query {search}"
+    await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn))
+    await db.update_timestamps(message.from_user.id, int(time.time()))
     if spoll:
         await msg.message.delete()
 
 
 async def advantage_spell_chok(msg):
     query = re.sub(
-        r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?|action|comedy|drama|horror|romance|thriller|science\sfiction|fantasy|animation|documentary|adventure|crime|family|history|mystery|musical|war|western|biography|sport|superhero|supernatural|foreign|subtitles)",
-        "", msg.text, flags=re.IGNORECASE).strip() + " movie"
+        r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?)",
+        "", msg.text, flags=re.IGNORECASE)  # plis contribute some common words
+    query = query.strip() + " movie"
     g_s = await search_gagala(query)
     g_s += await search_gagala(msg.text)
-    
+    gs_parsed = []
     if not g_s:
-        k = await msg.reply("I couldn't find any movie with that name.")
+        k = await msg.reply("I couldn't find any movie in that name.")
         await asyncio.sleep(8)
         await k.delete()
         return
-    
-    regex = re.compile(r".*(imdb|wikipedia).*", re.IGNORECASE) 
+    regex = re.compile(r".*(imdb|wikipedia).*", re.IGNORECASE)  # look for imdb / wiki results
     gs = list(filter(regex.match, g_s))
     gs_parsed = [re.sub(
         r'\b(\-([a-zA-Z-\s])\-\simdb|(\-\s)?imdb|(\-\s)?wikipedia|\(|\)|\-|reviews|full|all|episode(s)?|film|movie|series)',
         '', i, flags=re.IGNORECASE) for i in gs]
-    
     if not gs_parsed:
-        reg = re.compile(r"watch(\s[a-zA-Z0-9_\s\-\(\)]*)*\|.*", re.IGNORECASE)
-        gs_parsed = [reg.match(mv).group(1) for mv in g_s if reg.match(mv)]
-        
+        reg = re.compile(r"watch(\s[a-zA-Z0-9_\s\-\(\)]*)*\|.*",
+                         re.IGNORECASE)  # match something like Watch Niram | Amazon Prime
+        for mv in g_s:
+            match = reg.match(mv)
+            if match:
+                gs_parsed.append(match.group(1))
     user = msg.from_user.id if msg.from_user else 0
-    gs_parsed = list(dict.fromkeys(gs_parsed[:3]))  
     movielist = []
-    
+    gs_parsed = list(dict.fromkeys(gs_parsed))  # removing duplicates https://stackoverflow.com/a/7961425
+    if len(gs_parsed) > 3:
+        gs_parsed = gs_parsed[:3]
     if gs_parsed:
         for mov in gs_parsed:
-            imdb_s = await get_poster(mov.strip(), bulk=True)
+            imdb_s = await get_poster(mov.strip(), bulk=True)  # searching each keyword in imdb
             if imdb_s:
                 movielist += [movie.get('title') for movie in imdb_s]
-    
     movielist += [(re.sub(r'(\-|\(|\)|_)', '', i, flags=re.IGNORECASE)).strip() for i in gs_parsed]
-    movielist = list(dict.fromkeys(movielist))  
-    
+    movielist = list(dict.fromkeys(movielist))  # removing duplicates
     if not movielist:
-        k = await msg.reply("I couldn't find anything related to that. Check your spelling.")
+        k = await msg.reply("I couldn't find anything related to that. Check your spelling")
         await asyncio.sleep(8)
         await k.delete()
         return
-    
     SPELL_CHECK[msg.id] = movielist
     btn = [[
         InlineKeyboardButton(
@@ -998,9 +706,8 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    await msg.reply("I couldn't find anything related to that. Did you mean any one of these?",
+    await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
                     reply_markup=InlineKeyboardMarkup(btn))
-
 
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id

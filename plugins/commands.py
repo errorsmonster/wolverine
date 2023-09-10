@@ -42,8 +42,6 @@ async def start(client, message):
         buttons = [[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
-                    InlineKeyboardButton('📢 Add & Earn', callback_data="addme")
-                    ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🌼 Request', callback_data="request")
                   ]]
@@ -331,8 +329,6 @@ async def delete(bot, message):
         if result.deleted_count:
             await msg.edit('File is successfully deleted from database')
         else:
-            # files indexed before https://github.com/EvamariaTG/EvaMaria/commit/f3d2a1bcb155faf44178e5d7a685a1b533e714bf#diff-86b613edf1748372103e94cacff3b578b36b698ef9c16817bb98fe9ef22fb669R39 
-            # have original file name.
             result = await Media.collection.delete_many({
                 'file_name': media.file_name,
                 'file_size': media.file_size,
@@ -415,42 +411,12 @@ async def settings(client, message):
         buttons = [
             [
                 InlineKeyboardButton(
-                    'Filter Button',
-                    callback_data=f'setgs#button#{settings["button"]}#{grp_id}',
-                ),
-                InlineKeyboardButton(
-                    'Single' if settings["button"] else 'Double',
-                    callback_data=f'setgs#button#{settings["button"]}#{grp_id}',
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'Bot PM',
-                    callback_data=f'setgs#botpm#{settings["botpm"]}#{grp_id}',
-                ),
-                InlineKeyboardButton(
-                    '✅ Yes' if settings["botpm"] else '❌ No',
-                    callback_data=f'setgs#botpm#{settings["botpm"]}#{grp_id}',
-                ),
-            ],
-            [
-                InlineKeyboardButton(
                     'File Secure',
                     callback_data=f'setgs#file_secure#{settings["file_secure"]}#{grp_id}',
                 ),
                 InlineKeyboardButton(
                     '✅ Yes' if settings["file_secure"] else '❌ No',
                     callback_data=f'setgs#file_secure#{settings["file_secure"]}#{grp_id}',
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'IMDB',
-                    callback_data=f'setgs#imdb#{settings["imdb"]}#{grp_id}',
-                ),
-                InlineKeyboardButton(
-                    '✅ Yes' if settings["imdb"] else '❌ No',
-                    callback_data=f'setgs#imdb#{settings["imdb"]}#{grp_id}',
                 ),
             ],
             [
