@@ -221,7 +221,6 @@ async def userinfo(client, message):
 @Client.on_message(filters.command("commands") & filters.user(ADMINS))
 async def allcommands(client, message):
     m= await message.reply_text("Reply with passcode to get all commands")
-    await asyncio.sleep(1)
     passcode = "0000"
     if message.reply_to_message and message.reply_to_message.text == passcode:
         await message.reply_text(
