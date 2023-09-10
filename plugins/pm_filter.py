@@ -66,6 +66,7 @@ async def filters_private_handlers(client, message):
         files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
         if not files:
             await message.reply_text("I couldn't find any movie in that name.")
+            return
     
     msg = await message.reply_text("Searching for your request...")
 
