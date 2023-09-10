@@ -134,12 +134,13 @@ async def list_premium(client, message):
     out = "**List of Premium Users:**\n\n"
     users = await db.get_all_premium_users()
     async for user in users:
+        name = user.first_name
         user_id = user.get("id")
         duration = user.get("premium_expiry")
         purchase_date_unix = user.get("purchase_date")
         purchase_date = datetime.fromtimestamp(purchase_date_unix)
         purchase_date_str = purchase_date.strftime("%d/%m/%Y")
-        out += f"**User ID:** `{user_id}` **Purchase Date:** `{purchase_date_str}` **Duration:** `{duration}`\n\n"
+        out += f"**User ID:** `{user_id}`\n **Name**: `{name}`\n**Purchase Date:**\n`{purchase_date_str}`\n**Duration:** `{duration} days`\n\n"
     try:
         await m.edit(out, disable_web_page_preview=True)
     except MessageTooLong:
