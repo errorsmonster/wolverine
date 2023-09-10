@@ -90,8 +90,6 @@ async def filters_private_handlers(client, message):
                     await message.delete()
                     return
                 
-
-
             if files_counts is not None and files_counts >= 10:
                 await message.reply(
                     f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>upgrade</a> to premium for unlimited request",
