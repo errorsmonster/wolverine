@@ -9,6 +9,7 @@ import re
 from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
+from database.ia_filterdb import get_search_results
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
@@ -101,7 +102,13 @@ async def remove_paid(client, message):
 @Client.on_message(filters.command("request") & filters.private)
 async def request(client, message):
     # Strip the command and normalize the movie name
-    movie_name = message.text.replace("/request", "")
+    movie_name = message.text.replace("/request", "").strip().lower()
+
+    files, offset, total_results = await get_search_results(movie_name.lower(), offset=0, filter=True)
+    if files:
+        await message.reply_text("This movie is already available in our database. Please send movie name directly", disable_web_page_preview=True)
+        return
+
     # If the message only contains the command, send a default response
     if not movie_name:
         await message.reply_text(script.REQM, disable_web_page_preview=True)
