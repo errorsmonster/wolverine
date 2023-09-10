@@ -220,7 +220,11 @@ async def userinfo(client, message):
 # optional command to list all commands
 @Client.on_message(filters.command("commands") & filters.user(ADMINS))
 async def allcommands(client, message):
-    await message.reply_text(
+    m= await message.reply_text("Reply with passcode to get all commands")
+    await asyncio.sleep(1)
+    passcode = "0000"
+    if message.reply_to_message and message.reply_to_message.text == passcode:
+        await message.reply_text(
         f"<b>Commands:</b>\n"
         f"<b>➲/stats</b> - To get bot stats\n"
         f"<b>➲/user</b> - To get user info\n"
@@ -233,7 +237,7 @@ async def allcommands(client, message):
         f"<b>➲/channel</b> - To get channel info\n"
         f"<b>➲/broadcast</b> - To broadcast a message to all users\n"
         f"<b>➲/id</b> - To get chat id\n"
-        f"<b>➲info</b> - To get user info\n"
+        f"<b>➲/info</b> - To get user info\n"
         f"<b>➲/license</b> - To get redeem code\n"
         f"<b>➲/revoke</b> - To revoke redeem code\n"
         f"<b>➲/leave</b> - To leave a chat\n"
@@ -244,3 +248,6 @@ async def allcommands(client, message):
         f"<b>➲/unban</b> - To unban a user\n"
         f"<b>➲/chats</b> - To get all chats\n"
         )
+    else:
+        await message.reply_text("wrong passcode")
+        await m.delete()   
