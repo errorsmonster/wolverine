@@ -51,19 +51,6 @@ async def paid_next_page(bot, query):
             ]
         for file in files
         ]
-    else:
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
-                ),
-                InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)}",
-                    callback_data=f'files_#{file.file_id}',
-                ),
-            ]
-            for file in files
-        ]
 
     if 0 < offset <= 10:
         off_set = 0
@@ -193,6 +180,6 @@ async def freemium_filter(client, msg):
     cap = f"Here is what I found for your query {search}"
     await db.update_timestamps(message.from_user.id, int(time.time()))
     m = await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
-    # delete msg after 1 min
-    await asyncio.sleep(60)
+    # delete msg after 2 min
+    await asyncio.sleep(120)
     await m.delete()
