@@ -248,5 +248,4 @@ async def allcommands(client, message):
         f"<b>➲/chats</b> - To get all chats\n"
         )
     else:
-        await message.reply_text("wrong passcode")
-        await m.delete()   
+        await message.reply_text("wrong passcode")  
