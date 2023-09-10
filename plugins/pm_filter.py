@@ -65,7 +65,7 @@ async def filters_private_handlers(client, message):
         search = message.text
         files = await get_search_results(search.lower(), offset=0, filter=True)
         if not files:
-            await message.reply_text("I couldn't find any movie in that name, please check the spelling or release date and try again.", reply_to_message_id=message.id)
+            await message.reply_text("I couldn't find any movie in that name, please check the spelling or release date and try again.")
             return
     
     msg = await message.reply_text("Searching for your request...")
@@ -95,7 +95,6 @@ async def filters_private_handlers(client, message):
             if files_counts is not None and files_counts >= 10:
                 await message.reply(
                     f"You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>upgrade</a> to premium for unlimited request",
-                    reply_to_message_id=message.id,
                     disable_web_page_preview=True)
                 return
         
