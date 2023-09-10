@@ -133,7 +133,7 @@ async def list_premium(client, message):
     m = await message.reply_text("Listing all premium users...")
     out = "**List of Premium Users:**\n\n"
     users = await db.get_all_premium_users()
-    count = db.total_premium_users_count()
+    count = await db.total_premium_users_count()
     async for user in users:
         user_id = user.get("id")
         userx = await client.get_users(user_id)
