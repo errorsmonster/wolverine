@@ -131,9 +131,9 @@ async def remove_all_premium(client, message):
 @Client.on_message(filters.command("list_premium") & filters.user(ADMINS))
 async def list_premium(client, message):
     m = await message.reply_text("Listing all premium users...")
-    out = "**List of Premium Users:**\n\n"
-    users = await db.get_all_premium_users()
     count = await db.total_premium_users_count()
+    out = f"**List of Premium Users: - {count}**\n\n"
+    users = await db.get_all_premium_users()
     async for user in users:
         user_id = user.get("id")
         userx = await client.get_users(user_id)
