@@ -27,14 +27,14 @@ async def echo(_, message):
     response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>"
     await message.reply_text(response_text, disable_web_page_preview=True)
 
-@Client.on_message(filters.media & filters.private & ~filters.user(ADMINS)) 
+@Client.on_message(filters.media & filters.private & ~filters.user(ADMINS))
 async def mediasv_filter(client, message):
     m=await message.reply_text("<b>Please don't send any files in my PM. It will be deleted in 60 seconds.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(60)
     await message.delete()
     await m.delete()
     
-@Client.on_edited_message(filters.private)
+@Client.on_edited_message(filters.private & ~filters.user(ADMINS))
 async def editmsg_filter(client, message):
     m = await message.reply_text(text="<b>Instead of editing messages, please send a new one.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(10)
