@@ -156,7 +156,7 @@ async def list_premium(client, message):
         await message.reply_document('users.txt', caption=f"List Of Users - Total {count} Users")
 
 
-@Client.on_message(filters.command("user"))
+@Client.on_message(filters.command(['user', 'info', 'plan']))
 async def userinfo(client, message):
 
     if len(message.command) < 2:
