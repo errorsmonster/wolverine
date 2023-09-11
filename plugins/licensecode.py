@@ -5,7 +5,7 @@ from info import ADMINS, LOG_CHANNEL
 from database.users_chats_db import db
 import asyncio
 import binascii
-from datetime import datetime, timedelta
+from datetime import datetime
 
 ACCESS_KEY = "PZUNTLGIZFE67MR0I0H0"
 
