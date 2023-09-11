@@ -114,7 +114,7 @@ async def revoke_license_code(client, message):
         return
     code = message.text.split(None, 1)[1]
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=revoke&code={code}") as resp:
+        async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={code}") as resp:
             try:
                 if resp.status == 200:
                     json_response = await resp.json()
