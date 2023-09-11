@@ -133,7 +133,7 @@ async def remove_all_premium(client, message):
     await m.edit("Successfully removed all premium users!")
 
 # list down all premium user from database
-@Client.on_message(filters.command("list_premium") & filters.user(ADMINS))
+@Client.on_message(filters.command("premiumlist") & filters.user(ADMINS))
 async def list_premium(client, message):
     m = await message.reply_text("Listing all premium users...")
     count = await db.total_premium_users_count()
@@ -223,7 +223,6 @@ async def allcommands(client, message):
         f"<b>➲/stats</b> - To get bot stats\n"
         f"<b>➲/user</b> - To get user info\n"
         f"<b>➲/list_premium</b> - To list all premium users\n"
-        f"<b>➲/remove_all_premium</b> - To remove all premium users\n"
         f"<b>➲/resetdaily</b> - To reset daily files count\n"
         f"<b>➲/add_paid</b> - To add a user as premium\n"
         f"<b>➲/remove_paid</b> - To remove a user from premium\n"
