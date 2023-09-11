@@ -27,7 +27,7 @@ async def echo(_, message):
     response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>"
     await message.reply_text(response_text, disable_web_page_preview=True)
 
-@Client.on_message(filters.media & filters.private)
+@Client.on_message(filters.media & filters.private & ~filters.user(ADMINS)) 
 async def mediasv_filter(client, message):
     m=await message.reply_text("<b>Please don't send any files in my PM. It will be deleted in 60 seconds.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(60)
@@ -214,6 +214,18 @@ async def userinfo(client, message):
         disable_web_page_preview=True
     )
 
+
+@Client.on_message(filters.command(['upgrade', 'premium']))
+async def upgrademsg(client, message):
+    buttons = [[
+                InlineKeyboardButton('💫 Confirm', callback_data="confirm"),
+                InlineKeyboardButton('◀️ Back', callback_data="home")
+            ]]
+    await message.reply(
+        text=script.REMADS_TEXT,
+        reply_markup=InlineKeyboardMarkup(buttons),
+        disable_web_page_preview=True,
+        )
 
 # optional command to list all commands
 @Client.on_message(filters.command("commands") & filters.user(ADMINS))
