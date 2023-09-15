@@ -129,23 +129,24 @@ class Database:
     # check user is expired or not if expired then remove premium
     async def check_expired_users(self, user_id):
         user = await self.col.find_one({"id": user_id})
-        now_timestamp = int(datetime.now().timestamp())  # Convert now to UNIX timestamp
 
         if user is None:
-            return  # User not found in the database
-        
-        premium_expiry_days = user.get("premium_expiry")
-        purchase_date = user.get("purchase_date")
+            return
 
-        if premium_expiry_days is None:
-            return  # User does not have a premium expiry duration
-        
-        # Calculate the expiry timestamp based on premium_expiry_days
-        premium_expiry_timestamp = purchase_date + (premium_expiry_days * 24 * 60 * 60)
-        
-        if now_timestamp > premium_expiry_timestamp:
+        duration = user.get("premium_expiry")
+
+        if duration is None:
+            return
+
+        purchase_date = user.get("purchase_date")
+        purchased_date = datetime.fromtimestamp(purchase_date)
+        expiry_date = purchased_date + timedelta(days=duration)
+        days_left = (expiry_date - datetime.now()).days
+
+        if days_left <= 0:
             await self.remove_user_premium(user_id)
             return "Your subscription has expired."
+
 
     # remove all expired user
     async def remove_expired_users(self):
