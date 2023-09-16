@@ -142,8 +142,8 @@ class Database:
         if duration is None:
             return
 
-        purchase_date = user.get("purchase_date")
-        purchased_date = datetime.fromtimestamp(purchase_date)
+        purchase = user.get("purchase_date")
+        purchased_date = datetime.fromtimestamp(purchase)
         expiry_date = purchased_date + timedelta(days=duration)
         days_left = (expiry_date - datetime.now()).days
 
