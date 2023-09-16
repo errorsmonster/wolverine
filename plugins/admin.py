@@ -125,6 +125,16 @@ async def resetdaily(client, message):
     await db.reset_all_files_count()
     await m.edit("Successfully reset daily files count!")
 
+#reset daily files count of user
+@Client.on_message(filters.command("resetuser") & filters.user(ADMINS))
+async def resetdailyuser(client, message):
+    user_id = message.command[1]
+    if not user_id:
+        return await message.reply("Please provide a user id")
+    m = await message.reply_text("Resetting daily files count of user...")
+    await db.reset_daily_files_count_user(user_id)
+    await m.edit("Successfully reset daily files count of user!")
+
 # remove all premium user from database
 @Client.on_message(filters.command("remove_all_premium") & filters.user(ADMINS))
 async def remove_all_premium(client, message):
