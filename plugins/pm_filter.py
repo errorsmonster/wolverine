@@ -51,10 +51,7 @@ async def filters_private_handlers(client, message):
     today = datetime.now().strftime("%Y-%m-%d")
 
     if last_reset != today:
-        await db.reset_all_files_count()  # Reset the daily files count
-        expired=await db.check_expired_users(user_id)
-        if expired:
-            await message.reply_text(f"**Your premium has been expired. Please renew your premium to continue using the bot.**")
+        await db.reset_all_files_count()
         return    
 
     
@@ -72,6 +69,12 @@ async def filters_private_handlers(client, message):
 
     try:
         if premium_status is True:
+
+            is_expired = await db.check_expired_users(user_id)
+            if is_expired:
+                await message.reply_text(f"**Your premium subscription has expired. Please renew your subscription to continue premium.**", disable_web_page_preview=True)
+                return
+            
             await paid_filter(client, message)
             return
 
