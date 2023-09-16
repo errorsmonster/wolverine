@@ -38,16 +38,12 @@ Name - {}
 
     #remove ads
     REMADS_TEXT = """
-<b>Free</b>\nAds & no direct links\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, no waiting time, no daily limit, premium access of our other services\n\n<b>Plan Cost - ₹19/month & ₹90/6-Month </b>\nPrices may increase in the future.\n<b>UPI</b> -\n    <code>iPrimeHub@axl</code>
+<b>Free</b>\nAds & no direct links\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, no waiting time, no daily limit, premium access of our other services\n\n<b>Plan Cost - ₹20/month & ₹100/6Month </b>\nPrices may increase in the future.\n<b>UPI</b> -\n    <code>iPrimeHub@axl</code>
 """
     #confirm text
     CNFRM_TEXT = """
 **To Confirm Payment Process Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/lemx4>ｒｙｍｅ</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
 """
-
-    #paid group
-    GROUP_PROMO = """Now You Can **Earn Money** By Adding This Bot In Your Group.\n\n**Requirements:**\n1. Your Group Must Have Minimum 500 Members.\n2. Your Group Must Be Active.\n3. Your Group Must Be Public.\n\n**Advantages:**\n1. No need To Manage The Bot\n2. No Need to Upload Movies\n3. Use Your Favourite Shortner \n\n If You Are Interested Then Contact <a href=https://t.me/lemx4>ｒｙｍｅ</a>"""
-
     # removing blacklisted words
     BLACKLIST = ['www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'bot', 'flix',

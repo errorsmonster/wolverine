@@ -69,10 +69,10 @@ async def filters_private_handlers(client, message):
 
     try:
         if premium_status is True:
-
             is_expired = await db.check_expired_users(user_id)
+            
             if is_expired:
-                await message.reply_text(f"**Your premium subscription has expired. Please renew your subscription to continue premium.**", disable_web_page_preview=True)
+                await message.reply_text(f"**Your premium subscription has expired. Please renew your subscription to continue using premium.**", disable_web_page_preview=True)
                 return
             
             await paid_filter(client, message)
