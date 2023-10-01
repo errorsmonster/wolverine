@@ -94,6 +94,16 @@ async def start(client, message):
     data = message.command[1]
     try:
         pre, file_id = data.split('_', 1)
+
+        if pre == 'refferal':
+            user_id = message.from_user.id
+            user_name = message.from_user.first_name
+            user = await db.get_user(user_id)
+            refferal_points = await user.get('refferal', 0)
+            invite_id = file_id
+            await db.update_refferal_count(invite_id, refferal_points + 10)
+            return await client.send_message(text=f"You have successfully Invited {user_name} and got 10 points", chat_id=invite_id)
+
     except:
         file_id = data
         pre = ""

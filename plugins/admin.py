@@ -188,6 +188,7 @@ async def userinfo(client, message):
     users = await db.get_user(user_id)
     total_files_sent = users.get("lifetime_files") or "N/A"
     dc_id = user.dc_id or "Invalid DP"
+    refferal = users.get("refferal") or "N/A"
 
     if premium:
         duration = users.get("premium_expiry")
@@ -198,6 +199,7 @@ async def userinfo(client, message):
         purchase_date_str = purchase_date.strftime("%d/%m/%Y")
         expiry_date_str = expiry_date.strftime("%d/%m/%Y")
         days_left = (expiry_date - datetime.now()).days
+
     else:
         status = "Free"
         purchase_date_str = "N/A"
@@ -215,6 +217,7 @@ async def userinfo(client, message):
         f"<b>➲Purchase Date:</b> <code>{purchase_date_str}</code>\n"
         f"<b>➲Expiry Date:</b> <code>{expiry_date_str}</code>\n"
         f"<b>➲Days Left:</b> <code>{days_left}/{duration}</code> days\n"
+        f"<b>➲Refferal Points:</b> <code>{refferal}</code>\n"
         f"<b>➲Files Recieved:</b> <code>{total_files_sent}</code>\n"
     )
 

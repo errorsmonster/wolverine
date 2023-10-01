@@ -22,6 +22,7 @@ class Database:
             user_joined=False, # user joined or not
             files_count=0, # Daily files count
             lifetime_files=0, # Lifetime files count
+            refferal=0, # refferal count
             last_reset=datetime.now().strftime("%Y-%m-%d"), # Last reset date
             ban_status=dict(
                 is_banned=False,
@@ -167,6 +168,10 @@ class Database:
                 
                 if expiry_date <= now:
                     await self.remove_user_premium(user_id)
+
+    # update refferal count of user
+    async def update_refferal_count(self, user_id, count):
+        await self.col.update_one({"id": user_id}, {"$set": {"refferal": count}})                
 
     def new_group(self, id, title):
         return dict(
