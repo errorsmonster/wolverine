@@ -525,7 +525,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
-                    InlineKeyboardButton('Refer & Get Premium', callback_data="refer"),
+                    InlineKeyboardButton('📎 Refer & Get Premium', callback_data="refer"),
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🗣️ Request', callback_data="request")
