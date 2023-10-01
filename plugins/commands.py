@@ -57,7 +57,7 @@ async def start(client, message):
     if len(message.command) == 1:
             deta = message.command[1]
             ref, invite_id = deta.split('_', 1)
-            if ref == 'refferal':
+            
                 user_id = message.from_user.id
                 user_name = message.from_user.first_name
                 user = await db.get_user(user_id)
@@ -117,7 +117,9 @@ async def start(client, message):
 
     files_ = await get_file_details(file_id)           
     if not files_:
-        return await message.reply('No such file existttttt.')
+        if pre == 'refferal':
+            return await message.reply_text("You have 0 points")
+        return await message.reply_text("lol, this is not a valid file id")
 
     files = files_[0]
     title = files.file_name
