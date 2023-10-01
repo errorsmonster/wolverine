@@ -54,6 +54,7 @@ async def start(client, message):
             disable_web_page_preview=True
         )
         return
+    '''
     if len(message.command) == 1:
             deta = message.command[1]
             ref, invite_id = deta.split('_', 1)
@@ -68,6 +69,7 @@ async def start(client, message):
                     return await client.send_message(text=f"You have successfully Invited {user_name} and got 10 points", chat_id=invite_id)
                 else:
                     return await message.reply_text("You have already joined our bot")
+            '''
 
     if FORCESUB_CHANNEL and not await is_subscribed(client, message):
         try:
