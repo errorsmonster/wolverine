@@ -54,7 +54,21 @@ async def start(client, message):
             disable_web_page_preview=True
         )
         return
-    
+    if len(message.command) == 1:
+            deta = message.command[1]
+            ref, invite_id = deta.split('_', 1)
+            if ref == 'refferal':
+                user_id = message.from_user.id
+                user_name = message.from_user.first_name
+                user = await db.get_user(user_id)
+                refferal_points = user.get('refferal', 0)
+                if not await db.is_user_exist(message.from_user.id):
+                    await db.add_user(user_id, user_name)
+                    await db.update_refferal_count(invite_id, refferal_points + 10)
+                    return await client.send_message(text=f"You have successfully Invited {user_name} and got 10 points", chat_id=invite_id)
+                else:
+                    return await message.reply_text("You have already joined our bot")
+
     if FORCESUB_CHANNEL and not await is_subscribed(client, message):
         try:
             invite_link = await client.create_chat_invite_link(int(FORCESUB_CHANNEL), creates_join_request=True)
@@ -93,22 +107,7 @@ async def start(client, message):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
-        return
-    
-    deta = message.command[1]
-    ref, invite_id = deta.split('_', 1)
-    if ref == 'refferal':
-        user_id = message.from_user.id
-        user_name = message.from_user.first_name
-        user = await db.get_user(user_id)
-        refferal_points = user.get('refferal', 0)
-        if not await db.is_user_exist(message.from_user.id):
-            await db.add_user(user_id, user_name)
-            await db.update_refferal_count(invite_id, refferal_points + 10)
-            return await client.send_message(text=f"You have successfully Invited {user_name} and got 10 points", chat_id=invite_id)
-        else:
-            return await message.reply_text("You have already joined our bot")
-       
+        return       
     data = message.command[1]    
     try:
         pre, file_id = data.split('_', 1)          
