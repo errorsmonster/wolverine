@@ -98,7 +98,7 @@ async def start(client, message):
             user_id = message.from_user.id
             user_name = message.from_user.first_name
             user = await db.get_user(user_id)
-            refferal_points = await user.get('refferal', 0)
+            refferal_points = user.get('refferal')
             if not await db.is_user_exist(message.from_user.id):
                 await db.add_user(user_id, user_name)
                 await db.update_refferal_count(invite_id, refferal_points + 10)
