@@ -525,6 +525,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
+                    InlineKeyboardButton('Refer & Get Premium', callback_data="refer"),
+                    ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🗣️ Request', callback_data="request")
                   ]]
@@ -566,6 +568,20 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup=InlineKeyboardMarkup(buttons),
         disable_web_page_preview=True,
         )
+
+    elif query.data == "refer":
+        user_id = query.from_user.id
+        refferal_link = f"https://t.me/{temp.U_NAME}?start=refferal_{user_id}"
+        buttons = [[
+                    InlineKeyboardButton('Invite', url=f"https://telegram.me/share/url?url={refferal_link}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83"),
+                    InlineKeyboardButton('◀️ Back', callback_data="home")
+                ]]
+        await query.message.edit(
+            text=f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, each time they join, you will get 10 refferal points and after 100 points you will get 1 month premium subscription.</b>",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
+                                         
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         grpid = await active_connection(str(query.from_user.id))

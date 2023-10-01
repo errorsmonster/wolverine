@@ -42,8 +42,10 @@ async def start(client, message):
         buttons = [[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
+                    InlineKeyboardButton('Refer & Get Premium', callback_data="refer"),
+                    ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
-                    InlineKeyboardButton('🌼 Request', callback_data="request")
+                    InlineKeyboardButton('🗣️ Request', callback_data="request")
                   ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_text(
@@ -107,12 +109,7 @@ async def start(client, message):
         else:
             return await message.reply_text("You have already joined our bot")
        
-    data = message.command[1]
-
-    pre, file_id = data.split('_', 1)
-    if pre == 'refferal':
-        return
-    
+    data = message.command[1]    
     try:
         pre, file_id = data.split('_', 1)          
     except:
