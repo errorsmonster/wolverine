@@ -142,6 +142,13 @@ async def remove_all_premium(client, message):
     await db.remove_all_premium_users()
     await m.edit("Successfully removed all premium users!")
 
+# remove all free user from database
+@Client.on_message(filters.command("remove_all_free") & filters.user(ADMINS))
+async def remove_all_free(client, message):
+    m = await message.reply_text("Removing all free users...")
+    await db.remove_all_free_users()
+    await m.edit("Successfully removed all free users!")
+
 # list down all premium user from database
 @Client.on_message(filters.command("premiumlist") & filters.user(ADMINS))
 async def list_premium(client, message):
@@ -246,7 +253,7 @@ async def allcommands(client, message):
         f"<b>Commands:</b>\n"
         f"<b>➲/stats</b> - To get bot stats\n"
         f"<b>➲/user</b> - To get user info\n"
-        f"<b>➲/list_premium</b> - To list all premium users\n"
+        f"<b>➲/premiumlist</b> - To list all premium users\n"
         f"<b>➲/resetdaily</b> - To reset daily files count\n"
         f"<b>➲/add_paid</b> - To add a user as premium\n"
         f"<b>➲/remove_paid</b> - To remove a user from premium\n"
