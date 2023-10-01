@@ -105,6 +105,8 @@ async def start(client, message):
                 return await client.send_message(text=f"You have successfully Invited {user_name} and got 10 points", chat_id=invite_id)
             else:
                 return await message.reply_text("You have already joined our bot")  
+    else:
+        pass        
 
     data = message.command[1]
     try:
