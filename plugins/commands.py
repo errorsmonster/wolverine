@@ -108,8 +108,13 @@ async def start(client, message):
             return await message.reply_text("You have already joined our bot")
        
     data = message.command[1]
+
+    pre, file_id = data.split('_', 1)
+    if pre == 'refferal':
+        return
+    
     try:
-        pre, file_id = data.split('_', 1)            
+        pre, file_id = data.split('_', 1)          
     except:
         file_id = data
         pre = ""
