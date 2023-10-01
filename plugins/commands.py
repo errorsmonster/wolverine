@@ -91,6 +91,21 @@ async def start(client, message):
             parse_mode=enums.ParseMode.HTML
         )
         return
+    
+    deta = message.command[1]
+    ref, invite_id = deta.split('_', 1)
+    if ref == 'refferal':
+            user_id = message.from_user.id
+            user_name = message.from_user.first_name
+            user = await db.get_user(user_id)
+            refferal_points = await user.get('refferal', 0)
+            if not await db.is_user_exist(message.from_user.id):
+                await db.add_user(user_id, user_name)
+                await db.update_refferal_count(invite_id, refferal_points + 10)
+                return await client.send_message(text=f"You have successfully Invited {user_name} and got 10 points", chat_id=invite_id)
+            else:
+                return await message.reply_text("You have already joined our bot")  
+
     data = message.command[1]
     try:
         pre, file_id = data.split('_', 1)            
@@ -100,22 +115,28 @@ async def start(client, message):
 
     files_ = await get_file_details(file_id)           
     if not files_:
-        pre, file_id = data.split('_', 1)
+        pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("utf-16")).split("_", 1)
         try:
-            if pre == 'refferal':
-                user_id = message.from_user.id
-                user_name = message.from_user.first_name
-                user = await db.get_user(user_id)
-                refferal_points = await user.get('refferal', 0)
-                invite_id = file_id
-                if not await db.is_user_exist(message.from_user.id):
-                    await db.add_user(user_id, user_name)
-                    await db.update_refferal_count(invite_id, refferal_points + 10)
-                    return await client.send_message(text=f"You have successfully Invited {user_name} and got 10 points", chat_id=invite_id)
-                else:
-                    return await message.reply_text("You have already joined our bot")
+            msg = await client.send_cached_media(
+                chat_id=message.from_user.id,
+                file_id=file_id,
+                protect_content=True if pre == 'filep' else False,
+                )
+            filetype = msg.media
+            file = getattr(msg, filetype)
+            title = file.file_name
+            size=get_size(file.file_size)
+            f_caption = f"<code>{title}</code>"
+            if CUSTOM_FILE_CAPTION:
+                try:
+                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
+                except:
+                    return
+            await msg.edit_caption(f_caption)
+            return
         except:
-            pass    
+            pass
+        return await message.reply('No such file exist.')
 
     files = files_[0]
     title = files.file_name
