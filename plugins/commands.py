@@ -101,9 +101,13 @@ async def start(client, message):
             user = await db.get_user(user_id)
             refferal_points = await user.get('refferal', 0)
             invite_id = file_id
-            await db.update_refferal_count(invite_id, refferal_points + 10)
-            return await client.send_message(text=f"You have successfully Invited {user_name} and got 10 points", chat_id=invite_id)
-
+            if not await db.is_user_exist(message.from_user.id):
+                await db.add_user(user_id, user_name)
+                await db.update_refferal_count(invite_id, refferal_points + 10)
+                return await client.send_message(text=f"You have successfully Invited {user_name} and got 10 points", chat_id=invite_id)
+            else:
+                return await message.reply_text("You have already joined our bot")
+            
     except:
         file_id = data
         pre = ""
