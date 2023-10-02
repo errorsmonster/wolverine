@@ -179,8 +179,13 @@ class Database:
 
     # count refferal of user
     async def get_refferal_count(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        return user.get("refferal", 0)            
+        try:
+            user = await self.col.find_one({"id": user_id})
+            return user.get("refferal", 0)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return 0
+       
 
     def new_group(self, id, title):
         return dict(
