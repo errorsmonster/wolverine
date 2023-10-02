@@ -197,7 +197,6 @@ async def start(client, message):
         user_id = message.from_user.id
         invited_user = await client.get_users(invite_id)
         invusername = invited_user.first_name
-        user_link = f"<a href='tg://user?id={invite_id}'>{invusername}</a>"
         if invite_id == str(user_id):
             await message.reply_text("Lamao!😂 You can't invite yourself")
             return
@@ -206,7 +205,7 @@ async def start(client, message):
             await db.add_user(user_id, message.from_user.first_name)
             await db.update_refferal_count(invite_id, refferal + 1)
             await client.send_message(text=f"You have successfully Invited {message.from_user.mention}", chat_id=invite_id)
-            await message.reply_text(f"You have successfully Invited by {user_link}", disable_web_page_preview=True)
+            await message.reply_text(f"You successfully Invited by {invusername}", disable_web_page_preview=True)
         else:
             await message.reply_text("You already Invited/Joined")
         return
