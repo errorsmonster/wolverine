@@ -175,7 +175,12 @@ class Database:
 
     # update refferal count of user
     async def update_refferal_count(self, user_id, count):
-        await self.col.update_one({"id": user_id}, {"$set": {"refferal": count}})                
+        await self.col.update_one({"id": user_id}, {"$set": {"refferal": count}})   
+
+    # count refferal of user
+    async def get_refferal_count(self, user_id):
+        user = await self.col.find_one({"id": user_id})
+        return user.get("refferal", 0)            
 
     def new_group(self, id, title):
         return dict(
