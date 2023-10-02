@@ -54,7 +54,8 @@ async def start(client, message):
             disable_web_page_preview=True
         )
         return
-    if not message.command.split("-", 1)[0] == "RefferID" and FORCESUB_CHANNEL and not await is_subscribed(client, message):
+    data = message.command[1]
+    if not data.split("-", 1)[0] == "RefferID" and FORCESUB_CHANNEL and not await is_subscribed(client, message):
         try:
             invite_link = await client.create_chat_invite_link(int(FORCESUB_CHANNEL), creates_join_request=True)
         except Exception as e:
