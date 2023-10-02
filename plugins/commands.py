@@ -196,17 +196,19 @@ async def start(client, message):
         invite_id = data.split("-", 1)[1]
         user_id = message.from_user.id
         invited_user = await client.get_users(user_id)
-        username = invited_user.first_name
+        invusername = invited_user.first_name
+        if invite_id == str(user_id):
+            await message.reply_text("Lamao!😂 You can't invite yourself")
+            return
         if not await db.is_user_exist(user_id):
-            print(f"invited by, {invite_id}")
             refferal = await db.get_refferal_count(invite_id)
             await db.add_user(user_id, message.from_user.first_name)
             await db.update_refferal_count(invite_id, refferal + 1)
             #await Client.send_message(text=f"You have successfully Invited {message.from_user.first_name}", chat_id=invite_id)
-            await message.reply_text(f"You have successfully Invited by {username}", quote=True)
+            await message.reply_text(f"You have successfully Invited by {invusername}", quote=True)
         else:
-            await message.reply_text("You have already Invited/Joined")    
-        return    
+            await message.reply_text("You have already Invited/Joined")
+        return
 
 
     files_ = await get_file_details(file_id)           
