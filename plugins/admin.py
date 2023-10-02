@@ -195,7 +195,7 @@ async def userinfo(client, message):
     users = await db.get_user(user_id)
     total_files_sent = users.get("lifetime_files") or "N/A"
     dc_id = user.dc_id or "Invalid DP"
-    refferal = users.get("refferal") or "N/A"
+    refferal = users.get("refferal", 0) or "N/A"
 
     if premium:
         duration = users.get("premium_expiry")
