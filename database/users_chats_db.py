@@ -181,7 +181,7 @@ class Database:
     async def get_refferal_count(self, user_id):
         try:
             user = await self.col.find_one({"id": user_id})
-            return user.get("refferal", 0)
+            return user.get("refferal")
         except Exception as e:
             print(f"An error occurred: {e}")
             return 0
