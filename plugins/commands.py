@@ -193,6 +193,20 @@ async def start(client, message):
         return await sts.delete()
         
 
+    elif data.split("-", 1)[0] == "RefferID":
+        invite_id = data.split("-", 1)[1]
+        user_id = message.from_user.id
+        if not await db.is_user_exist(user_id):
+            user = await db.get_user(user_id)
+            refferal = user.get("refferal", 0) or "N/A"
+            await db.add_user(user_id, message.from_user.first_name)
+            await db.update_refferal_count(invite_id, refferal + 1)
+            await Client.send_message(text=f"You have successfully Invited {message.from_user.first_name}", chat_id=invite_id)
+        else:
+            await message.reply_text("You have already Invited/Joined")    
+        return    
+
+
     files_ = await get_file_details(file_id)           
     if not files_:
         pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("utf-16")).split("_", 1)
