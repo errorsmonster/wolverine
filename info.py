@@ -32,8 +32,8 @@ AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 
 # MongoDB information
 DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://ryu:ryu@ryu.watcr8f.mongodb.net/?retryWrites=true&w=majority")
-DATABASE_NAME = environ.get('DATABASE_NAME', "primehub")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'flimz')
+DATABASE_NAME = environ.get('DATABASE_NAME', "flimz")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'ryu')
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
