@@ -11,7 +11,7 @@ class Database:
         self.grp = self.db.groups
         
         
-    def new_user(self, id, name, premium_expiry=None, purchase_date=None, timestamps=0, user_joined=False, files_count=0, lifetime_files=0, referral=0):
+    def new_user(self, id, name):
         return dict(
             id=id,
             name=name,
