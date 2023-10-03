@@ -196,7 +196,7 @@ async def start(client, message):
         invite_id = data.split("-", 1)[1]
         invited_user = await client.get_users(invite_id)
         invusername = invited_user.first_name
-        referral = str(await db.get_refferal_count(invite_id))
+        referral = await db.get_refferal_count(invite_id)
 
         if invite_id == str(message.from_user.id):
             await message.reply_text("Lamao!😂 You can't invite yourself")
