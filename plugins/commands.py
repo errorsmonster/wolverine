@@ -209,6 +209,7 @@ async def start(client, message):
             await message.reply_text(f"You successfully Invited by {invusername}", disable_web_page_preview=True)
         else:
             await message.reply_text("You already Invited/Joined")
+            print(referral)
         return
 
 
