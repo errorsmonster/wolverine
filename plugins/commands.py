@@ -192,6 +192,7 @@ async def start(client, message):
         return await sts.delete()
         
 
+    # Referral sysytem
     elif data.split("-", 1)[0] == "ReferID":
         invite_id = int(data.split("-", 1)[1])
 
@@ -210,9 +211,7 @@ async def start(client, message):
                 await db.add_user(message.from_user.id, message.from_user.first_name)
                 await asyncio.sleep(1)
                 referral = await db.get_refferal_count(invite_id)  # Fetch the current referral count
-                new_referral_count = referral + 10  # Add 10 to the current referral count
-                await db.update_refferal_count(invite_id, new_referral_count)  # Update the referral count
-                print(new_referral_count)
+                await db.update_refferal_count(invite_id, referral + 10)  # Update the referral count
                 await asyncio.sleep(1)
                 referral_count = await db.get_refferal_count(message.from_user.id)
                 await db.update_refferal_count(message.from_user.id, referral_count + 10) # Update the referral count to invted user
@@ -222,8 +221,6 @@ async def start(client, message):
                 print(e)
         else:
             await message.reply_text("You already Invited/Joined")
-            referral = await db.get_refferal_count(invite_id)
-            print(referral)
         return
 
     files_ = await get_file_details(file_id)           

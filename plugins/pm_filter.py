@@ -41,7 +41,7 @@ async def filters_private_handlers(client, message):
         await db.add_user(message.from_user.id, message.from_user.first_name)
 
 
-
+    now = datetime.now()
     user_id = message.from_user.id
     user = await db.get_user(user_id)
     user_timestamps = user.get("timestamps")
@@ -51,7 +51,13 @@ async def filters_private_handlers(client, message):
     referral = await db.get_refferal_count(user_id)
 
     if referral is None or referral == 0:
-        await db.update_refferal_count(user_id, 1)
+        await db.update_refferal_count(user_id, 0)
+
+    if referral is not None and referral >= 100:
+        await db.update_refferal_count(user_id, referral - 100)
+        await db.add_user_as_premium(user_id, 28, now)
+        await message.reply_text(f"**Congratulations, you have received 1 month premium subscription for referring 10 users.**", disable_web_page_preview=True)
+        return
         
     today = datetime.now().strftime("%Y-%m-%d")
 
@@ -59,7 +65,6 @@ async def filters_private_handlers(client, message):
         await db.reset_all_files_count()
         return    
 
-    
     if message.text.startswith("/"):
         return
     
