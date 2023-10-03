@@ -180,8 +180,9 @@ class Database:
     # count refferal of user
     async def get_refferal_count(self, user_id):
         user = await self.col.find_one({"id": user_id})
+        if user is None:
+            return 0  # Return a default value (e.g., 0) when user is not found
         return user.get("referral", 0)
-       
 
     def new_group(self, id, title):
         return dict(
