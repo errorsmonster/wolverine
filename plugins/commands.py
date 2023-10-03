@@ -193,24 +193,31 @@ async def start(client, message):
         
 
     elif data.split("-", 1)[0] == "ReferID":
-        invite_id = data.split("-", 1)[1]
-        invited_user = await client.get_users(invite_id)
-        invusername = invited_user.first_name
+        invite_id = int(data.split("-", 1)[1])
 
-        if invite_id == str(message.from_user.id):
+        try:
+            invited_user = await client.get_users(invite_id)
+        except ValueError:
+            await message.reply_text("Invalid user ID provided.")
+            return
+
+        if str(invite_id) == str(message.from_user.id):
             await message.reply_text("Lamao!😂 You can't invite yourself")
             return
 
         if not await db.is_user_exist(message.from_user.id):
             try:
                 await db.add_user(message.from_user.id, message.from_user.first_name)
+                await asyncio.sleep(1)
                 referral = await db.get_refferal_count(invite_id)  # Fetch the current referral count
                 new_referral_count = referral + 10  # Add 10 to the current referral count
                 await db.update_refferal_count(invite_id, new_referral_count)  # Update the referral count
                 print(new_referral_count)
                 await asyncio.sleep(1)
+                referral_count = await db.get_refferal_count(message.from_user.id)
+                await db.update_refferal_count(message.from_user.id, referral_count + 10) # Update the referral count to invted user
                 await client.send_message(text=f"You have successfully Invited {message.from_user.mention}", chat_id=invite_id)
-                await message.reply_text(f"You were successfully invited by {invusername}", disable_web_page_preview=True)
+                await message.reply_text(f"You were successfully invited by {invited_user.first_name}", disable_web_page_preview=True)
             except Exception as e:
                 print(e)
         else:
@@ -218,7 +225,6 @@ async def start(client, message):
             referral = await db.get_refferal_count(invite_id)
             print(referral)
         return
-
 
     files_ = await get_file_details(file_id)           
     if not files_:
