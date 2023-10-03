@@ -38,7 +38,9 @@ slow_mode = SLOW_MODE_DELAY
 async def filters_private_handlers(client, message):
 
     if not await db.is_user_exist(message.from_user.id):
-        await db.add_user(message.from_user.id, message.from_user.first_name)    
+        await db.add_user(message.from_user.id, message.from_user.first_name)
+
+
 
     user_id = message.from_user.id
     user = await db.get_user(user_id)
@@ -46,8 +48,10 @@ async def filters_private_handlers(client, message):
     files_counts = user.get("files_count")
     premium_status = await db.is_premium_status(user_id)
     last_reset = user.get("last_reset")
+    referral = await db.get_refferal_count(user_id)
 
-
+    if referral is None or referral == 0:
+        await db.update_refferal_count(user_id, 1)
         
     today = datetime.now().strftime("%Y-%m-%d")
 
