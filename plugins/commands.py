@@ -192,7 +192,7 @@ async def start(client, message):
         return await sts.delete()
         
 
-    elif data.split("-", 1)[0] == "RefferID":
+    elif data.split("-", 1)[0] == "ReferID":
         invite_id = data.split("-", 1)[1]
         user_id = message.from_user.id
         invited_user = await client.get_users(invite_id)
@@ -203,7 +203,7 @@ async def start(client, message):
         if not await db.is_user_exist(user_id):
             refferal = await db.get_refferal_count(invite_id)
             await db.add_user(user_id, message.from_user.first_name)
-            await db.update_refferal_count(invite_id, refferal + 1)
+            await db.update_refferal_count(invite_id, refferal + 10)
             await client.send_message(text=f"You have successfully Invited {message.from_user.mention}", chat_id=invite_id)
             await message.reply_text(f"You successfully Invited by {invusername}", disable_web_page_preview=True)
         else:
