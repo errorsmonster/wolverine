@@ -133,6 +133,10 @@ async def public_group_filter(client, message):
     title = message.chat.title
     member_count = message.chat.members_count
     chat = await db.get_chat(group_id)
+    
+    # add user to db if not exists
+    if not await db.is_user_exist(message.from_user.id):
+        await db.add_user(message.from_user.id, message.from_user.first_name)
 
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
