@@ -52,4 +52,4 @@ Name - {}
                 'backup', 'primeroom', 'theprofffesorr', 'premium', 'vip', '4wap', 'toonworld4all', 'mlwbd'
                 'Telegram@alpacinodump', 'bollywood', "AllNewEnglishMovie", "7MovieRulz", "1TamilMV",
                 'Bazar', '_Corner20', 'CornersOfficial❣️', 'support', 'iMediaShare', '[', ']', '&', '✅',
-                'Uᴘʟᴏᴀᴅᴇᴅ', 'Bʏ', ':', 'PFM']
+                'Uᴘʟᴏᴀᴅᴇᴅ', 'Bʏ', ':', 'PFM', 'alpacinodump']
