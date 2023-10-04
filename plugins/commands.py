@@ -203,7 +203,7 @@ async def start(client, message):
             return
 
         if str(invite_id) == str(message.from_user.id):
-            await message.reply_text("Lamao!😂 You can't invite yourself")
+            await message.reply_text("LOL!😂 You can't invite yourself")
             return
 
         if not await db.is_user_exist(message.from_user.id):
@@ -216,7 +216,7 @@ async def start(client, message):
                 referral_count = await db.get_refferal_count(message.from_user.id)
                 await db.update_refferal_count(message.from_user.id, referral_count + 10) # Update the referral count to invted user
                 await client.send_message(text=f"You have successfully Invited {message.from_user.mention}", chat_id=invite_id)
-                await message.reply_text(f"You were successfully invited by {invited_user.first_name}", disable_web_page_preview=True)
+                await message.reply_text(f"You have been successfully invited by {invited_user.first_name}", disable_web_page_preview=True)
             except Exception as e:
                 print(e)
         else:

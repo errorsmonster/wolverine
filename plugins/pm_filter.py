@@ -583,16 +583,24 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "refer":
         user_id = query.from_user.id
+        referral_points = await db.get_refferal_count(user_id)
         refferal_link = f"https://t.me/{temp.U_NAME}?start=ReferID-{user_id}"
         buttons = [[
-                    InlineKeyboardButton('Invite', url=f"https://telegram.me/share/url?url={refferal_link}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83"),
+                    InlineKeyboardButton('🎐 Invite', url=f"https://telegram.me/share/url?url={refferal_link}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83"),
+                    InlineKeyboardButton(f"🟢 {referral_points}", callback_data="refer_point"),
                     InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
         await query.message.edit(
-            text=f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, each time they join, you will get 10 refferal points and after 100 points you will get 1 month premium subscription.</b>",
+            text=f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, each time they join, Both of you will get 10 refferal points and after 100 points you will get 1 month premium subscription.</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
+
+    elif query.data == "refer_point":
+        user_id = query.from_user.id
+        referral_points = await db.get_refferal_count(user_id)
+        await query.answer(f"You have {referral_points} refferal points.", show_alert=True
+        )    
                                          
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
