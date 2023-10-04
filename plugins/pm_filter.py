@@ -42,6 +42,7 @@ async def filters_private_handlers(client, message):
 
 
     now = datetime.now()
+    tody = int(now.timestamp())
     user_id = message.from_user.id
     user = await db.get_user(user_id)
     user_timestamps = user.get("timestamps")
@@ -55,7 +56,7 @@ async def filters_private_handlers(client, message):
 
     if referral is not None and referral >= 10:
         await db.update_refferal_count(user_id, referral - 100)
-        await db.add_user_as_premium(user_id, 28, now)
+        await db.add_user_as_premium(user_id, 28, tody)
         await message.reply_text(f"**Congratulations, you have received 1 month premium subscription for referring 10 users.**", disable_web_page_preview=True)
         return
         
