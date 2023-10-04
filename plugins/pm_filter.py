@@ -47,6 +47,7 @@ async def filters_private_handlers(client, message):
     user = await db.get_user(user_id)
     user_timestamps = user.get("timestamps")
     files_counts = user.get("files_count")
+    lifetime_files = user.get("lifetime_files")
     premium_status = await db.is_premium_status(user_id)
     last_reset = user.get("last_reset")
     referral = await db.get_refferal_count(user_id)
