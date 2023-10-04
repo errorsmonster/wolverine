@@ -54,7 +54,7 @@ async def filters_private_handlers(client, message):
     if referral is None or referral == 0:
         await db.update_refferal_count(user_id, 0)
 
-    if referral is not None and referral >= 10:
+    if referral is not None and referral >= 100:
         await db.update_refferal_count(user_id, referral - 100)
         await db.add_user_as_premium(user_id, 28, tody)
         await message.reply_text(f"**Congratulations, you have received 1 month premium subscription for referring 10 users.**", disable_web_page_preview=True)
