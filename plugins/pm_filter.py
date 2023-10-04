@@ -51,7 +51,7 @@ async def filters_private_handlers(client, message):
     last_reset = user.get("last_reset")
     referral = await db.get_refferal_count(user_id)
 
-    if referral is None or referral == 0:
+    if referral is None or referral <= 0:
         await db.update_refferal_count(user_id, 0)
 
     if referral is not None and referral >= 100:
