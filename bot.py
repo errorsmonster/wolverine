@@ -17,7 +17,7 @@ from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
 
 from aiohttp import web
-from plugins import web_server
+from plugins.web import web_server
 
 name = f"""
 ██████╗ ██████╗ ██╗███╗   ███╗███████╗██╗  ██╗██╗   ██╗██████╗ 
