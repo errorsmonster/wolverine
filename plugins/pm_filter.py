@@ -17,6 +17,7 @@ from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerId
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist
 from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter, freemium_filter
+from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -113,7 +114,7 @@ async def filters_private_handlers(client, message):
         
             if ONE_LINK_ONE_FILE:
                 if files_counts is not None and files_counts >= 1:
-                    await freemium_filter(client, message)
+                    await free_filter(client, message)
                     return
                 else:
                     await auto_filter(client, message)
