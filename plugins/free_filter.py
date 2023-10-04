@@ -22,12 +22,8 @@ slow_mode = SLOW_MODE_DELAY
 @Client.on_callback_query(filters.regex(r"^free"))
 async def free_next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
-    # get user name in query.answer
-    m = int(req)
-    k = await bot.get_users(m)
-    name = k.first_name if not k.last_name else k.first_name + " " + k.last_name
     if int(req) not in [query.from_user.id, 0]:
-        return await query.answer(f"That's not for you buddy!\nOnly ~{name} can access this query", show_alert=True)
+        return await query.answer("ok")
     try:
         offset = int(offset)
     except:
@@ -45,7 +41,6 @@ async def free_next_page(bot, query):
 
     if not files:
         return
-    
 
     # Construct a text message with hyperlinks
     search_results_text = []
@@ -65,6 +60,7 @@ async def free_next_page(bot, query):
         off_set = None
     else:
         off_set = offset - 10
+        
     if n_offset == 0:
         btn.append(
             [InlineKeyboardButton("⏪ BACK", callback_data=f"free_{req}_{key}_{off_set}"),
