@@ -60,7 +60,7 @@ async def free_next_page(bot, query):
         off_set = None
     else:
         off_set = offset - 10
-        
+
     if n_offset == 0:
         btn.append(
             [InlineKeyboardButton("⏪ BACK", callback_data=f"free_{req}_{key}_{off_set}"),
@@ -132,7 +132,8 @@ async def free_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
     cap = f"Here is what i found for your query {search}"
-    await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
+    m = await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
     await db.update_timestamps(message.from_user.id, int(time.time()))
-    if spoll:
-        await msg.message.delete()
+    # delete msg after 2 min
+    await asyncio.sleep(120)
+    await m.delete()
