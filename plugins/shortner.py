@@ -1,9 +1,9 @@
 import aiohttp
 import json
 
-async def linkgen(link):
+async def get_shortlink(link):
     url = f'https://api.shareus.io/easy_api'
-    api_key = "VLuKAPjHgrahNY2zTcWM16lFyTJ2"
+    api_key = "uCnFziQw3OQMiHjYzjHo4I6CS5a2"
 
     params = {'key': api_key, 'link': link}
     
@@ -27,7 +27,7 @@ async def adlinkfly(link, shortner=None, api_key=None):
         print(e)
         return f"{shortner}?api={api_key}&url={link}&format=text"
 
-async def get_shortlink(link):
+async def linkgen(link):
     shortner = f'https://urlshare.onrender.com/?create&url={link}'
     try:
         async with aiohttp.ClientSession() as session:
