@@ -16,6 +16,9 @@ from utils import temp
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
 
+from aiohttp import web
+from plugins.web import web_server
+
 name = f"""
 ██████╗ ██████╗ ██╗███╗   ███╗███████╗██╗  ██╗██╗   ██╗██████╗ 
 ██╔══██╗██╔══██╗██║████╗ ████║██╔════╝██║  ██║██║   ██║██╔══██╗
@@ -50,6 +53,12 @@ class Bot(Client):
         temp.B_NAME = me.first_name
         self.username = '@' + me.username
         logging.info(name)
+        #web-response
+        app = web.AppRunner(await web_server())
+        await app.setup()
+        bind_address = "0.0.0.0"
+        port = "8080"
+        await web.TCPSite(app, bind_address, port).start()
 
     async def stop(self, *args):
         await super().stop()
