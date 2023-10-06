@@ -80,7 +80,7 @@ async def filters_private_handlers(client, message):
     msg = await message.reply_text("Searching For Your Request...")
 
  
-    # Unnecessary Function
+    # optinal function for checking time difference between currrent time and next 12'o clock
     current_datetime = datetime.now()
     next_day = current_datetime + timedelta(days=1)
     next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
