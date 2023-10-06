@@ -4,7 +4,7 @@ import re
 import ast
 import math
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
@@ -58,7 +58,7 @@ async def filters_private_handlers(client, message):
     if referral is not None and referral >= 100:
         await db.update_refferal_count(user_id, referral - 100)
         await db.add_user_as_premium(user_id, 28, tody)
-        await message.reply_text(f"**Congratulations, you have received 1 month premium subscription for referring 10 users.**", disable_web_page_preview=True)
+        await message.reply_text(f"**Congratulations! {message.from_user.mention},\nYou Have Received 1 Month Premium Subscription For Inviting 10 Users.**", disable_web_page_preview=True)
         return
         
     today = datetime.now().strftime("%Y-%m-%d")
@@ -79,6 +79,13 @@ async def filters_private_handlers(client, message):
     
     msg = await message.reply_text("Searching For Your Request...")
 
+ 
+    # Unnecessary Function
+    current_datetime = datetime.now()
+    next_day = current_datetime + timedelta(days=1)
+    next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
+    time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
+
     try:
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
@@ -88,7 +95,7 @@ async def filters_private_handlers(client, message):
                 return
             
             if files_counts is not None and files_counts >= 50:
-                await message.reply_text("Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After 24 Hours.")
+                await message.reply_text(f"Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.")
                 return
             
             await paid_filter(client, message)
