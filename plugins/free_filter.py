@@ -55,10 +55,8 @@ async def free_next_page(bot, query):
     btn.append([
             InlineKeyboardButton("Upgrade", url=f"https://t.me/{temp.U_NAME}?start=upgrade"),
             InlineKeyboardButton("Refer", url=f"https://t.me/{temp.U_NAME}?start=refer")
-        ])
-    
-    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
-    
+            ],[
+            InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
 
     if 0 < offset <= 10:
         off_set = 0
@@ -127,10 +125,8 @@ async def free_filter(client, msg, spoll=False):
     btn.append([
             InlineKeyboardButton("Upgrade", url=f"https://t.me/{temp.U_NAME}?start=upgrade"),
             InlineKeyboardButton("Refer", url=f"https://t.me/{temp.U_NAME}?start=refer")
-        ])
-    
-    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
-    
+            ],[
+            InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
 
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
