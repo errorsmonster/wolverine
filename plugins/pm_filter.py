@@ -212,7 +212,13 @@ async def next_page(bot, query):
         search_results_text = "\n\n".join(search_results_text)
 
     btn = []    
-    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5"),])
+    btn.append([
+        [
+        InlineKeyboardButton("Upgrade", url=f"https://t.me/{temp.U_NAME}start?upgrade=upgrade"),
+        InlineKeyboardButton("Refer", url=f"https://t.me/{temp.U_NAME}start?upgrade=refer")
+        ],[
+        InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")]
+        ])
 
     if 0 < offset <= 10:
         off_set = 0
@@ -686,7 +692,14 @@ async def auto_filter(client, msg, spoll=False):
         search_results_text = "\n\n".join(search_results_text)
 
     btn = []  
-    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5"),])
+    btn.append([
+        [
+        InlineKeyboardButton("Upgrade", url=f"https://t.me/{temp.U_NAME}start?upgrade=upgrade"),
+        InlineKeyboardButton("Refer", url=f"https://t.me/{temp.U_NAME}start?upgrade=refer")
+        ],[
+        InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")]
+        ])
+    
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
         BUTTONS[key] = search
