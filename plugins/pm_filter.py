@@ -693,8 +693,7 @@ async def auto_filter(client, msg, spoll=False):
 
         search_results_text = "\n\n".join(search_results_text)
 
-    btn = []  
-    btn = []  
+    btn = []   
     btn.append([
             InlineKeyboardButton("Upgrade", url=f"https://t.me/{temp.U_NAME}?start=upgrade"),
             InlineKeyboardButton("Refer", url=f"https://t.me/{temp.U_NAME}?start=refer")
