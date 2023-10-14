@@ -4,7 +4,7 @@ import re
 import ast
 import math
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
@@ -58,7 +58,7 @@ async def filters_private_handlers(client, message):
     if referral is not None and referral >= 100:
         await db.update_refferal_count(user_id, referral - 100)
         await db.add_user_as_premium(user_id, 28, tody)
-        await message.reply_text(f"**Congratulations, you have received 1 month premium subscription for referring 10 users.**", disable_web_page_preview=True)
+        await message.reply_text(f"**Congratulations! {message.from_user.mention},\nYou Have Received 1 Month Premium Subscription For Inviting 10 Users.**", disable_web_page_preview=True)
         return
         
     today = datetime.now().strftime("%Y-%m-%d")
@@ -74,17 +74,28 @@ async def filters_private_handlers(client, message):
         search = message.text
         files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
         if not files:
-            await message.reply_text("**I couldn't find any movie in that name, please check the spelling or release date and try again.**", reply_to_message_id=message.id)
+            await message.reply_text("**I Couldn't Find Any Movie In That Name, Please Check The Spelling Or Release Date And Try Again.**", reply_to_message_id=message.id)
             return
     
-    msg = await message.reply_text("Searching for your request...")
+    msg = await message.reply_text("Searching For Your Request...")
+
+ 
+    # optinal function for checking time difference between currrent time and next 12'o clock
+    current_datetime = datetime.now()
+    next_day = current_datetime + timedelta(days=1)
+    next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
+    time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
 
     try:
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
             
             if is_expired:
-                await message.reply_text(f"**Your premium subscription has expired. Please renew your subscription to continue using premium.**", disable_web_page_preview=True)
+                await message.reply_text(f"**Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.**", disable_web_page_preview=True)
+                return
+            
+            if files_counts is not None and files_counts >= 50:
+                await message.reply_text(f"Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.")
                 return
             
             await paid_filter(client, message)
@@ -107,7 +118,7 @@ async def filters_private_handlers(client, message):
                 
             if files_counts is not None and files_counts >= 10:
                 await message.reply(
-                    f"**You have reached your daily limit. Please try again tomorrow, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>upgrade</a> to premium for unlimited request**",
+                    f"**You Have Reached Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request**",
                     disable_web_page_preview=True)
                 return
         
