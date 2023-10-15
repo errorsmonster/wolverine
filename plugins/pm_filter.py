@@ -51,6 +51,7 @@ async def filters_private_handlers(client, message):
     premium_status = await db.is_premium_status(user_id)
     last_reset = user.get("last_reset")
     referral = await db.get_refferal_count(user_id)
+    duration = user.get("premium_expiry")
 
     if referral is None or referral <= 0:
         await db.update_refferal_count(user_id, 0)
@@ -98,6 +99,11 @@ async def filters_private_handlers(client, message):
                 await message.reply_text(f"Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.")
                 return
             
+            if duration == 29:
+                if files_counts is not None and files_counts >= 20:
+                    await message.reply_text(f"You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again")
+                    return
+
             await paid_filter(client, message)
             return
 
