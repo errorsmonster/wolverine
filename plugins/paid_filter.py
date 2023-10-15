@@ -204,11 +204,15 @@ async def paid_next_page(bot, query):
             ],
         )
     try:
-         await query.edit_message_text(
+         m = await query.edit_message_text(
             text=search_results_text,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(btn)
         )
+         # delete msg after 5 min
+         await asyncio.sleep(300)
+         await m.delete()
+
     except MessageNotModified:
         pass
     await query.answer()
