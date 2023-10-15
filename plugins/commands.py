@@ -233,7 +233,7 @@ async def start(client, message):
             except Exception as e:
                 print(e)
         else:
-            await message.reply_text("You already Invited/Joined")
+            await message.reply_text("You already Invited or Joined")
         return
 
     files_ = await get_file_details(file_id)           
