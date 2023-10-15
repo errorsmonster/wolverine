@@ -216,7 +216,7 @@ async def start(client, message):
             return
 
         if str(invite_id) == str(message.from_user.id):
-            await message.reply_text(f"You Can't Invite Yourself, Send This Invite Link To Your Friends\n\nInvite Link - <code>https://t.me/{temp.U_NAME}?start=ReferID-{message.from_user.id}</code>")
+            await message.reply_text(f"You Can't Invite Yourself, Send This Invite Link To Your Friends\n\n<b>Invite Link</b> - <code>https://t.me/{temp.U_NAME}?start=ReferID-{message.from_user.id}</code>")
             return
 
         if not await db.is_user_exist(message.from_user.id):
