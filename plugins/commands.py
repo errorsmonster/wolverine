@@ -216,7 +216,7 @@ async def start(client, message):
             return
 
         if str(invite_id) == str(message.from_user.id):
-            await message.reply_text(f"You Can't Invite Yourself, Send This Invite Link To Your Friends\n\n<b>Invite Link</b> - <code>https://t.me/{temp.U_NAME}?start=ReferID-{message.from_user.id}</code>")
+            await message.reply_text(f"<b>You Can't Invite Yourself, Send This Invite Link To Your Friends\n\nInvite Link</b> - \n<code>https://t.me/{temp.U_NAME}?start=ReferID-{message.from_user.id}</code>")
             return
 
         if not await db.is_user_exist(message.from_user.id):
@@ -276,7 +276,7 @@ async def start(client, message):
         chat_id=message.from_user.id,
         file_id=file_id,
         protect_content=True if pre == 'filep' else False,
-        caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
+        caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Join</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
         reply_markup=InlineKeyboardMarkup(
             [[
                 InlineKeyboardButton('Support', url=f"https://t.me/iPrimehub"),
