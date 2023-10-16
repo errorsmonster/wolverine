@@ -16,7 +16,7 @@ from database.users_chats_db import db
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist
 from plugins.shortner import get_shortlink
-from plugins.paid_filter import paid_filter, freemium_filter
+from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
@@ -51,6 +51,7 @@ async def filters_private_handlers(client, message):
     premium_status = await db.is_premium_status(user_id)
     last_reset = user.get("last_reset")
     referral = await db.get_refferal_count(user_id)
+    duration = user.get("premium_expiry")
 
     if referral is None or referral <= 0:
         await db.update_refferal_count(user_id, 0)
@@ -98,6 +99,11 @@ async def filters_private_handlers(client, message):
                 await message.reply_text(f"Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.")
                 return
             
+            if duration == 29:
+                if files_counts is not None and files_counts >= 20:
+                    await message.reply_text(f"You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again")
+                    return
+
             await paid_filter(client, message)
             return
 
@@ -211,16 +217,8 @@ async def next_page(bot, query):
 
         search_results_text = "\n\n".join(search_results_text)
 
-    btn = []    
-    btn = []  
-    btn.append([
-            InlineKeyboardButton("Upgrade", url=f"https://t.me/{temp.U_NAME}?start=upgrade"),
-            InlineKeyboardButton("Refer", url=f"https://t.me/{temp.U_NAME}?start=refer")
-        ])
-    
+    btn = []
     btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
-    
-
     
     if 0 < offset <= 10:
         off_set = 0

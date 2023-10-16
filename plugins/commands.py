@@ -99,7 +99,7 @@ async def start(client, message):
         referral_points = await db.get_refferal_count(user_id)
         refferal_link = f"https://t.me/{temp.U_NAME}?start=ReferID-{user_id}"
         keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔗 Invite Your Friends", url=f"https://telegram.me/share/url?url={refferal_link}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83")]])
-        await m.edit(f"<b>Here is your refferal link:</b>\n{refferal_link}\n\n<b>Share this link with your friends, each time they join,Both of you will be rewarded 10 refferal points and after 100 points you will get 1 month premium subscription.\n\n Referral Points: {referral_points}</b>",
+        await m.edit(f"<b>Here is your refferal link:</b>\n{refferal_link}\n\n<b>Share this link with your friends, each time they join, Both of you will be rewarded 10 refferal points and after 100 points you will get 1 month premium subscription.\n\n Referral Points: {referral_points}</b>",
                      reply_markup=keyboard,
                      disable_web_page_preview=True
         )
@@ -216,7 +216,7 @@ async def start(client, message):
             return
 
         if str(invite_id) == str(message.from_user.id):
-            await message.reply_text("LOL!😂 You can't invite yourself")
+            await message.reply_text(f"<b>You Can't Invite Yourself, Send This Invite Link To Your Friends\n\nInvite Link</b> - \n<code>https://t.me/{temp.U_NAME}?start=ReferID-{message.from_user.id}</code>")
             return
 
         if not await db.is_user_exist(message.from_user.id):
@@ -233,7 +233,7 @@ async def start(client, message):
             except Exception as e:
                 print(e)
         else:
-            await message.reply_text("You already Invited/Joined")
+            await message.reply_text("You already Invited or Joined")
         return
 
     files_ = await get_file_details(file_id)           
@@ -276,7 +276,7 @@ async def start(client, message):
         chat_id=message.from_user.id,
         file_id=file_id,
         protect_content=True if pre == 'filep' else False,
-        caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
+        caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Join</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
         reply_markup=InlineKeyboardMarkup(
             [[
                 InlineKeyboardButton('Support', url=f"https://t.me/iPrimehub"),
