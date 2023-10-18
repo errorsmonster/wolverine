@@ -9,7 +9,7 @@ from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidD
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS
+from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -33,6 +33,7 @@ BUTTONS = {}
 SPELL_CHECK = {}
 blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
+waitime = WAIT_TIME
 
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
@@ -160,25 +161,32 @@ async def public_group_filter(client, message):
     if message.text.startswith("/"):
         return
     
-    if group_id in AUTH_GROUPS:
-        k = await manual_filters(client, message)
-        if k is False:
-            await auto_filter(client, message)
+    try:
+        if group_id in AUTH_GROUPS:
+            k = await manual_filters(client, message)
+            if k is False:
+                await auto_filter(client, message)
             return
-
-    if group_id in ACCESS_GROUPS:
-        await auto_filter(client, message)
-        return      
-
-    if member_count is not None and member_count > 500:
-        if chat:
+        
+        if group_id in ACCESS_GROUPS:
             await auto_filter(client, message)
+            return      
+
+        if member_count is not None and member_count > 500:
+            if chat:
+                await auto_filter(client, message)
+            else:
+                await db.add_chat(group_id, title)
         else:
-            await db.add_chat(group_id, title)
-    else:
-        return
+            return
+        
+    except Exception as e:
+        print(e)
 
-
+    finally:
+        if waitime is not None:
+            await asyncio.sleep(waitime)
+            await message.delete()
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
@@ -712,11 +720,14 @@ async def auto_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
     cap = f"Here is what i found for your query {search}"
-    await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
+    m = await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
+    # add timestamp to database for floodwait
     await db.update_timestamps(message.from_user.id, int(time.time()))
+    if waitime is not None:
+        await asyncio.sleep(waitime)
+        await m.delete()
     if spoll:
         await msg.message.delete()
-
 
 async def advantage_spell_chok(msg):
     query = re.sub(
