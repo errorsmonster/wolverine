@@ -79,7 +79,7 @@ async def filters_private_handlers(client, message):
             await message.reply_text("**I Couldn't Find Any Movie In That Name, Please Check The Spelling Or Release Date And Try Again.**", reply_to_message_id=message.id)
             return
     
-    msg = await message.reply_text("Searching For Your Request...")
+    msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
 
  
     # optinal function for checking time difference between currrent time and next 12'o clock

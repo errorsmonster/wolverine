@@ -73,7 +73,7 @@ async def validate_code(client, message):
 
     user_id = message.from_user.id
     if await db.is_premium_status(user_id) is True:
-        await message.reply_text("You can't redeem this code because you are already a premium user")
+        await message.reply_text(f"<b>You can't redeem this code because you are already a premium user</b>")
         return
 
     m = await message.reply_text(f"Please wait, checking your redeem code....")
@@ -101,7 +101,7 @@ async def validate_code(client, message):
                     await asyncio.sleep(2)
                     a = await s.edit(f"Activating your subscription...")
                     await asyncio.sleep(2)
-                    await a.edit(f"Your subscription has been enabled successfully for {duration} days.")
+                    await a.edit(f"<b>Your subscription has been enabled successfully for {duration} days.</b>")
                     # send message to log channel
                     await client.send_message(LOG_CHANNEL, f"#redeem\n<code>{full_code}</code>\n{message.from_user.mention} <code>{message.from_user.id}</code> successfully redeemed a code for {duration} days.")
                 else:
