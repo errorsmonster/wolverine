@@ -52,8 +52,6 @@ FILE_STORE_CHANNEL = [int(ch) for ch in (environ.get('FILE_STORE_CHANNEL', '')).
 MELCOW_NEW_USERS = is_enabled((environ.get('MELCOW_NEW_USERS', "False")), True)
 PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
 PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "False")), True)
-
-
 FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001905287436"))
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 60))
 RESPONCE_LIMIT = int(environ.get('RESPONCE_LIMIT', 10))

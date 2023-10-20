@@ -276,7 +276,7 @@ async def start(client, message):
         chat_id=message.from_user.id,
         file_id=file_id,
         protect_content=True if pre == 'filep' else False,
-        caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Join</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
+        caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
         reply_markup=InlineKeyboardMarkup(
             [[
                 InlineKeyboardButton('Support', url=f"https://t.me/iPrimehub"),
