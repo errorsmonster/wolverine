@@ -3,7 +3,7 @@ import re
 import math
 import time
 from Script import script
-from info import SLOW_MODE_DELAY
+from info import SLOW_MODE_DELAY, WAIT_TIME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from database.users_chats_db import db
@@ -16,6 +16,7 @@ BUTTONS = {}
 SPELL_CHECK = {}
 blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
+waitime = WAIT_TIME
 
 
 @Client.on_callback_query(filters.regex(r"^forward"))
@@ -245,8 +246,6 @@ async def paid_filter(client, msg, spoll=False):
     search_results_text = "\n\n".join(search_results_text)
 
     btn = []   
-    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
-
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
         BUTTONS[key] = search
@@ -262,6 +261,6 @@ async def paid_filter(client, msg, spoll=False):
     cap = f"Here is what i found for your query {search}"
     m = await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
     await db.update_timestamps(message.from_user.id, int(time.time()))
-    # delete msg after 3 min
-    await asyncio.sleep(300)
-    await m.delete()
+    if waitime is not None:
+        await asyncio.sleep(waitime)
+        await m.delete()
