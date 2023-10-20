@@ -196,7 +196,7 @@ async def next_page(bot, query):
     k = await bot.get_users(m)
     name = k.first_name if not k.last_name else k.first_name + " " + k.last_name
     if int(req) not in [query.from_user.id, 0]:
-        return await query.answer(f"That's not for you buddy!\nOnly ~{name} can access this query", show_alert=True)
+        return await query.answer(f"Only ~{name} can access this query", show_alert=True)
     try:
         offset = int(offset)
     except:
