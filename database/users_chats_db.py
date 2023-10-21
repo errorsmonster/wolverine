@@ -152,7 +152,7 @@ class Database:
         expiry_date = purchased_date + timedelta(days=duration)
         days_left = (expiry_date - datetime.now()).days
 
-        if days_left <= 0:
+        if days_left < 0:
             await self.remove_user_premium(user_id)
             return "Your subscription has expired."
 
