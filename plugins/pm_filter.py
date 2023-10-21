@@ -284,7 +284,6 @@ async def advantage_spoll_choker(bot, query):
             k = await query.message.edit('This Movie Not Found In DataBase')
             await asyncio.sleep(10)
             await k.delete()
-            await query.delete()
     
 
 @Client.on_callback_query()
