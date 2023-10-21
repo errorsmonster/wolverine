@@ -159,7 +159,7 @@ async def public_group_filter(client, message):
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return
-    
+
     try:
         if group_id in AUTH_GROUPS:
             k = await manual_filters(client, message)
@@ -284,7 +284,7 @@ async def advantage_spoll_choker(bot, query):
             k = await query.message.edit('This Movie Not Found In DataBase')
             await asyncio.sleep(10)
             await k.delete()
-
+            await query.delete()
     
 
 @Client.on_callback_query()
@@ -784,6 +784,7 @@ async def advantage_spell_chok(msg):
     if waitime is not None:
         await asyncio.sleep(waitime)
         await m.delete()
+        await msg.delete()
 
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id
