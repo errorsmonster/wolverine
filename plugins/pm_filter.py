@@ -151,9 +151,6 @@ async def public_group_filter(client, message):
     title = message.chat.title
     member_count = message.chat.members_count
     chat = await db.get_chat(group_id)
-
-    search = message.text
-    files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
     
     # add user to db if not exists
     if not await db.is_user_exist(message.from_user.id):
@@ -162,10 +159,6 @@ async def public_group_filter(client, message):
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return
-    
-    if not files:
-        await asyncio.sleep(15)
-        await message.delete()
 
     try:
         if group_id in AUTH_GROUPS:
