@@ -73,7 +73,7 @@ async def validate_code(client, message):
 
     user_id = message.from_user.id
     if await db.is_premium_status(user_id) is True:
-        await message.reply_text("You can't redeem this code because you are already a premium user")
+        await message.reply_text(f"<b>You can't redeem this code because you are already a premium user</b>")
         return
 
     m = await message.reply_text(f"Please wait, checking your redeem code....")
@@ -98,10 +98,10 @@ async def validate_code(client, message):
                 if json_response.get('message') == "Code validated successfully":
                     s = await m.edit("Redeem code validated successfully.")
                     await db.add_user_as_premium(user_id, duration, subscription_date)
-                    await asyncio.sleep(5)
+                    await asyncio.sleep(2)
                     a = await s.edit(f"Activating your subscription...")
-                    await asyncio.sleep(5)
-                    await a.edit(f"Your subscription has been enabled successfully for {duration} days.")
+                    await asyncio.sleep(2)
+                    await a.edit(f"<b>Your subscription has been enabled successfully for {duration} days.</b>")
                     # send message to log channel
                     await client.send_message(LOG_CHANNEL, f"#redeem\n<code>{full_code}</code>\n{message.from_user.mention} <code>{message.from_user.id}</code> successfully redeemed a code for {duration} days.")
                 else:
@@ -112,9 +112,14 @@ async def revoke_license_code(client, message):
     if len(message.command) != 2:
         await message.reply_text("Invalid command format. Use /revoke <code>")
         return
+    
     code = message.text.split(None, 1)[1]
+    first_part_code = code.matches[0][1]
+    second_part_code = code.matches[0][3]
+    full_code = first_part_code + second_part_code
+
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={code}") as resp:
+        async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={full_code}") as resp:
             try:
                 if resp.status == 200:
                     json_response = await resp.json()

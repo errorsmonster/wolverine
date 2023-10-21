@@ -5,7 +5,6 @@ import ast
 import math
 import time
 from datetime import datetime, timedelta
-from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
@@ -79,7 +78,7 @@ async def filters_private_handlers(client, message):
             await message.reply_text("**I Couldn't Find Any Movie In That Name, Please Check The Spelling Or Release Date And Try Again.**", reply_to_message_id=message.id)
             return
     
-    msg = await message.reply_text("Searching For Your Request...")
+    msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
 
  
     # optinal function for checking time difference between currrent time and next 12'o clock
@@ -196,7 +195,7 @@ async def next_page(bot, query):
     k = await bot.get_users(m)
     name = k.first_name if not k.last_name else k.first_name + " " + k.last_name
     if int(req) not in [query.from_user.id, 0]:
-        return await query.answer(f"That's not for you buddy!\nOnly ~{name} can access this query", show_alert=True)
+        return await query.answer(f"Only ~{name} can access this query", show_alert=True)
     try:
         offset = int(offset)
     except:
@@ -622,7 +621,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
         await query.message.edit(
-            text=f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, each time they join, Both of you will get 10 refferal points and after 100 points you will get 1 month premium subscription.</b>",
+            text=f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will get 10 refferal points and after 100 points you will get 1 month premium subscription.</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
@@ -767,8 +766,8 @@ async def advantage_spell_chok(msg):
     movielist += [(re.sub(r'(\-|\(|\)|_)', '', i, flags=re.IGNORECASE)).strip() for i in gs_parsed]
     movielist = list(dict.fromkeys(movielist))  # removing duplicates
     if not movielist:
-        k = await msg.reply("I couldn't find anything related to that. Check your spelling")
-        await asyncio.sleep(8)
+        k = await msg.reply("**I couldn't find anything related to that. Check your spelling**")
+        await asyncio.sleep(15)
         await k.delete()
         return
     SPELL_CHECK[msg.id] = movielist
@@ -779,8 +778,12 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
+    m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
                     reply_markup=InlineKeyboardMarkup(btn))
+    # delete the spellcheck query after given time
+    if waitime is not None:
+        await asyncio.sleep(waitime)
+        await m.delete()
 
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id
