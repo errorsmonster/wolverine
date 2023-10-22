@@ -145,6 +145,7 @@ async def filters_private_handlers(client, message):
     finally:
         await msg.delete()
 
+
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
     group_id = message.chat.id
@@ -159,7 +160,7 @@ async def public_group_filter(client, message):
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return
-    
+
     try:
         if group_id in AUTH_GROUPS:
             k = await manual_filters(client, message)
@@ -169,7 +170,7 @@ async def public_group_filter(client, message):
         
         if group_id in ACCESS_GROUPS:
             await auto_filter(client, message)
-            return      
+            return
 
         if member_count is not None and member_count > 500:
             if chat:
@@ -179,13 +180,14 @@ async def public_group_filter(client, message):
         else:
             return
         
-    except Exception as e:
-        print(e)
-
-    finally:
         if waitime is not None:
             await asyncio.sleep(waitime)
             await message.delete()
+        return
+        
+    except Exception as e:
+        print(e)
+
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
@@ -284,7 +286,6 @@ async def advantage_spoll_choker(bot, query):
             k = await query.message.edit('This Movie Not Found In DataBase')
             await asyncio.sleep(10)
             await k.delete()
-
     
 
 @Client.on_callback_query()
@@ -561,6 +562,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await asyncio.sleep(600)
         await md_id.delete()
         await del_msg.edit("__⊘ This message was deleted__")
+
     elif query.data == "pages":
         await query.answer('Share & Support Us♥️')
     elif query.data == "home":
@@ -784,6 +786,7 @@ async def advantage_spell_chok(msg):
     if waitime is not None:
         await asyncio.sleep(waitime)
         await m.delete()
+        return
 
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id

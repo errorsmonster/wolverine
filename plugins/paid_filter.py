@@ -215,7 +215,7 @@ async def paid_next_page(bot, query):
 
     except MessageNotModified:
         pass
-    await query.answer()
+    await query.answer("©PrimeHub™")
 
 
 async def paid_filter(client, msg, spoll=False):
