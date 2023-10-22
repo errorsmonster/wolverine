@@ -53,6 +53,15 @@ async def filters_private_handlers(client, message):
     referral = await db.get_refferal_count(user_id)
     duration = user.get("premium_expiry")
 
+    # optinal function for checking time difference between currrent time and next 12'o clock
+    current_datetime = datetime.now()
+    next_day = current_datetime + timedelta(days=1)
+    next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
+    time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
+ 
+    # Todays Date
+    today = datetime.now().strftime("%Y-%m-%d")
+
     if referral is None or referral <= 0:
         await db.update_refferal_count(user_id, 0)
 
@@ -62,8 +71,6 @@ async def filters_private_handlers(client, message):
         await message.reply_text(f"**Congratulations! {message.from_user.mention},\nYou Have Received 1 Month Premium Subscription For Inviting 10 Users.**", disable_web_page_preview=True)
         return
         
-    today = datetime.now().strftime("%Y-%m-%d")
-
     if last_reset != today:
         await db.reset_all_files_count()
         return    
@@ -79,12 +86,6 @@ async def filters_private_handlers(client, message):
             return
     
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
-
-    # optinal function for checking time difference between currrent time and next 12'o clock
-    current_datetime = datetime.now()
-    next_day = current_datetime + timedelta(days=1)
-    next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
-    time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
 
     try:
         # delete loading msg
@@ -105,7 +106,8 @@ async def filters_private_handlers(client, message):
                 if files_counts is not None and files_counts >= 20:
                     await message.reply_text(f"You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again")
                     return
-
+                
+            # call auto filter
             await paid_filter(client, message)
 
         else:
