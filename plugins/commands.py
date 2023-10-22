@@ -7,7 +7,7 @@ from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, FORCESUB_CHANNEL
+from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, FORCESUB_CHANNEL, WAIT_TIME
 from utils import get_settings, get_size, is_subscribed, temp, replace_blacklist
 from database.connections_mdb import active_connection
 import re
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
 blacklist = script.BLACKLIST
+waitime = WAIT_TIME
 
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
@@ -216,7 +217,11 @@ async def start(client, message):
             return
 
         if str(invite_id) == str(message.from_user.id):
-            await message.reply_text(f"<b>You Can't Invite Yourself, Send This Invite Link To Your Friends\n\nInvite Link</b> - \n<code>https://t.me/{temp.U_NAME}?start=ReferID-{message.from_user.id}</code>")
+            inv_link = f"https://t.me/{temp.U_NAME}?start=ReferID-{message.from_user.id}"
+            keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔗 Invite Your Friends", url=f"https://telegram.me/share/url?url={refferal_link}&text=%F0%9D%90%87%F0%9D%90%9E%F0%9D%90%A5%F0%9D%90%A5%F0%9D%90%A8!%20%F0%9D%90%84%F0%9D%90%B1%F0%9D%90%A9%F0%9D%90%9E%F0%9D%90%AB%F0%9D%90%A2%F0%9D%90%9E%F0%9D%90%A7%F0%9D%90%9C%F0%9D%90%9E%20%F0%9D%90%9A%20%F0%9D%90%9B%F0%9D%90%A8%F0%9D%90%AD%20%F0%9D%90%AD%F0%9D%90%A1%F0%9D%90%9A%F0%9D%90%AD%20%F0%9D%90%A8%F0%9D%90%9F%F0%9D%90%9F%F0%9D%90%9E%F0%9D%90%AB%F0%9D%90%AC%20%F0%9D%90%9A%20%F0%9D%90%AF%F0%9D%90%9A%F0%9D%90%AC%F0%9D%90%AD%20%F0%9D%90%A5%F0%9D%90%A2%F0%9D%90%9B%F0%9D%90%AB%F0%9D%90%9A%F0%9D%90%AB%F0%9D%90%B2%20%F0%9D%90%A8%F0%9D%90%9F%20%F0%9D%90%AE%F0%9D%90%A7%F0%9D%90%A5%F0%9D%90%A2%F0%9D%90%A6%F0%9D%90%A2%F0%9D%90%AD%F0%9D%90%9E%F0%9D%90%9D%20%F0%9D%90%A6%F0%9D%90%A8%F0%9D%90%AF%F0%9D%90%A2%F0%9D%90%9E%F0%9D%90%AC%20%F0%9D%90%9A%F0%9D%90%A7%F0%9D%90%9D%20%F0%9D%90%AC%F0%9D%90%9E%F0%9D%90%AB%F0%9D%90%A2%F0%9D%90%9E%F0%9D%90%AC.")]])
+            await message.reply_text(f"<b>You Can't Invite Yourself, Send This Invite Link To Your Friends\n\nInvite Link</b> - \n<code>{inv_link}</code>",
+                                    reply_markup=keyboard,
+                                    disable_web_page_preview=True)
             return
 
         if not await db.is_user_exist(message.from_user.id):
@@ -289,13 +294,14 @@ async def start(client, message):
     lifetime_files = await db.get_lifetime_files(message.from_user.id)
     await db.update_files_count(message.from_user.id, files_counts + 1)
     await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
-    print(f"File sent {files_counts + 1} to {message.from_user.first_name}")
+    print(f"File sent {files_counts + 1} to {message.from_user.first_name} - {message.from_user.id}")
 
     del_msg = await client.send_message(
         text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
         chat_id=message.from_user.id,
         reply_to_message_id=media_id.id)
-    await asyncio.sleep(600)
+    
+    await asyncio.sleep(waitime or 600)
     await media_id.delete()
     await del_msg.edit("__⊘ This message was deleted__")
                     
