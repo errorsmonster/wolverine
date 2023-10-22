@@ -1,3 +1,4 @@
+import re
 import base64
 import aiohttp
 from pyrogram import Client, filters
@@ -35,7 +36,7 @@ async def generate(client, message):
     codes_generated = []
     for _ in range(num_codes):
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=generate&days=30") as resp:
+            async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=generate&days=90") as resp:
                 if resp.status == 200:
                     json_response = await resp.json()
                     license_code = f"{json_response.get('license_code')[:10]}{encoded_duration}{json_response.get('license_code')[10:]}"
@@ -113,9 +114,15 @@ async def revoke_license_code(client, message):
         await message.reply_text("Invalid command format. Use /revoke <code>")
         return
     
-    code = message.text.split(None, 1)[1]
-    first_part_code = code.matches[0][1]
-    second_part_code = code.matches[0][3]
+    code = message.text.split(None, 1)[1]  # Extract the code from the command message
+
+    # Check if the code matches the expected pattern
+    if not re.match(r"^([A-Z0-9]{10})([A-Za-z0-9+/]{4})([A-Z0-9]{10})$", code):
+        await message.reply_text("Invalid code format.")
+        return
+
+    first_part_code = re.match(r"^([A-Z0-9]{10})([A-Za-z0-9+/]{4})([A-Z0-9]{10})$", code).group(1)
+    second_part_code = re.match(r"^([A-Z0-9]{10})([A-Za-z0-9+/]{4})([A-Z0-9]{10})$", code).group(3)
     full_code = first_part_code + second_part_code
 
     async with aiohttp.ClientSession() as session:
@@ -128,6 +135,6 @@ async def revoke_license_code(client, message):
                     else:
                         await message.reply_text(json_response.get('message'))
                 else:
-                    await message.reply_text("Error occured while revoking code.")        
+                    await message.reply_text("Error occurred while revoking code.")
             except Exception as e:
-                await message.reply_text(f"Error occured while revoking code.\n{e}") 
+                await message.reply_text(f"Error occurred while revoking code.\n{e}")
