@@ -87,6 +87,9 @@ async def filters_private_handlers(client, message):
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
 
     try:
+        # delete loading msg
+        await msg.delete()
+
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
             
@@ -136,9 +139,6 @@ async def filters_private_handlers(client, message):
 
     except Exception as e:
         await message.reply_text(f"Error: {e}")
-
-    finally:
-        await msg.delete()
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
