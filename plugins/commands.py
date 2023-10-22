@@ -212,8 +212,8 @@ async def start(client, message):
 
         try:
             invited_user = await client.get_users(invite_id)
-        except ValueError:
-            await message.reply_text("Invalid user ID provided.")
+        except Exception as e:
+            print(e)
             return
 
         if str(invite_id) == str(message.from_user.id):
