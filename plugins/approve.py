@@ -11,7 +11,6 @@ APPROVE = True
 async def autoapprove(client: Client, message: ChatJoinRequest):
     chat=message.chat
     user=message.from_user
-    print(f"{user.first_name} Joined")
     if APPROVE == True:
         await client.approve_chat_join_request(chat.id, user.id)
         await client.send_message(chat_id=chat.id, text=TEXT.format(user.mention, chat.title))
