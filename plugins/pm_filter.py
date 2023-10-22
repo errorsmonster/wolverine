@@ -171,14 +171,13 @@ async def public_group_filter(client, message):
                 await db.add_chat(group_id, title)
         else:
             return
-                
-    except Exception as e:
-        print(e)
-
-    finally:
+        
         if waitime is not None:
             await asyncio.sleep(waitime)
             await message.delete()    
+          
+    except Exception as e:
+        print(e)
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
