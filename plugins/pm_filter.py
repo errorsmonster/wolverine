@@ -80,7 +80,6 @@ async def filters_private_handlers(client, message):
     
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
 
- 
     # optinal function for checking time difference between currrent time and next 12'o clock
     current_datetime = datetime.now()
     next_day = current_datetime + timedelta(days=1)
@@ -105,7 +104,6 @@ async def filters_private_handlers(client, message):
                     return
 
             await paid_filter(client, message)
-            return
 
         else:
             if user_timestamps:
@@ -131,20 +129,16 @@ async def filters_private_handlers(client, message):
             if ONE_LINK_ONE_FILE:
                 if files_counts is not None and files_counts >= 1:
                     await free_filter(client, message)
-                    return
                 else:
                     await auto_filter(client, message)
-                    return
             else:
                 await auto_filter(client, message)
-                return
 
     except Exception as e:
         await message.reply_text(f"Error: {e}")
 
     finally:
         await msg.delete()
-
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
@@ -166,11 +160,9 @@ async def public_group_filter(client, message):
             k = await manual_filters(client, message)
             if k is False:
                 await auto_filter(client, message)
-            return
         
         if group_id in ACCESS_GROUPS:
             await auto_filter(client, message)
-            return
 
         if member_count is not None and member_count > 500:
             if chat:
@@ -179,15 +171,14 @@ async def public_group_filter(client, message):
                 await db.add_chat(group_id, title)
         else:
             return
-        
-        if waitime is not None:
-            await asyncio.sleep(waitime)
-            await message.delete()
-        return
-        
+                
     except Exception as e:
         print(e)
 
+    finally:
+        if waitime is not None:
+            await asyncio.sleep(waitime)
+            await message.delete()    
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
