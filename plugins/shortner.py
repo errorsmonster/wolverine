@@ -27,6 +27,7 @@ async def adlinkfly(link, shortner=None, api_key=None):
         print(e)
         return f"{shortner}?api={api_key}&url={link}&format=text"
 
+# primehub shortner
 async def linkgen(link):
     shortner = f'https://urlshare.onrender.com/?create&url={link}'
     try:
