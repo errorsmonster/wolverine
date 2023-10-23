@@ -79,7 +79,7 @@ async def validate_code(client, message):
 
     m = await message.reply_text(f"<b>Please Wait, Verifing Your Redeem Code....</b>",
                                  reply_to_message_id=message.id)
-    await asyncio.sleep(3)
+    await asyncio.sleep(2)
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={full_code}") as resp:
             if resp.status == 404:
