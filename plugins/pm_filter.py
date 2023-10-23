@@ -768,14 +768,9 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
+    await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
                     reply_markup=InlineKeyboardMarkup(btn))
-    # delete the spellcheck query after given time
-    if waitime is not None:
-        await asyncio.sleep(waitime)
-        await m.delete()
-        return
-
+    
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id
     name = text or message.text
