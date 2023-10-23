@@ -169,17 +169,19 @@ async def public_group_filter(client, message):
             call_auto_filter = True
 
     # Call auto_filter if necessary and handle the message it returns
-    sent_message = None
     if call_auto_filter:
         sent_message = await auto_filter(client, message)
 
-    # Handle message deletions
-    if waitime and sent_message:
-        await asyncio.sleep(waitime)
-        await sent_message.delete()
-        await message.delete()
-        
-        
+        # Handle message deletions
+        if waitime and sent_message:
+            await asyncio.sleep(waitime)
+            await message.delete()
+            try:
+                await sent_message.delete()
+            except Exception as e:
+                print(f"Error deleting sent_message: {e}")
+
+
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
