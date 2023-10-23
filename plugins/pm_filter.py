@@ -88,6 +88,10 @@ async def filters_private_handlers(client, message):
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
 
     try:
+        if waitime is not None:
+            await asyncio.sleep(5)
+            await msg.delete()
+
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
             
@@ -136,9 +140,6 @@ async def filters_private_handlers(client, message):
             else:
                 await auto_filter(client, message)
  
-        # delete loading msg
-        await msg.delete()
-
     except Exception as e:
         await message.reply_text(f"Error: {e}")
 

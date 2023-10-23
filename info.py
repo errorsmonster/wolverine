@@ -65,3 +65,5 @@ accss_grp = environ.get('ACCESS_GROUP', "-1001786962803")
 ACCESS_GROUPS = [int(ch) for ch in accss_grp.split()] if auth_grp else None
 # wait time for automate delete qurery request and query feed
 WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
+# auto approve join request
+APPROVE = is_enabled(environ.get("APPROVE", "True"), True)
