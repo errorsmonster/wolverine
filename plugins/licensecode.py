@@ -74,35 +74,36 @@ async def validate_code(client, message):
 
     user_id = message.from_user.id
     if await db.is_premium_status(user_id) is True:
-        await message.reply_text(f"<b>You can't redeem this code because you are already a premium user</b>")
+        await message.reply_text(f"<b>You Can't Redeem This Code Because You Are Already a Premium User</b>")
         return
 
-    m = await message.reply_text(f"Please wait, checking your redeem code....")
+    m = await message.reply_text(f"<b>Please Wait, Verifing Your Redeem Code....</b>",
+                                 reply_to_message_id=message.id)
     await asyncio.sleep(3)
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={full_code}") as resp:
             if resp.status == 404:
-                await m.edit("Invalid redeem code!...")
+                await m.edit("<b>Erorr: Invalid Code!...<b>")
             if resp.status == 403:
                 respo = await resp.json()
                 if respo.get('message') == "This code does not belong to the provided access key":
                     await m.edit("This code does not belong to the provided access key.")
                     return
                 if respo.get('message') == "This code is already in use":
-                    await m.edit("This redeem code's already used.")
+                    await m.edit(f"<b>This Redeem Code's Already Been Used.</b>")
                     return
                 if respo.get('message') == "The code has expired":
-                    await m.edit("The redeem code has expired.")
+                    await m.edit("The redeem code has been expired.")
                     return
             if resp.status == 200:
                 json_response = await resp.json()
                 if json_response.get('message') == "Code validated successfully":
-                    s = await m.edit("Redeem code validated successfully.")
+                    s = await m.edit(f"<b>Redeem Code Validated Successfully.</b>")
                     await db.add_user_as_premium(user_id, duration, subscription_date)
                     await asyncio.sleep(2)
-                    a = await s.edit(f"Activating your subscription...")
+                    a = await s.edit(f"<b>Activating Your Subscription...</b>")
                     await asyncio.sleep(2)
-                    await a.edit(f"<b>Your subscription has been enabled successfully for {duration} days.</b>")
+                    await a.edit(f"<b>Your Subscription Has Been Enabled Successfully For {duration} Days.</b>")
                     # send message to log channel
                     await client.send_message(LOG_CHANNEL, f"#redeem\n<code>{full_code}</code>\n{message.from_user.mention} <code>{message.from_user.id}</code> successfully redeemed a code for {duration} days.")
                 else:
@@ -131,7 +132,7 @@ async def revoke_license_code(client, message):
                 if resp.status == 200:
                     json_response = await resp.json()
                     if json_response.get('message') == "Code validated successfully":
-                        await message.reply_text("Redeem code revoked successfully.")
+                        await message.reply_text("Redeem code has been successfully revoked.")
                     else:
                         await message.reply_text(json_response.get('message'))
                 else:
