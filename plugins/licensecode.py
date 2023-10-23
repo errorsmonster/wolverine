@@ -74,7 +74,8 @@ async def validate_code(client, message):
 
     user_id = message.from_user.id
     if await db.is_premium_status(user_id) is True:
-        await message.reply_text(f"<b>You Can't Redeem This Code Because You Are Already a Premium User</b>")
+        await message.reply_text(f"<b>You Can't Redeem This Code Because You Are Already a Premium User</b>",
+                                 reply_to_message_id=message.id)
         return
 
     m = await message.reply_text(f"<b>Please Wait, Verifing Your Redeem Code....</b>",
