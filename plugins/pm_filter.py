@@ -41,7 +41,6 @@ async def filters_private_handlers(client, message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
 
-
     now = datetime.now()
     tody = int(now.timestamp())
     user_id = message.from_user.id
@@ -88,10 +87,6 @@ async def filters_private_handlers(client, message):
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
 
     try:
-        if waitime is not None:
-            await asyncio.sleep(5)
-            await msg.delete()
-
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
             
@@ -118,7 +113,7 @@ async def filters_private_handlers(client, message):
                 if time_diff < slow_mode:
                     remaining_time = slow_mode - time_diff
                     while remaining_time > 0:
-                        await msg.edit(f"Please wait for {remaining_time} seconds before sending another request.")
+                        await msg.edit(f"<b>Please Wait For {remaining_time} Seconds Before Sending Another Request.</b>")
                         await asyncio.sleep(5)
                         current_time = int(time.time())
                         time_diff = current_time - user_timestamps
@@ -143,45 +138,48 @@ async def filters_private_handlers(client, message):
     except Exception as e:
         await message.reply_text(f"Error: {e}")
 
+    finally:
+        await msg.delete()   
+
+
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
     group_id = message.chat.id
-    title = message.chat.title
-    member_count = message.chat.members_count
-    chat = await db.get_chat(group_id)
-    
-    # add user to db if not exists
-    if not await db.is_user_exist(message.from_user.id):
-        await db.add_user(message.from_user.id, message.from_user.first_name)
 
-    # Ignore commands starting with "/"
+    # Ignore commands
     if message.text.startswith("/"):
         return
 
-    try:
-        if group_id in AUTH_GROUPS:
-            k = await manual_filters(client, message)
-            if k is False:
-                await auto_filter(client, message)
-        
-        if group_id in ACCESS_GROUPS:
-            await auto_filter(client, message)
+    # Ensure user is in the database
+    if not await db.is_user_exist(message.from_user.id):
+        await db.add_user(message.from_user.id, message.from_user.first_name)
 
-        if member_count is not None and member_count > 500:
-            if chat:
-                await auto_filter(client, message)
-            else:
-                await db.add_chat(group_id, title)
-        else:
-            return
-        
-        if waitime is not None:
-            await asyncio.sleep(waitime)
-            await message.delete()    
-          
-    except Exception as e:
-        print(e)
+    # Logic to determine if we should call auto_filter
+    call_auto_filter = False
 
+    if group_id in AUTH_GROUPS:
+        k = await manual_filters(client, message)
+        if k is False:
+            call_auto_filter = True
+    elif group_id in ACCESS_GROUPS:
+        call_auto_filter = True
+    elif message.chat.members_count and message.chat.members_count > 500:
+        if not await db.get_chat(group_id):
+            await db.add_chat(group_id, message.chat.title)
+            call_auto_filter = True
+
+    # Call auto_filter if necessary and handle the message it returns
+    sent_message = None
+    if call_auto_filter:
+        sent_message = await auto_filter(client, message)
+
+    # Handle message deletions
+    if waitime and sent_message:
+        await asyncio.sleep(waitime)
+        await sent_message.delete()
+        await message.delete()
+        
+        
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
@@ -717,9 +715,6 @@ async def auto_filter(client, msg, spoll=False):
     m = await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
     # add timestamp to database for floodwait
     await db.update_timestamps(message.from_user.id, int(time.time()))
-    if waitime is not None:
-        await asyncio.sleep(waitime)
-        await m.delete()
     if spoll:
         await msg.message.delete()
 
@@ -773,14 +768,9 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
+    await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
                     reply_markup=InlineKeyboardMarkup(btn))
-    # delete the spellcheck query after given time
-    if waitime is not None:
-        await asyncio.sleep(waitime)
-        await m.delete()
-        return
-
+    
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id
     name = text or message.text
