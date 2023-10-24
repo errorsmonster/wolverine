@@ -127,13 +127,15 @@ async def filters_private_handlers(client, message):
                     disable_web_page_preview=True)
                 return
         
+            au, keybrd = await auto_filter(client, message)
+            free, keyboard = await free_filter(client, message)
             if ONE_LINK_ONE_FILE:
                 if files_counts is not None and files_counts >= 1:
-                    await free_filter(client, message)
+                    m = await msg.edit(text=free, reply_markup=keyboard, disable_web_page_preview=True)
                 else:
-                    await auto_filter(client, message)
+                    m = await msg.edit(text=au, reply_markup=keybrd, disable_web_page_preview=True)
             else:
-                await auto_filter(client, message)
+                m = await msg.edit(text=au, reply_markup=keybrd, disable_web_page_preview=True)
  
     except Exception as e:
         await message.reply_text(f"Error: {e}")
@@ -161,25 +163,27 @@ async def public_group_filter(client, message):
 
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
-        return
-
+        return 
+    
+    text, markup = await auto_filter(client, message)
     try:
         # Filtering logic
         if group_id in AUTH_GROUPS:
             k = await manual_filters(client, message)
             if not k:
-                await auto_filter(client, message)
-                await message.delete()
+                m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
-            await auto_filter(client, message)
-            await message.delete()
+            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
         
     except Exception as e:
         print(e)
 
     finally:
-        await message.delete()
+        if waitime is not None:
+            await asyncio.sleep(waitime)
+            await message.delete()
+            await m.delete()
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
@@ -714,14 +718,9 @@ async def auto_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
     cap = f"Here is what i found for your query {search}"
-    m = await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
     # add timestamp to database for floodwait
     await db.update_timestamps(message.from_user.id, int(time.time()))
-    if waitime is not None:
-        await asyncio.sleep(waitime)
-        await m.delete()
-    if spoll:
-        await msg.message.delete()
+    return f"<b>{cap}</b>\n\n{search_results_text}", InlineKeyboardMarkup(btn)
 
 async def advantage_spell_chok(msg):
     query = re.sub(
