@@ -128,15 +128,15 @@ async def filters_private_handlers(client, message):
                     disable_web_page_preview=True)
                 return
         
-            au, keybrd = await auto_filter(client, message)
-            free, keyboard = await free_filter(client, message)
+            auto, keyboard = await auto_filter(client, message)
+            free, button = await free_filter(client, message)
             if ONE_LINK_ONE_FILE:
                 if files_counts is not None and files_counts >= 1:
-                    m = await msg.edit(text=free, reply_markup=keyboard, disable_web_page_preview=True)
+                    m = await msg.edit(text=free, reply_markup=button, disable_web_page_preview=True)
                 else:
-                    m = await msg.edit(text=au, reply_markup=keybrd, disable_web_page_preview=True)
+                    m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
             else:
-                m = await msg.edit(text=au, reply_markup=keybrd, disable_web_page_preview=True)
+                m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
  
     except Exception as e:
         await message.reply_text(f"Error: {e}")
@@ -145,6 +145,7 @@ async def filters_private_handlers(client, message):
         if waitime is not None:
             await asyncio.sleep(waitime)
             await m.delete()
+
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
