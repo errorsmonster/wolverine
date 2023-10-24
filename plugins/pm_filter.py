@@ -41,7 +41,6 @@ async def filters_private_handlers(client, message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
 
-
     now = datetime.now()
     tody = int(now.timestamp())
     user_id = message.from_user.id
@@ -78,20 +77,15 @@ async def filters_private_handlers(client, message):
     if message.text.startswith("/"):
         return
     
+    msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
+    
     if 2 < len(message.text) < 100:
         search = message.text
         files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
         if not files:
-            await message.reply_text("**I Couldn't Find Any Movie In That Name, Please Check The Spelling Or Release Date And Try Again.**", reply_to_message_id=message.id)
+            await msg.edit("<b>I Couldn't Find Any Movie In That Name, Please Check The Spelling Or Release Date And Try Again.</b>")
             return
-    
-    msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
-
     try:
-        if waitime is not None:
-            await asyncio.sleep(5)
-            await msg.delete()
-
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
             
@@ -109,7 +103,8 @@ async def filters_private_handlers(client, message):
                     return
                 
             # call auto filter
-            await paid_filter(client, message)
+            text, markup = await paid_filter(client, message)
+            m = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         else:
             if user_timestamps:
@@ -118,7 +113,7 @@ async def filters_private_handlers(client, message):
                 if time_diff < slow_mode:
                     remaining_time = slow_mode - time_diff
                     while remaining_time > 0:
-                        await msg.edit(f"Please wait for {remaining_time} seconds before sending another request.")
+                        await msg.edit(f"<b>Please Wait For {remaining_time} Seconds Before Sending Another Request.</b>")
                         await asyncio.sleep(5)
                         current_time = int(time.time())
                         time_diff = current_time - user_timestamps
@@ -132,55 +127,64 @@ async def filters_private_handlers(client, message):
                     disable_web_page_preview=True)
                 return
         
+            au, keybrd = await auto_filter(client, message)
+            free, keyboard = await free_filter(client, message)
             if ONE_LINK_ONE_FILE:
                 if files_counts is not None and files_counts >= 1:
-                    await free_filter(client, message)
+                    m = await msg.edit(text=free, reply_markup=keyboard, disable_web_page_preview=True)
                 else:
-                    await auto_filter(client, message)
+                    m = await msg.edit(text=au, reply_markup=keybrd, disable_web_page_preview=True)
             else:
-                await auto_filter(client, message)
+                m = await msg.edit(text=au, reply_markup=keybrd, disable_web_page_preview=True)
  
     except Exception as e:
         await message.reply_text(f"Error: {e}")
+
+    finally:
+        if waitime is not None:
+            await asyncio.sleep(waitime)
+            await m.delete()
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
     group_id = message.chat.id
     title = message.chat.title
     member_count = message.chat.members_count
-    chat = await db.get_chat(group_id)
-    
-    # add user to db if not exists
-    if not await db.is_user_exist(message.from_user.id):
+
+    # Check if the chat and user exist in the database
+    chat_exists = await db.get_chat(group_id)
+    user_exists = await db.is_user_exist(message.from_user.id)
+
+    # Add chat or user if they don't exist in the database
+    if not chat_exists:
+        await db.add_chat(group_id, title)
+    if not user_exists:
         await db.add_user(message.from_user.id, message.from_user.first_name)
 
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
-        return
-
+        return 
+    
+    text, markup = await auto_filter(client, message)
     try:
+        # Filtering logic
         if group_id in AUTH_GROUPS:
             k = await manual_filters(client, message)
-            if k is False:
-                await auto_filter(client, message)
-        
-        if group_id in ACCESS_GROUPS:
-            await auto_filter(client, message)
+            if not k:
+                m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
 
-        if member_count is not None and member_count > 500:
-            if chat:
-                await auto_filter(client, message)
-            else:
-                await db.add_chat(group_id, title)
-        else:
-            return
+        elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
+            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
         
-        if waitime is not None:
-            await asyncio.sleep(waitime)
-            await message.delete()    
-          
     except Exception as e:
         print(e)
+
+    finally:
+        if waitime is not None:
+            await asyncio.sleep(waitime)
+            await message.delete()
+            await m.delete()
+
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
@@ -714,14 +718,9 @@ async def auto_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
     cap = f"Here is what i found for your query {search}"
-    m = await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
     # add timestamp to database for floodwait
     await db.update_timestamps(message.from_user.id, int(time.time()))
-    if waitime is not None:
-        await asyncio.sleep(waitime)
-        await m.delete()
-    if spoll:
-        await msg.message.delete()
+    return f"<b>{cap}</b>\n\n{search_results_text}", InlineKeyboardMarkup(btn)
 
 async def advantage_spell_chok(msg):
     query = re.sub(
@@ -775,12 +774,10 @@ async def advantage_spell_chok(msg):
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
     m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
                     reply_markup=InlineKeyboardMarkup(btn))
-    # delete the spellcheck query after given time
     if waitime is not None:
         await asyncio.sleep(waitime)
         await m.delete()
-        return
-
+    
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id
     name = text or message.text
