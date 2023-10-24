@@ -550,7 +550,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         md_id=await client.send_cached_media(
             chat_id=query.from_user.id,
             file_id=file_id,
-            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
+            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             protect_content=True if ident == 'checksubp' else False
         )
         del_msg = await client.send_message(
