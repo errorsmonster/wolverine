@@ -104,10 +104,9 @@ async def filters_private_handlers(client, message):
                     return
                 
             # call auto filter
-            m = await paid_filter(client, message)
-            if waitime:
-                await asyncio.sleep(60)
-                await m.delete()
+            text, markup = await paid_filter(client, message)
+            m = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
+
         else:
             if user_timestamps:
                 current_time = int(time.time())
@@ -141,8 +140,9 @@ async def filters_private_handlers(client, message):
         await message.reply_text(f"Error: {e}")
 
     finally:
-        await msg.delete()
-
+        if waitime is not None:
+            await asyncio.sleep(waitime)
+            await m.delete()
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
