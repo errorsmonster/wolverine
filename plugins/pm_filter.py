@@ -145,41 +145,40 @@ async def filters_private_handlers(client, message):
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
     group_id = message.chat.id
+    title = message.chat.title
+    member_count = message.chat.members_count
 
-    # Ignore commands
+    # Check if the chat and user exist in the database
+    chat_exists = await db.get_chat(group_id)
+    user_exists = await db.is_user_exist(message.from_user.id)
+
+    # Add chat or user if they don't exist in the database
+    if not chat_exists:
+        await db.add_chat(group_id, title)
+    if not user_exists:
+        await db.add_user(message.from_user.id, message.from_user.first_name)
+
+    # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return
 
-    # Ensure user is in the database
-    if not await db.is_user_exist(message.from_user.id):
-        await db.add_user(message.from_user.id, message.from_user.first_name)
+    try:
+        # Filtering logic
+        if group_id in AUTH_GROUPS:
+            k = await manual_filters(client, message)
+            if not k:
+                await auto_filter(client, message)
+                await message.delete()
 
-    # Logic to determine if we should call auto_filter
-    call_auto_filter = False
-
-    if group_id in AUTH_GROUPS:
-        k = await manual_filters(client, message)
-        if k is False:
-            call_auto_filter = True
-    elif group_id in ACCESS_GROUPS:
-        call_auto_filter = True
-    elif message.chat.members_count and message.chat.members_count > 500:
-        if not await db.get_chat(group_id):
-            await db.add_chat(group_id, message.chat.title)
-            call_auto_filter = True
-
-    # Call auto_filter if necessary and handle the message it returns
-    if call_auto_filter:
-        sent_message = await auto_filter(client, message)
-
-        # Handle message deletions
-        if waitime and sent_message:
-            await asyncio.sleep(waitime)
+        elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
+            await auto_filter(client, message)
             await message.delete()
-            try:
-                await sent_message.delete()
-            except Exception as e:
-                print(f"Error deleting sent_message: {e}")
+        
+    except Exception as e:
+        print(e)
+
+    finally:
+        await message.delete()
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
@@ -717,6 +716,9 @@ async def auto_filter(client, msg, spoll=False):
     m = await message.reply_text(text=f"**{cap}**\n\n{search_results_text}", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
     # add timestamp to database for floodwait
     await db.update_timestamps(message.from_user.id, int(time.time()))
+    if waitime is not None:
+        await asyncio.sleep(waitime)
+        await m.delete()
     if spoll:
         await msg.message.delete()
 
@@ -770,8 +772,11 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
+    m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
                     reply_markup=InlineKeyboardMarkup(btn))
+    if waitime is not None:
+        await asyncio.sleep(waitime)
+        await m.delete()
     
 async def manual_filters(client, message, text=False):
     group_id = message.chat.id
