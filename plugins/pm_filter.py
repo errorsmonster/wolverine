@@ -558,7 +558,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             chat_id=query.from_user.id,
             reply_to_message_id=md_id.id
             )
-        await asyncio.sleep(600)
+        await asyncio.sleep(waitime or 600)
         await md_id.delete()
         await del_msg.edit("__⊘ This message was deleted__")
 
