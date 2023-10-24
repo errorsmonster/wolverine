@@ -508,16 +508,19 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 media_id=await client.send_cached_media(
                     chat_id=query.from_user.id,
                     file_id=file_id,
-                    caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
+                    caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
                     protect_content=True if ident == "filep" else False 
                 )
                 await query.answer('Check PM, I have sent files in pm', show_alert=True)
                 del_msg = await client.send_message(
-                    text="Files Will Be Deleted Within 10 Mins..\n__Please Make Sure That You Forward These Files To Your Saved Message or Friends.__",
-                    chat_id=query.from_user.id)
-                await asyncio.sleep(600)
+                    text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
+                    chat_id=query.from_user.id,
+                    reply_to_message_id=media_id.id
+                    )
+                await asyncio.sleep(waitime or 600)
                 await media_id.delete()
                 await del_msg.edit("__⊘ This message was deleted__")
+
         except UserIsBlocked:
             await query.answer('Unblock the bot mahn !', show_alert=True)
         except PeerIdInvalid:
