@@ -77,15 +77,14 @@ async def filters_private_handlers(client, message):
     if message.text.startswith("/"):
         return
     
+    msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
+    
     if 2 < len(message.text) < 100:
         search = message.text
         files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
         if not files:
-            await message.reply_text("**I Couldn't Find Any Movie In That Name, Please Check The Spelling Or Release Date And Try Again.**", reply_to_message_id=message.id)
+            await msg.edit("<b>I Couldn't Find Any Movie In That Name, Please Check The Spelling Or Release Date And Try Again.</b>")
             return
-    
-    msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
-
     try:
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
