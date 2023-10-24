@@ -104,8 +104,10 @@ async def filters_private_handlers(client, message):
                     return
                 
             # call auto filter
-            await paid_filter(client, message)
-
+            m = await paid_filter(client, message)
+            if waitime:
+                await asyncio.sleep(60)
+                await m.delete()
         else:
             if user_timestamps:
                 current_time = int(time.time())
@@ -139,7 +141,7 @@ async def filters_private_handlers(client, message):
         await message.reply_text(f"Error: {e}")
 
     finally:
-        await msg.delete()   
+        await msg.delete()
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
