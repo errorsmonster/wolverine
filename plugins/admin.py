@@ -22,7 +22,7 @@ async def how2download(_, message):
     response_text = "<b>Please watch this video to know how to download movies and series from this bot.</b>"
     await message.reply_text(response_text, reply_markup=keyboard, disable_web_page_preview=True)
 
-@Client.on_message(filters.private & filters.regex(r"\b(hi+|hello|hey)\b", re.IGNORECASE))
+@Client.on_message(filters.private & filters.regex(r"^(hi+|hello+|hey+)$", re.IGNORECASE))
 async def echo(_, message):
     response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>"
     await message.reply_text(response_text, disable_web_page_preview=True)
