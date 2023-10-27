@@ -293,3 +293,4 @@ async def reffer(client, message):
     await m.edit(f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will be rewarded 10 refferal points and after 100 points you will get 1 month premium subscription.\n\n Referral Points: {referral_points}</b>",
                  reply_markup=keyboard,
                  disable_web_page_preview=True)
+    
