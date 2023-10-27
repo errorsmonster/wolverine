@@ -196,6 +196,7 @@ async def userinfo(client, message):
     total_files_sent = users.get("lifetime_files") or "N/A"
     dc_id = user.dc_id or "Invalid DP"
     refferal = await db.get_refferal_count(user_id)
+    today_recieved = users.get("files_count") or "N/A"
 
     if premium:
         duration = users.get("premium_expiry")
@@ -232,6 +233,7 @@ async def userinfo(client, message):
         f"<b>➲Days Left:</b> <code>{days_left}/{duration}</code> days\n"
         f"<b>➲Refferal Points:</b> <code>{refferal}</code>\n"
         f"<b>➲Files Recieved:</b> <code>{total_files_sent}</code>\n"
+        f"<b>➲Today Recieved:</b> <code>{today_recieved}</code>\n"
     )
 
     await message.reply_text(
