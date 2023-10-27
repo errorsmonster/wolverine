@@ -57,6 +57,7 @@ async def filters_private_handlers(client, message):
     next_day = current_datetime + timedelta(days=1)
     next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
+    time_difference = round(time_difference)
  
     # Todays Date
     today = datetime.now().strftime("%Y-%m-%d")
