@@ -91,16 +91,16 @@ async def filters_private_handlers(client, message):
             is_expired = await db.check_expired_users(user_id)
             
             if is_expired:
-                await message.reply_text(f"**Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.**", disable_web_page_preview=True)
+                await msg.edit(f"**Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.**", disable_web_page_preview=True)
                 return
             
             if files_counts is not None and files_counts >= 50:
-                await message.reply_text(f"Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.")
+                await msg.edit(f"Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.")
                 return
             
             if duration == 29:
                 if files_counts is not None and files_counts >= 20:
-                    await message.reply_text(f"You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again")
+                    await msg.edit(f"You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again")
                     return
                 
             # call auto filter
