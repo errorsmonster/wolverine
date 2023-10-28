@@ -134,7 +134,7 @@ async def resetdailyuser(client, message):
     if not user_id:
         return await message.reply("Please provide a user id")
     m = await message.reply_text("Resetting daily files count of user...")
-    await db.reset_daily_files_count_user(user_id)
+    await db.reset_daily_files_count(user_id)
     await m.edit("Successfully reset daily files count of user!")
 
 # remove all premium user from database
