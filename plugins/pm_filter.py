@@ -5,6 +5,7 @@ import ast
 import math
 import time
 from datetime import datetime, timedelta
+from urllib.parse import quote
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
@@ -57,6 +58,7 @@ async def filters_private_handlers(client, message):
     next_day = current_datetime + timedelta(days=1)
     next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
+    time_difference = round(time_difference)
  
     # Todays Date
     today = datetime.now().strftime("%Y-%m-%d")
@@ -80,26 +82,36 @@ async def filters_private_handlers(client, message):
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
     
     if 2 < len(message.text) < 100:
-        search = message.text
-        files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+        search = message.text.lower()
+        encoded_search = quote(search)
+    
+        files, offset, total_results = await get_search_results(search, offset=0, filter=True)
         if not files:
-            await msg.edit("<b>I Couldn't Find Any Movie In That Name, Please Check The Spelling Or Release Date And Try Again.</b>")
+            google = "https://google.com/search?q="
+            reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("🔍 Check Your Spelling", url=f"{google}{encoded_search}%20movie")],
+                [InlineKeyboardButton("🗓 Check Release Date", url=f"{google}{encoded_search}%20release%20date")]
+            ])
+            await msg.edit(
+                text="<b>I couldn't find a movie in my database. Please check the spelling or the release date and try again.</b>",
+                reply_markup=reply_markup
+            )
             return
     try:
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
             
             if is_expired:
-                await message.reply_text(f"**Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.**", disable_web_page_preview=True)
+                await msg.edit(f"**Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.**", disable_web_page_preview=True)
                 return
             
             if files_counts is not None and files_counts >= 50:
-                await message.reply_text(f"Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.")
+                await msg.edit(f"Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.")
                 return
             
             if duration == 29:
                 if files_counts is not None and files_counts >= 20:
-                    await message.reply_text(f"You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again")
+                    await msg.edit(f"You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again")
                     return
                 
             # call auto filter
@@ -119,6 +131,7 @@ async def filters_private_handlers(client, message):
                         time_diff = current_time - user_timestamps
                         remaining_time = max(0, slow_mode - time_diff)
                     await message.delete()
+                    await msg.delete()
                     return
                 
             if files_counts is not None and files_counts >= 10:
@@ -127,15 +140,15 @@ async def filters_private_handlers(client, message):
                     disable_web_page_preview=True)
                 return
         
-            au, keybrd = await auto_filter(client, message)
-            free, keyboard = await free_filter(client, message)
+            auto, keyboard = await auto_filter(client, message)
+            free, button = await free_filter(client, message)
             if ONE_LINK_ONE_FILE:
                 if files_counts is not None and files_counts >= 1:
-                    m = await msg.edit(text=free, reply_markup=keyboard, disable_web_page_preview=True)
+                    m = await msg.edit(text=free, reply_markup=button, disable_web_page_preview=True)
                 else:
-                    m = await msg.edit(text=au, reply_markup=keybrd, disable_web_page_preview=True)
+                    m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
             else:
-                m = await msg.edit(text=au, reply_markup=keybrd, disable_web_page_preview=True)
+                m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
  
     except Exception as e:
         await message.reply_text(f"Error: {e}")
@@ -144,6 +157,7 @@ async def filters_private_handlers(client, message):
         if waitime is not None:
             await asyncio.sleep(waitime)
             await m.delete()
+
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
@@ -506,16 +520,19 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 media_id=await client.send_cached_media(
                     chat_id=query.from_user.id,
                     file_id=file_id,
-                    caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
+                    caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
                     protect_content=True if ident == "filep" else False 
                 )
                 await query.answer('Check PM, I have sent files in pm', show_alert=True)
                 del_msg = await client.send_message(
-                    text="Files Will Be Deleted Within 10 Mins..\n__Please Make Sure That You Forward These Files To Your Saved Message or Friends.__",
-                    chat_id=query.from_user.id)
-                await asyncio.sleep(600)
+                    text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
+                    chat_id=query.from_user.id,
+                    reply_to_message_id=media_id.id
+                    )
+                await asyncio.sleep(waitime or 600)
                 await media_id.delete()
                 await del_msg.edit("__⊘ This message was deleted__")
+
         except UserIsBlocked:
             await query.answer('Unblock the bot mahn !', show_alert=True)
         except PeerIdInvalid:
@@ -524,7 +541,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
     elif query.data.startswith("checksub"):
         if FORCESUB_CHANNEL and not await is_subscribed(client, query):
-            await query.answer("Please Join My Channel Then Try Again 😒", show_alert=True)
+            await query.answer("Please Join My Channel Then Click Try Again 😒", show_alert=True)
             return
         ident, file_id = query.data.split("#")
         files_ = await get_file_details(file_id)
@@ -548,7 +565,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         md_id=await client.send_cached_media(
             chat_id=query.from_user.id,
             file_id=file_id,
-            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<code>Uploaded By</code>: <a href=https://t.me/iPrimeHub>PrimeHub</a>",
+            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             protect_content=True if ident == 'checksubp' else False
         )
         del_msg = await client.send_message(
@@ -556,7 +573,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             chat_id=query.from_user.id,
             reply_to_message_id=md_id.id
             )
-        await asyncio.sleep(600)
+        await asyncio.sleep(waitime or 600)
         await md_id.delete()
         await del_msg.edit("__⊘ This message was deleted__")
 
@@ -699,8 +716,8 @@ async def auto_filter(client, msg, spoll=False):
 
     btn = []   
     btn.append([
-            InlineKeyboardButton("Upgrade", url=f"https://t.me/{temp.U_NAME}?start=upgrade"),
-            InlineKeyboardButton("Refer", url=f"https://t.me/{temp.U_NAME}?start=refer")
+            InlineKeyboardButton("🪙 Upgrade", url=f"https://t.me/{temp.U_NAME}?start=upgrade"),
+            InlineKeyboardButton("🔗 Refer", url=f"https://t.me/{temp.U_NAME}?start=refer")
         ])
     
     btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
