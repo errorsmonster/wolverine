@@ -43,7 +43,7 @@ async def filters_private_handlers(client, message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
 
-    await mdb.update_top_messages(message.from_user.id, message.message_id)    
+    await mdb.update_top_messages(message.from_user.id, message.text)    
 
     now = datetime.now()
     tody = int(now.timestamp())
