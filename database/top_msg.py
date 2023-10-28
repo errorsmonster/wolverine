@@ -22,7 +22,7 @@ class Database:
                 {"$inc": {"messages.$.count": 1}}
             )
 
-    async def get_top_messages(self, limit=20):
+    async def get_top_messages(self, limit=30):
         pipeline = [
             {"$unwind": "$messages"},
             {"$group": {"_id": "$messages.text", "count": {"$sum": "$messages.count"}}},
