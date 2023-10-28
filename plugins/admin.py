@@ -298,9 +298,15 @@ async def reffer(client, message):
                  reply_markup=keyboard,
                  disable_web_page_preview=True)
     
+
 @Client.on_message(filters.command('top'))
 async def top(client, message):
-    top_messages = await mdb.get_top_messages(20)
+    try:
+        limit = int(message.command[1])
+    except (IndexError, ValueError):
+        limit = 20
+
+    top_messages = await mdb.get_top_messages(limit)
 
     truncated_messages = []
     for msg in top_messages:
@@ -314,5 +320,5 @@ async def top(client, message):
         row = truncated_messages[i:i+2]
         keyboard.append(row)
     
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
-    await message.reply_text("Top Searches", reply_markup=reply_markup)    
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Top Searches of The Week")
+    await message.reply_text(f"<b>Top Searches of the week</b>", reply_markup=reply_markup)
