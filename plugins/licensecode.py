@@ -84,7 +84,7 @@ async def validate_code(client, message):
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=validate&code={full_code}") as resp:
             if resp.status == 404:
-                await m.edit(f"<b>Erorr: Invalid Code!...<b>")
+                await m.edit(f"<b>Erorr: Invalid Code!</b>")
             if resp.status == 403:
                 respo = await resp.json()
                 if respo.get('message') == "This code does not belong to the provided access key":
