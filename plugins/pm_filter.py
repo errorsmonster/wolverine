@@ -13,6 +13,7 @@ from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GRO
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
+from database.top_msg import mdb
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist
 from plugins.shortner import get_shortlink
@@ -41,6 +42,8 @@ async def filters_private_handlers(client, message):
 
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
+
+    await mdb.update_top_messages(message.from_user.id, message.message_id)    
 
     now = datetime.now()
     tody = int(now.timestamp())
@@ -74,6 +77,7 @@ async def filters_private_handlers(client, message):
         
     if last_reset != today:
         await db.reset_all_files_count()
+        await mdb.delete_all_messages()
         return    
 
     if message.text.startswith("/"):
