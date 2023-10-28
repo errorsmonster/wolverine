@@ -43,6 +43,9 @@ async def filters_private_handlers(client, message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
 
+    if message.text.startswith("/"):
+        return
+  
     await mdb.update_top_messages(message.from_user.id, message.text)    
 
     now = datetime.now()
@@ -62,6 +65,7 @@ async def filters_private_handlers(client, message):
     next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
     time_difference = round(time_difference)
+    current_day = datetime.now().day
  
     # Todays Date
     today = datetime.now().strftime("%Y-%m-%d")
@@ -77,11 +81,10 @@ async def filters_private_handlers(client, message):
         
     if last_reset != today:
         await db.reset_all_files_count()
-        await mdb.delete_all_messages()
-        return    
-
-    if message.text.startswith("/"):
-        return
+        return 
+    
+    if current_day in [7, 14, 21, 28]:  
+        await mdb.delete_all_messages() 
     
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
@@ -650,7 +653,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         user_id = query.from_user.id
         referral_points = await db.get_refferal_count(user_id)
         await query.answer(f"You have {referral_points} refferal points.", show_alert=True
-        )    
+        )
                                          
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
