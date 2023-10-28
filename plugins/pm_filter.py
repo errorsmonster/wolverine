@@ -93,7 +93,7 @@ async def filters_private_handlers(client, message):
                 [InlineKeyboardButton("🗓 Check Release Date", url=f"{google}{encoded_search}%20release%20date")]
             ])
             await msg.edit(
-                text="<b>I couldn't find a movie by that name. Please check the spelling or the release date and try again.</b>",
+                text="<b>I couldn't find a movie in my database. Please check the spelling or the release date and try again.</b>",
                 reply_markup=reply_markup
             )
             return
