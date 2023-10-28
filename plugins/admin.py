@@ -14,8 +14,10 @@ from database.ia_filterdb import get_search_results
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
-PATTERN_DOWNLOAD = re.compile(r"\b(how to (?:download|find|search|get (?:link|links)))$\b", re.IGNORECASE)
-
+PATTERN_DOWNLOAD = re.compile(
+    r"\bhow to (?:download|find|search for|get) (?:movie(?:s)?|series|link(?:s)?)\b",
+    re.IGNORECASE
+)
 @Client.on_message(filters.regex(PATTERN_DOWNLOAD))
 async def how2download(_, message):
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("How To Download", url="https://t.me/QuickAnnounce/5")]])
