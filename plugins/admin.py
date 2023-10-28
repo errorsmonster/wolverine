@@ -12,7 +12,6 @@ from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
 from database.top_msg import mdb 
 
-MAX_MESSAGE_LENGTH = 30 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
@@ -310,8 +309,8 @@ async def top(client, message):
 
     truncated_messages = []
     for msg in top_messages:
-        if len(msg) > MAX_MESSAGE_LENGTH:
-            truncated_messages.append(msg[:MAX_MESSAGE_LENGTH - 3] + "...")
+        if len(msg) > 30:
+            truncated_messages.append(msg[:30 - 3] + "...")
         else:
             truncated_messages.append(msg)
 
