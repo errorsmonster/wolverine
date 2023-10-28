@@ -79,7 +79,7 @@ async def filters_private_handlers(client, message):
     if message.text.startswith("/"):
         return
     
-    msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
+    msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
     if 2 < len(message.text) < 100:
         search = message.text.lower()
@@ -94,7 +94,7 @@ async def filters_private_handlers(client, message):
             ])
             await msg.edit(
                 text="<b>I couldn't find a movie in my database. Please check the spelling or the release date and try again.</b>",
-                reply_markup=reply_markup
+                reply_markup=reply_markup,
             )
             return
     try:
