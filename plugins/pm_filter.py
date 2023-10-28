@@ -5,6 +5,7 @@ import ast
 import math
 import time
 from datetime import datetime, timedelta
+from urllib.parse import quote
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
@@ -81,10 +82,20 @@ async def filters_private_handlers(client, message):
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>")
     
     if 2 < len(message.text) < 100:
-        search = message.text
-        files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+        search = message.text.lower()
+        encoded_search = quote(search)
+    
+        files, offset, total_results = await get_search_results(search, offset=0, filter=True)
         if not files:
-            await msg.edit("<b>I Couldn't Find Any Movie In That Name, Please Check The Spelling Or Release Date And Try Again.</b>")
+            google = "https://google.com/search?q="
+            reply_markup = InlineKeyboardMarkup([
+                [InlineKeyboardButton("🔍 Check Your Spelling", url=f"{google}{encoded_search}%20movie")],
+                [InlineKeyboardButton("🗓 Check Release Date", url=f"{google}{encoded_search}%20release%20date")]
+            ])
+            await msg.edit(
+                text="<b>I couldn't find a movie in my database. Please check the spelling or the release date and try again.</b>",
+                reply_markup=reply_markup
+            )
             return
     try:
         if premium_status is True:
