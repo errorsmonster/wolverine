@@ -321,3 +321,30 @@ async def top(client, message):
     
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
     await message.reply_text(f"<b>Top searches of the day</b>", reply_markup=reply_markup)
+
+
+@Client.on_message(filters.command('latest'))
+async def latests(client, message):
+    try:
+        limit = int(message.command[1])
+    except (IndexError, ValueError):
+        limit = 20
+
+    top_messages = await mdb.get_top_messages(limit)
+
+    truncated_messages = []
+    for msg in top_messages:
+        files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
+        if files:
+            if len(msg) > 30:
+                truncated_messages.append(msg[:30 - 3] + "...")
+            else:
+                truncated_messages.append(msg)
+
+    keyboard = []
+    for i in range(0, len(truncated_messages), 2):
+        row = truncated_messages[i:i+2]
+        keyboard.append(row)
+    
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day", is_persistent=True)
+    await message.reply_text(f"<b>Top searches of the day</b>", reply_markup=reply_markup)    
