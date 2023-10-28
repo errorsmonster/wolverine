@@ -81,11 +81,9 @@ async def filters_private_handlers(client, message):
         
     if last_reset != today:
         await db.reset_all_files_count()
+        await mdb.delete_all_messages()
         return 
-    
-    if current_day in [7, 14, 21, 28]:  
-        await mdb.delete_all_messages() 
-    
+ 
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
     if 2 < len(message.text) < 100:
