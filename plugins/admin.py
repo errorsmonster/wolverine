@@ -14,8 +14,10 @@ from database.ia_filterdb import get_search_results
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
-PATTERN_DOWNLOAD = re.compile(r"\b(how to (?:download|find|search|get (?:link|links)))$\b", re.IGNORECASE)
-
+PATTERN_DOWNLOAD = re.compile(
+    r"\bhow to (?:download|find|search for|get) (?:movie(?:s)?|series|link(?:s)?)\b",
+    re.IGNORECASE
+)
 @Client.on_message(filters.regex(PATTERN_DOWNLOAD))
 async def how2download(_, message):
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("How To Download", url="https://t.me/QuickAnnounce/5")]])
@@ -24,7 +26,7 @@ async def how2download(_, message):
 
 @Client.on_message(filters.private & filters.regex(r"^(hi+|hello+|hey+)$", re.IGNORECASE))
 async def echo(_, message):
-    response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>, "
+    response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>Please provide the name of the movie or series you're seeking, and I'll help you to find it..</b>, "
     await message.reply_text(response_text, reply_to_message_id=message.id, disable_web_page_preview=True)
 
 @Client.on_message(filters.media & filters.private & ~filters.user(ADMINS))
@@ -36,7 +38,7 @@ async def mediasv_filter(client, message):
     
 @Client.on_edited_message(filters.private & ~filters.user(ADMINS))
 async def editmsg_filter(client, message):
-    m = await message.reply_text(text="<b>Instead of editing messages, Please send a new one.</b>", reply_to_message_id=message.id)
+    m = await message.reply_text(text="<b>Please send a new message rather than editing the existing one.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(10)
     await m.delete()
     await message.delete()
