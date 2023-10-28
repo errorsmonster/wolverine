@@ -36,7 +36,7 @@ async def mediasv_filter(client, message):
     
 @Client.on_edited_message(filters.private & ~filters.user(ADMINS))
 async def editmsg_filter(client, message):
-    m = await message.reply_text(text="<b>Instead of editing messages, Please send a new one.</b>", reply_to_message_id=message.id)
+    m = await message.reply_text(text="<b>Please send a new message rather than editing the existing one.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(10)
     await m.delete()
     await message.delete()
