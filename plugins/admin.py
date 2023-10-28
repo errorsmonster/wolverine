@@ -22,7 +22,7 @@ async def how2download(_, message):
     response_text = "<b>Please watch this video to know how to download movies and series from this bot.</b>"
     await message.reply_text(response_text, reply_markup=keyboard, disable_web_page_preview=True)
 
-@Client.on_message(filters.private & filters.regex(r"\b(hi+|hello|hey)\b", re.IGNORECASE))
+@Client.on_message(filters.private & filters.regex(r"^(hi+|hello+|hey+)$", re.IGNORECASE))
 async def echo(_, message):
     response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>"
     await message.reply_text(response_text, disable_web_page_preview=True)
@@ -196,6 +196,7 @@ async def userinfo(client, message):
     total_files_sent = users.get("lifetime_files") or "N/A"
     dc_id = user.dc_id or "Invalid DP"
     refferal = await db.get_refferal_count(user_id)
+    today_recieved = users.get("files_count") or "N/A"
 
     if premium:
         duration = users.get("premium_expiry")
@@ -232,6 +233,7 @@ async def userinfo(client, message):
         f"<b>➲Days Left:</b> <code>{days_left}/{duration}</code> days\n"
         f"<b>➲Refferal Points:</b> <code>{refferal}</code>\n"
         f"<b>➲Files Recieved:</b> <code>{total_files_sent}</code>\n"
+        f"<b>➲Today Recieved:</b> <code>{today_recieved}</code>\n"
     )
 
     await message.reply_text(
@@ -263,7 +265,6 @@ async def allcommands(client, message):
         f"<b>➲/resetdaily</b> - To reset daily files count\n"
         f"<b>➲/add_paid</b> - To add a user as premium\n"
         f"<b>➲/remove_paid</b> - To remove a user from premium\n"
-        f"<b>➲/remove_all_free</b> - To remove a all user from database\n"
         f"<b>➲/deleteallfiles</b> - To delete all files from database\n"
         f"<b>➲/channel</b> - To get channel info\n"
         f"<b>➲/broadcast</b> - To broadcast a message to all users\n"
@@ -292,3 +293,4 @@ async def reffer(client, message):
     await m.edit(f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will be rewarded 10 refferal points and after 100 points you will get 1 month premium subscription.\n\n Referral Points: {referral_points}</b>",
                  reply_markup=keyboard,
                  disable_web_page_preview=True)
+    

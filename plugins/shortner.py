@@ -3,7 +3,7 @@ import json
 
 async def get_shortlink(link):
     url = f'https://api.shareus.io/easy_api'
-    api_key = "VLuKAPjHgrahNY2zTcWM16lFyTJ2"
+    api_key = "UVZ5NmnAZkNdK6azyMoTP9Ij3n62"
 
     params = {'key': api_key, 'link': link}
     
