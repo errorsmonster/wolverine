@@ -301,12 +301,7 @@ async def reffer(client, message):
 
 @Client.on_message(filters.command('top'))
 async def top(client, message):
-    try:
-        limit = int(message.command[1])
-    except (IndexError, ValueError):
-        limit = 20
-
-    top_messages = await mdb.get_top_messages(limit)
+    top_messages = await mdb.get_top_messages(30)
 
     truncated_messages = []
     for msg in top_messages:
