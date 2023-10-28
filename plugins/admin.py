@@ -320,5 +320,5 @@ async def top(client, message):
         row = truncated_messages[i:i+2]
         keyboard.append(row)
     
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Top Searches of The Week")
-    await message.reply_text(f"<b>Top Searches of the day</b>", reply_markup=reply_markup)
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
+    await message.reply_text(f"<b>Top searches of the day</b>", reply_markup=reply_markup)
