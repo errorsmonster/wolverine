@@ -7,10 +7,12 @@ from info import LOG_CHANNEL
 from utils import temp
 import re
 from datetime import datetime, timedelta
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
+from database.top_msg import mdb 
 
+MAX_MESSAGE_LENGTH = 30 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
@@ -296,3 +298,21 @@ async def reffer(client, message):
                  reply_markup=keyboard,
                  disable_web_page_preview=True)
     
+@Client.on_message(filters.command('top'))
+async def top(client, message):
+    top_messages = await mdb.get_top_messages(20)
+
+    truncated_messages = []
+    for msg in top_messages:
+        if len(msg) > MAX_MESSAGE_LENGTH:
+            truncated_messages.append(msg[:MAX_MESSAGE_LENGTH - 3] + "...")
+        else:
+            truncated_messages.append(msg)
+
+    keyboard = []
+    for i in range(0, len(truncated_messages), 2):
+        row = truncated_messages[i:i+2]
+        keyboard.append(row)
+    
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
+    await message.reply_text("Top Searches", reply_markup=reply_markup)    
