@@ -65,7 +65,6 @@ async def filters_private_handlers(client, message):
     next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
     time_difference = round(time_difference)
-    current_day = datetime.now().day
  
     # Todays Date
     today = datetime.now().strftime("%Y-%m-%d")
@@ -183,6 +182,8 @@ async def public_group_filter(client, message):
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return 
+    
+    await mdb.update_top_messages(message.from_user.id, message.text) 
     
     text, markup = await auto_filter(client, message)
     try:
