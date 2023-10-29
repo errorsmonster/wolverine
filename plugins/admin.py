@@ -328,8 +328,9 @@ async def latests(client, message):
     try:
         limit = int(message.command[1])
     except (IndexError, ValueError):
-        limit = 20
+        limit = 30
 
+    m = await message.reply_text(f"<b>Please wait, Fetching latest searches...</b>")
     top_messages = await mdb.get_top_messages(limit)
 
     truncated_messages = []
@@ -347,4 +348,4 @@ async def latests(client, message):
         keyboard.append(row)
     
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
-    await message.reply_text(f"<b>Top searches of the day</b>", reply_markup=reply_markup)    
+    await message.reply_text(f"<b>Here is the top searches of the day</b>", reply_markup=reply_markup)    
