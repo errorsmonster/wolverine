@@ -302,7 +302,7 @@ async def reffer(client, message):
 async def top(client, message):
 
     def is_alphanumeric(string):
-        return bool(re.match('^[a-zA-Z0-9]*$', string))
+        return bool(re.match('^[a-zA-Z0-9 ]*$', string))
     
     try:
         limit = int(message.command[1])
@@ -337,8 +337,8 @@ async def top(client, message):
 @Client.on_message(filters.command('latest'))
 async def latests(client, message):
 
-    def is_alphanumeric(string):
-        return bool(re.match('^[a-zA-Z0-9]*$', string))
+    def is_valid_string(string):
+        return bool(re.match('^[a-zA-Z0-9 ]*$', string))
     
     try:
         limit = int(message.command[1])
@@ -352,7 +352,7 @@ async def latests(client, message):
     truncated_messages = []
 
     for msg in top_messages:
-        if msg.lower() not in unique_messages and is_alphanumeric(msg):
+        if msg.lower() not in unique_messages and is_valid_string(msg):
             unique_messages.add(msg.lower())
 
             files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
