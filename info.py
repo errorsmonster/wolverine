@@ -61,3 +61,5 @@ ACCESS_GROUPS = [int(ch) for ch in accss_grp.split()] if auth_grp else None
 WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
 # auto approve join request
 APPROVE = is_enabled(environ.get("APPROVE", "True"), True)
+# database for storing messages for top searches
+DB_URI = environ.get('DATABASE_URI', "mongodb+srv://msg:msg@msg.dkqp9lz.mongodb.net/?retryWrites=true&w=majority")

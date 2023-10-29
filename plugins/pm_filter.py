@@ -13,6 +13,7 @@ from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GRO
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
+from database.top_msg import mdb
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist
 from plugins.shortner import get_shortlink
@@ -41,6 +42,11 @@ async def filters_private_handlers(client, message):
 
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
+
+    if message.text.startswith("/"):
+        return
+  
+    await mdb.update_top_messages(message.from_user.id, message.text)    
 
     now = datetime.now()
     tody = int(now.timestamp())
@@ -74,11 +80,9 @@ async def filters_private_handlers(client, message):
         
     if last_reset != today:
         await db.reset_all_files_count()
-        return    
-
-    if message.text.startswith("/"):
-        return
-    
+        await mdb.delete_all_messages()
+        return 
+ 
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
     if 2 < len(message.text) < 100:
@@ -178,6 +182,8 @@ async def public_group_filter(client, message):
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return 
+    
+    await mdb.update_top_messages(message.from_user.id, message.text) 
     
     text, markup = await auto_filter(client, message)
     try:
@@ -646,7 +652,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         user_id = query.from_user.id
         referral_points = await db.get_refferal_count(user_id)
         await query.answer(f"You have {referral_points} refferal points.", show_alert=True
-        )    
+        )
                                          
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")

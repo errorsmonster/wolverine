@@ -7,25 +7,28 @@ from info import LOG_CHANNEL
 from utils import temp
 import re
 from datetime import datetime, timedelta
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
+from database.top_msg import mdb 
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 
-PATTERN_DOWNLOAD = re.compile(r"\b(how to (?:download|find|search|get)|send me|download link)\b", re.IGNORECASE)
-
+PATTERN_DOWNLOAD = re.compile(
+    r"\bhow to (?:download|find|search for|get) (?:movie(?:s)?|series|link(?:s)?)\b",
+    re.IGNORECASE
+)
 @Client.on_message(filters.regex(PATTERN_DOWNLOAD))
 async def how2download(_, message):
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("How To Download", url="https://t.me/QuickAnnounce/5")]])
     response_text = "<b>Please watch this video to know how to download movies and series from this bot.</b>"
-    await message.reply_text(response_text, reply_markup=keyboard, disable_web_page_preview=True)
+    await message.reply_text(response_text, reply_markup=keyboard, reply_to_message_id=message.id, disable_web_page_preview=True)
 
 @Client.on_message(filters.private & filters.regex(r"^(hi+|hello+|hey+)$", re.IGNORECASE))
 async def echo(_, message):
-    response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>I can help you find movies and series. Just send me the name of what you're looking for.</b>"
-    await message.reply_text(response_text, disable_web_page_preview=True)
+    response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>Please provide the name of the movie or series you're seeking, and I'll help you to find it..</b>, "
+    await message.reply_text(response_text, reply_to_message_id=message.id, disable_web_page_preview=True)
 
 @Client.on_message(filters.media & filters.private & ~filters.user(ADMINS))
 async def mediasv_filter(client, message):
@@ -36,7 +39,7 @@ async def mediasv_filter(client, message):
     
 @Client.on_edited_message(filters.private & ~filters.user(ADMINS))
 async def editmsg_filter(client, message):
-    m = await message.reply_text(text="<b>Instead of editing messages, Please send a new one.</b>", reply_to_message_id=message.id)
+    m = await message.reply_text(text="<b>Please send a new message rather than editing the existing one.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(10)
     await m.delete()
     await message.delete()
@@ -132,7 +135,7 @@ async def resetdailyuser(client, message):
     if not user_id:
         return await message.reply("Please provide a user id")
     m = await message.reply_text("Resetting daily files count of user...")
-    await db.reset_daily_files_count_user(user_id)
+    await db.reset_daily_files_count(user_id)
     await m.edit("Successfully reset daily files count of user!")
 
 # remove all premium user from database
@@ -294,3 +297,55 @@ async def reffer(client, message):
                  reply_markup=keyboard,
                  disable_web_page_preview=True)
     
+
+@Client.on_message(filters.command('top'))
+async def top(client, message):
+    try:
+        limit = int(message.command[1])
+    except (IndexError, ValueError):
+        limit = 20
+
+    top_messages = await mdb.get_top_messages(limit)
+
+    truncated_messages = []
+    for msg in top_messages:
+        if len(msg) > 30:
+            truncated_messages.append(msg[:30 - 3] + "...")
+        else:
+            truncated_messages.append(msg)
+
+    keyboard = []
+    for i in range(0, len(truncated_messages), 2):
+        row = truncated_messages[i:i+2]
+        keyboard.append(row)
+    
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
+    await message.reply_text(f"<b>Top searches of the day</b>", reply_markup=reply_markup)
+
+
+@Client.on_message(filters.command('latest'))
+async def latests(client, message):
+    try:
+        limit = int(message.command[1])
+    except (IndexError, ValueError):
+        limit = 30
+
+    m = await message.reply_text(f"<b>Please wait, Fetching latest searches...</b>")
+    top_messages = await mdb.get_top_messages(limit)
+
+    truncated_messages = []
+    for msg in top_messages:
+        files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
+        if files:
+            if len(msg) > 30:
+                truncated_messages.append(msg[:30 - 3] + "...")
+            else:
+                truncated_messages.append(msg)
+
+    keyboard = []
+    for i in range(0, len(truncated_messages), 2):
+        row = truncated_messages[i:i+2]
+        keyboard.append(row)
+    
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
+    await message.reply_text(f"<b>Here is the top searches of the day</b>", reply_markup=reply_markup)    
