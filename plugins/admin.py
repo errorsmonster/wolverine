@@ -330,13 +330,13 @@ async def top(client, message):
         row = truncated_messages[i:i+2]
         keyboard.append(row)
     
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
+    reply_markup = ReplyKeyboardMarkup(keyboard, is_persistent=True, resize_keyboard=True, placeholder="Most searches of the day")
     await message.reply_text(f"<b>Top searches of the day</b>", reply_markup=reply_markup)
 
 
 @Client.on_message(filters.command('latest'))
 async def latests(client, message):
-    
+
     def is_alphanumeric(string):
         return bool(re.match('^[a-zA-Z0-9]*$', string))
     
