@@ -336,6 +336,7 @@ async def top(client, message):
 
 @Client.on_message(filters.command('latest'))
 async def latests(client, message):
+    
     def is_alphanumeric(string):
         return bool(re.match('^[a-zA-Z0-9]*$', string))
     
