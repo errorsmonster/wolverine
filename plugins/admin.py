@@ -348,4 +348,5 @@ async def latests(client, message):
         keyboard.append(row)
     
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
-    await message.reply_text(f"<b>Here is the top searches of the day</b>", reply_markup=reply_markup)    
+    await message.reply_text(f"<b>Here is the top searches of the day</b>", reply_markup=reply_markup)
+    await m.delete()
