@@ -4,12 +4,14 @@ import asyncio
 from Script import script
 from pyrogram import Client, filters, enums
 from pyrogram.errors import ChatAdminRequired, FloodWait
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
+from database.top_msg import mdb 
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, FORCESUB_CHANNEL, WAIT_TIME
 from utils import get_settings, get_size, is_subscribed, temp, replace_blacklist
 from database.connections_mdb import active_connection
+from database.ia_filterdb import get_search_results
 import re
 import json
 import base64
@@ -92,6 +94,28 @@ async def start(client, message):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
+        return
+    
+    if message.command[1] == "topsearch":
+        m = await message.reply_text(f"<b>Please Wait, Fetching Top Searches...</b>")
+        top_messages = await mdb.get_top_messages(30)
+
+        truncated_messages = []
+        for msg in top_messages:
+            files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
+            if files:
+                if len(msg) > 30:
+                    truncated_messages.append(msg[:30 - 3] + "...")
+                else:
+                    truncated_messages.append(msg)
+
+        keyboard = []
+        for i in range(0, len(truncated_messages), 2):
+            row = truncated_messages[i:i+2]
+            keyboard.append(row)
+    
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
+        await m.edit(f"<b>Here Is The Top Searches Of The Day</b>", reply_markup=reply_markup)
         return
     
     if message.command[1] == "refer":
@@ -205,6 +229,8 @@ async def start(client, message):
             await asyncio.sleep(1) 
         return await sts.delete()
         
+
+    
 
     # Referral sysytem
     elif data.split("-", 1)[0] == "ReferID":
