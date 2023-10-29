@@ -31,9 +31,9 @@ AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_chan
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://ryme:ryme@cluster0.3kwfyam.mongodb.net/?retryWrites=true&w=majority")
-DATABASE_NAME = environ.get('DATABASE_NAME', "Rajappan")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'netflimsbot')
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://ryu:ryu@ryu.watcr8f.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_NAME = environ.get('DATABASE_NAME', "primehub")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'ryu')
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
