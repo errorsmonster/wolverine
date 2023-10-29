@@ -115,7 +115,8 @@ async def start(client, message):
             keyboard.append(row)
     
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
-        await m.edit(f"<b>Here Is The Top Searches Of The Day</b>", reply_markup=reply_markup)
+        await message.reply_text(f"<b>Here Is The Top Searches Of The Day</b>", reply_markup=reply_markup)
+        await m.delete()
         return
     
     if message.command[1] == "refer":
