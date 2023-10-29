@@ -343,7 +343,7 @@ async def latests(client, message):
     try:
         limit = int(message.command[1])
     except (IndexError, ValueError):
-        limit = 30
+        limit = 20
 
     m = await message.reply_text(f"<b>Please wait, fetching latest searches...</b>")
     top_messages = await mdb.get_top_messages(limit)
