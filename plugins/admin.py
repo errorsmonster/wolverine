@@ -205,11 +205,11 @@ async def userinfo(client, message):
         duration = users.get("premium_expiry")
         purchase_date_unix = users.get("purchase_date")
 
-        status = "Premium"
+        status = "Premium (Paid)"
         if duration == 28:
-            status = "Freemium (Refer)"
+            status = "Premium (Referral)"
         if duration == 29:
-            status = "Freemium (Promo)"
+            status = "Premium (Promocode)"
 
         purchase_date = datetime.fromtimestamp(purchase_date_unix)
         expiry_date = purchase_date + timedelta(days=duration)
