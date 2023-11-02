@@ -32,7 +32,7 @@ async def echo(_, message):
 
 @Client.on_message(filters.media & filters.private & ~filters.user(ADMINS))
 async def mediasv_filter(client, message):
-    m=await message.reply_text("<b>Please don't send any files in my PM. It will be deleted in 1 Minute.</b>", reply_to_message_id=message.id)
+    m=await message.reply_text("<b>Please Don't Send Any Files In My PM. It Will Be Deleted Within 1 Minute.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(60)
     await message.delete()
     await m.delete()
