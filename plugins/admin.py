@@ -3,17 +3,19 @@ from database.users_chats_db import db
 from info import ADMINS
 import asyncio
 from Script import script
-from info import LOG_CHANNEL
+from info import LOG_CHANNEL, AUTH_GROUPS
 from utils import temp
 import re
 from datetime import datetime, timedelta
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
 from database.top_msg import mdb 
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
+TEXT = "Hello {}, Welcome To {}"
+APPROVE = True
 
 PATTERN_DOWNLOAD = re.compile(
     r"\bhow to (?:download|find|search for|get) (?:movie(?:s)?|series|link(?:s)?)\b",
@@ -370,3 +372,16 @@ async def latests(client, message):
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
     await message.reply_text(f"<b>Here are the top searches of the day</b>", reply_markup=reply_markup)
     await m.delete()
+
+
+# auto approve members 
+@Client.on_chat_join_request((filters.group | filters.channel) & filters.chat(AUTH_GROUPS) if AUTH_GROUPS else (filters.group | filters.channel))
+async def autoapprove(client: Client, message: ChatJoinRequest):
+    chat=message.chat
+    user=message.from_user
+    try:
+        if APPROVE == True:
+            await client.approve_chat_join_request(chat.id, user.id)
+            await client.send_message(chat_id=chat.id, text=TEXT.format(user.mention, chat.title))
+    except Exception as e:
+        print(e)
