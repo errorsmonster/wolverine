@@ -106,16 +106,16 @@ async def filters_private_handlers(client, message):
             is_expired = await db.check_expired_users(user_id)
             
             if is_expired:
-                await msg.edit(f"**Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.**", disable_web_page_preview=True)
+                await msg.edit(f"<b>Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.</b>", disable_web_page_preview=True)
                 return
             
             if files_counts is not None and files_counts >= 50:
-                await msg.edit(f"Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.")
+                await msg.edit(f"<b>Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.</b>")
                 return
             
             if duration == 29:
                 if files_counts is not None and files_counts >= 20:
-                    await msg.edit(f"You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again")
+                    await msg.edit(f"<b>You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
                     return
                 
             # call auto filter
@@ -140,7 +140,7 @@ async def filters_private_handlers(client, message):
                 
             if files_counts is not None and files_counts >= 10:
                 await message.reply(
-                    f"**You Have Reached Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request**",
+                    f"<b>You Have Reached Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request</b>",
                     disable_web_page_preview=True)
                 return
         
@@ -155,7 +155,7 @@ async def filters_private_handlers(client, message):
                 m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
  
     except Exception as e:
-        await message.reply_text(f"Error: {e}")
+        await msg.edit(f"Error: {e}")
 
     finally:
         if waitime is not None:
