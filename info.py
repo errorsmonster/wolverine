@@ -14,7 +14,7 @@ def is_enabled(value, default):
 SESSION = environ.get('SESSION', 'autofilter')
 API_ID = environ.get('API_ID', "11948995")
 API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
-BOT_TOKEN = environ.get('BOT_TOKEN', "6496586495:AAFZXdcbC7XANI3lwtmeDTPVs43EHp0HG3I")
+BOT_TOKEN = environ.get('BOT_TOKEN', "5600341219:AAH16Wh8SUL0O6YBw30yGsio2TNIYRfC5xs")
 
 # Bot settings
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
@@ -31,9 +31,9 @@ AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_chan
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://ryu:ryu@ryu.watcr8f.mongodb.net/?retryWrites=true&w=majority")
-DATABASE_NAME = environ.get('DATABASE_NAME', "primehub")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'ryu')
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://rosi:rosi@rosi.zc9sl7q.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_NAME = environ.get('DATABASE_NAME', "rosi")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'rosi')
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
