@@ -231,8 +231,6 @@ async def start(client, message):
         return await sts.delete()
         
 
-    
-
     # Referral sysytem
     elif data.split("-", 1)[0] == "ReferID":
         invite_id = int(data.split("-", 1)[1])

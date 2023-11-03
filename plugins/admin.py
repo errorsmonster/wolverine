@@ -3,17 +3,19 @@ from database.users_chats_db import db
 from info import ADMINS
 import asyncio
 from Script import script
-from info import LOG_CHANNEL
+from info import LOG_CHANNEL, AUTH_GROUPS
 from utils import temp
 import re
 from datetime import datetime, timedelta
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
 from database.top_msg import mdb 
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
+TEXT = "Hello {}, Welcome To {}"
+APPROVE = True
 
 PATTERN_DOWNLOAD = re.compile(
     r"\bhow to (?:download|find|search for|get) (?:movie(?:s)?|series|link(?:s)?)\b",
@@ -22,28 +24,27 @@ PATTERN_DOWNLOAD = re.compile(
 @Client.on_message(filters.regex(PATTERN_DOWNLOAD))
 async def how2download(_, message):
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("How To Download", url="https://t.me/QuickAnnounce/5")]])
-    response_text = "<b>Please watch this video to know how to download movies and series from this bot.</b>"
+    response_text = "<b>Please Watch This Video To Know How To Download Movies And Series From This Bot.</b>"
     await message.reply_text(response_text, reply_markup=keyboard, reply_to_message_id=message.id, disable_web_page_preview=True)
 
 @Client.on_message(filters.private & filters.regex(r"^(hi+|hello+|hey+)$", re.IGNORECASE))
 async def echo(_, message):
-    response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>Please provide the name of the movie or series you're seeking, and I'll help you to find it..</b>, "
+    response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>Please Provide The Name Of The Movie Or Series You're Looking For, and I'll Help You To Find It..</b>, "
     await message.reply_text(response_text, reply_to_message_id=message.id, disable_web_page_preview=True)
 
 @Client.on_message(filters.media & filters.private & ~filters.user(ADMINS))
 async def mediasv_filter(client, message):
-    m=await message.reply_text("<b>Please don't send any files in my PM. It will be deleted in 1 Minute.</b>", reply_to_message_id=message.id)
+    m=await message.reply_text("<b>Please Don't Send Any Files In My PM. It Will Be Deleted Within 1 Minute.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(60)
     await message.delete()
     await m.delete()
     
 @Client.on_edited_message(filters.private & ~filters.user(ADMINS))
 async def editmsg_filter(client, message):
-    m = await message.reply_text(text="<b>Please send a new message rather than editing the existing one.</b>", reply_to_message_id=message.id)
+    m = await message.reply_text(text="<b>Please Send a New Message Rather Than Editing The Existing One.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(10)
     await m.delete()
     await message.delete()
-
 
 # Add paid user to database and send message
 @Client.on_message(filters.command('add_paid') & filters.user(ADMINS))
@@ -113,7 +114,7 @@ async def request(client, message):
         return
     
     if files:
-        await message.reply_text(f"**This movie is already available in our database. Please send movie name directly.**", reply_to_message_id=message.id, disable_web_page_preview=True)
+        await message.reply_text(f"**This Movie Is Already Available In Our Database. Please Send Movie Name Directly.**", reply_to_message_id=message.id, disable_web_page_preview=True)
 
     else:
         await message.reply_text(script.REQ_REPLY.format(movie_name), disable_web_page_preview=True)
@@ -167,7 +168,7 @@ async def list_premium(client, message):
         purchase_date_unix = user.get("purchase_date")
         purchase_date = datetime.fromtimestamp(purchase_date_unix)
         purchase_date_str = purchase_date.strftime("%d/%m/%Y")
-        out += f"**User ID:** `{user_id}`\n**Name**: {user_name}\n**Purchase Date:**\n`{purchase_date_str}`\n**Duration:** `{duration} days`\n\n"
+        out += f"ID: `{user_id}`\nName: {user_name}\nDOP:\n`{purchase_date_str}`\nDuration: `{duration}` days\n\n"
     try:
         await m.edit(out, disable_web_page_preview=True)
     except MessageTooLong:
@@ -205,11 +206,11 @@ async def userinfo(client, message):
         duration = users.get("premium_expiry")
         purchase_date_unix = users.get("purchase_date")
 
-        status = "Premium"
+        status = "Premium (Paid)"
         if duration == 28:
-            status = "Freemium (Refer)"
+            status = "Premium (Referral)"
         if duration == 29:
-            status = "Freemium (Promo)"
+            status = "Premium (Promocode)"
 
         purchase_date = datetime.fromtimestamp(purchase_date_unix)
         expiry_date = purchase_date + timedelta(days=duration)
@@ -343,7 +344,7 @@ async def latests(client, message):
     try:
         limit = int(message.command[1])
     except (IndexError, ValueError):
-        limit = 30
+        limit = 20
 
     m = await message.reply_text(f"<b>Please wait, fetching latest searches...</b>")
     top_messages = await mdb.get_top_messages(limit)
@@ -370,3 +371,16 @@ async def latests(client, message):
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True, placeholder="Most searches of the day")
     await message.reply_text(f"<b>Here are the top searches of the day</b>", reply_markup=reply_markup)
     await m.delete()
+
+
+# auto approve members 
+@Client.on_chat_join_request((filters.group | filters.channel) & filters.chat(AUTH_GROUPS) if AUTH_GROUPS else (filters.group | filters.channel))
+async def autoapprove(client: Client, message: ChatJoinRequest):
+    chat=message.chat
+    user=message.from_user
+    try:
+        if APPROVE == True:
+            await client.approve_chat_join_request(chat.id, user.id)
+            await client.send_message(chat_id=chat.id, text=TEXT.format(user.mention, chat.title))
+    except Exception as e:
+        print(e)
