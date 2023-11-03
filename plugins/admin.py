@@ -24,7 +24,7 @@ PATTERN_DOWNLOAD = re.compile(
 @Client.on_message(filters.regex(PATTERN_DOWNLOAD))
 async def how2download(_, message):
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("How To Download", url="https://t.me/QuickAnnounce/5")]])
-    response_text = "<b>Please watch this video to know how to download movies and series from this bot.</b>"
+    response_text = "<b>Please Watch This Video To Know How To Download Movies And Series From This Bot.</b>"
     await message.reply_text(response_text, reply_markup=keyboard, reply_to_message_id=message.id, disable_web_page_preview=True)
 
 @Client.on_message(filters.private & filters.regex(r"^(hi+|hello+|hey+)$", re.IGNORECASE))
@@ -45,7 +45,6 @@ async def editmsg_filter(client, message):
     await asyncio.sleep(10)
     await m.delete()
     await message.delete()
-
 
 # Add paid user to database and send message
 @Client.on_message(filters.command('add_paid') & filters.user(ADMINS))
@@ -115,7 +114,7 @@ async def request(client, message):
         return
     
     if files:
-        await message.reply_text(f"**This movie is already available in our database. Please send movie name directly.**", reply_to_message_id=message.id, disable_web_page_preview=True)
+        await message.reply_text(f"**This Movie Is Already Available In Our Database. Please Send Movie Name Directly.**", reply_to_message_id=message.id, disable_web_page_preview=True)
 
     else:
         await message.reply_text(script.REQ_REPLY.format(movie_name), disable_web_page_preview=True)
