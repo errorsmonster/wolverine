@@ -286,7 +286,7 @@ async def allcommands(client, message):
         )
     
 # Add functions for refferal system
-@Client.on_message(filters.command("refer") & filters.private)
+@Client.on_message(filters.command("refer"))
 async def reffer(client, message):
     m = await message.reply_text(f"<b>Generating Your Refferal Link...</b>")
     await asyncio.sleep(2)
