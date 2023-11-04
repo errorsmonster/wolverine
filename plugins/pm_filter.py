@@ -130,7 +130,7 @@ async def filters_private_handlers(client, message):
                     remaining_time = slow_mode - time_diff
                     while remaining_time > 0:
                         await msg.edit(f"<b>Please Wait For {remaining_time} Seconds Before Sending Another Request.</b>")
-                        await asyncio.sleep(5)
+                        await asyncio.sleep(2)
                         current_time = int(time.time())
                         time_diff = current_time - user_timestamps
                         remaining_time = max(0, slow_mode - time_diff)
@@ -155,7 +155,8 @@ async def filters_private_handlers(client, message):
                 m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
  
     except Exception as e:
-        await msg.edit(f"Error: {e}")
+        print(e)
+        await msg.edit(f"<b>Something Went Wrong :(</b>")
 
     finally:
         if waitime is not None:
