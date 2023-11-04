@@ -155,7 +155,8 @@ async def filters_private_handlers(client, message):
                 m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
  
     except Exception as e:
-        await msg.edit(f"Error: {e}")
+        print(e)
+        await msg.edit(f"<b>Something Went Wrong :(</b>")
 
     finally:
         if waitime is not None:
