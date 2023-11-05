@@ -3,7 +3,7 @@ from database.users_chats_db import db
 from info import ADMINS
 import asyncio
 from Script import script
-from info import LOG_CHANNEL, AUTH_GROUPS
+from info import LOG_CHANNEL, AUTH_GROUPS, APPROVE
 from utils import temp
 import re
 from datetime import datetime, timedelta
@@ -14,8 +14,7 @@ from database.top_msg import mdb
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
-TEXT = "Hello {}, Welcome To {}"
-APPROVE = True
+TEXT = "<b>Hello {}, Welcome To {}</b>"
 
 PATTERN_DOWNLOAD = re.compile(
     r"\bhow to (?:download|find|search for|get) (?:movie(?:s)?|series|link(?:s)?)\b",
