@@ -9,7 +9,7 @@ from urllib.parse import quote
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME
+from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME, MAINTAINENCE_MODE
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -82,6 +82,10 @@ async def filters_private_handlers(client, message):
         await db.reset_all_files_count()
         await mdb.delete_all_messages()
         return 
+    
+    if MAINTAINENCE_MODE == True:
+        await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later.</b>", disable_web_page_preview=True)
+        return
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
@@ -130,7 +134,7 @@ async def filters_private_handlers(client, message):
                     remaining_time = slow_mode - time_diff
                     while remaining_time > 0:
                         await msg.edit(f"<b>Please Wait For {remaining_time} Seconds Before Sending Another Request.</b>")
-                        await asyncio.sleep(5)
+                        await asyncio.sleep(2)
                         current_time = int(time.time())
                         time_diff = current_time - user_timestamps
                         remaining_time = max(0, slow_mode - time_diff)
@@ -155,7 +159,8 @@ async def filters_private_handlers(client, message):
                 m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
  
     except Exception as e:
-        await msg.edit(f"Error: {e}")
+        print(e)
+        await msg.edit(f"<b>Something Went Wrong :(</b>")
 
     finally:
         if waitime is not None:
