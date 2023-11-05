@@ -84,7 +84,7 @@ async def filters_private_handlers(client, message):
         return 
     
     if MAINTAINENCE_MODE == True:
-        await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later. Try This Bot Instead <a href=https://t.me/flimrobot>R O S I E</a></b>", disable_web_page_preview=True)
+        await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later, or Try This Bot Instead <a href=https://t.me/flimrobot>R O S I E</a></b>", disable_web_page_preview=True)
         return
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
