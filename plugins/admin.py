@@ -167,7 +167,7 @@ async def list_premium(client, message):
         purchase_date_unix = user.get("purchase_date")
         purchase_date = datetime.fromtimestamp(purchase_date_unix)
         purchase_date_str = purchase_date.strftime("%d/%m/%Y")
-        out += f"ID: `{user_id}`\nName: {user_name}\nDOP:\n`{purchase_date_str}`\nDuration: `{duration}` days\n\n"
+        out += f"ID: `{user_id}`\nName: {user_name}\nPurchase On:\n`{purchase_date_str}`\nDuration: `{duration}` days\n\n"
     try:
         await m.edit(out, disable_web_page_preview=True)
     except MessageTooLong:
@@ -235,7 +235,7 @@ async def userinfo(client, message):
         f"<b>➲Expiry Date:</b> <code>{expiry_date_str}</code>\n"
         f"<b>➲Days Left:</b> <code>{days_left}/{duration}</code> days\n"
         f"<b>➲Refferal Points:</b> <code>{refferal}</code>\n"
-        f"<b>➲Files Recieved:</b> <code>{total_files_sent}</code>\n"
+        f"<b>➲Total Recieved:</b> <code>{total_files_sent}</code>\n"
         f"<b>➲Today Recieved:</b> <code>{today_recieved}</code>\n"
     )
 

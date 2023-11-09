@@ -160,7 +160,7 @@ async def filters_private_handlers(client, message):
  
     except Exception as e:
         print(e)
-        await msg.edit(f"<b>Something Went Wrong :(</b>")
+        await msg.edit(f"<b>Opps! Something Went Wrong.</b>")
 
     finally:
         if waitime is not None:
@@ -219,7 +219,7 @@ async def next_page(bot, query):
     k = await bot.get_users(m)
     name = k.first_name if not k.last_name else k.first_name + " " + k.last_name
     if int(req) not in [query.from_user.id, 0]:
-        return await query.answer(f"Only ~{name} can access this query", show_alert=True)
+        return await query.answer(f"{name}\ncan only access this query", show_alert=True)
     try:
         offset = int(offset)
     except:
