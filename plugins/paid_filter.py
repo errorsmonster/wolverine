@@ -126,4 +126,4 @@ async def paid_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
     cap = f"Here is what i found for your query {search}"
-    return f"<b>{cap}</b>\n\n{search_results_text}", InlineKeyboardMarkup(btn)
+    return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
