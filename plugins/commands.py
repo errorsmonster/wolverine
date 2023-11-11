@@ -120,6 +120,7 @@ async def start(client, message):
         await m.delete()
         return
     
+    # Refer
     if message.command[1] == "refer":
         m = await message.reply_text(f"<b>Generating Your Refferal Link...</b>")
         user_id = message.from_user.id
@@ -130,6 +131,11 @@ async def start(client, message):
                      reply_markup=keyboard,
                      disable_web_page_preview=True
         )
+        return
+
+    # Terms & Condition 
+    if message.command[1] == "terms":
+        await message.reply_text(text=f"<b>Terms & Condition Coming Soon</b>", disable_web_page_preview=True)
         return
     
     data = message.command[1]
