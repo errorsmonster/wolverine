@@ -64,7 +64,6 @@ WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
 APPROVE = is_enabled(environ.get("APPROVE", "True"), True)
 DB_URI = environ.get('DATABASE_URI', "mongodb+srv://msg:msg@msg.dkqp9lz.mongodb.net/?retryWrites=true&w=majority")
 
-
 # For stream purposes
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")
 URL = environ.get("URL", "https://linkrobot.onrender.com")
