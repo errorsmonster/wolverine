@@ -19,6 +19,7 @@ from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_
 from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
+from profanity import profanity
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -187,6 +188,10 @@ async def public_group_filter(client, message):
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return 
+    
+    # Check if the user's message contains any inappropriate words
+    if profanity.contains_profanity(message.text):
+        await message.delete()        
     
     await mdb.update_top_messages(message.from_user.id, message.text) 
     
