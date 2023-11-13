@@ -63,6 +63,7 @@ ACCESS_GROUPS = [int(ch) for ch in accss_grp.split()] if auth_grp else None
 WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
 APPROVE = is_enabled(environ.get("APPROVE", "True"), True)
 DB_URI = environ.get('DATABASE_URI', "mongodb+srv://msg:msg@msg.dkqp9lz.mongodb.net/?retryWrites=true&w=majority")
+PROFANITY_FILTER = is_enabled(environ.get("PROFANITY_FILTER", "False"), False)
 
 # For stream purposes
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")

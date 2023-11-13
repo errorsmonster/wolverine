@@ -77,7 +77,7 @@ async def paid_next_page(bot, query):
         )
     try:
          await query.edit_message_text(
-            text=search_results_text,
+            text=f"<b>{search_results_text}</b>",
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(btn)
         )
