@@ -1,4 +1,3 @@
-# Kanged From @TroJanZheX
 import asyncio
 import re
 import ast
@@ -9,7 +8,7 @@ from urllib.parse import quote
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME, MAINTAINENCE_MODE
+from info import ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME, MAINTAINENCE_MODE, PROFANITY_FILTER
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -19,6 +18,7 @@ from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_
 from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
+from profanity import profanity
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -188,6 +188,11 @@ async def public_group_filter(client, message):
     if message.text.startswith("/"):
         return 
     
+    # Check if the user's message contains any inappropriate words
+    if PROFANITY_FILTER:
+        if profanity.contains_profanity(message.text):
+            await message.delete()        
+    
     await mdb.update_top_messages(message.from_user.id, message.text) 
     
     text, markup = await auto_filter(client, message)
@@ -277,7 +282,7 @@ async def next_page(bot, query):
         )
     try:
          await query.edit_message_text(
-            text=search_results_text,
+            text=f"<b>{search_results_text}</b>",
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(btn)
         )
