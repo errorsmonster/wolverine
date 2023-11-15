@@ -731,8 +731,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             for row in keyboard_buttons
         ]
         btn.append(
-            [InlineKeyboardButton("Close", callback_data="close_data"),
-             InlineKeyboardButton("Back", callback_data="delback")]
+            [InlineKeyboardButton("Close", callback_data="close_data")]
             )
 
         await query.message.edit(
@@ -747,7 +746,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[           
             InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{query.data}")
             ],[
-            InlineKeyboardButton('No, Nevermind', callback_data="confirm_no"),
+            InlineKeyboardButton('No', callback_data="confirm_no"),
+            InlineKeyboardButton('◀️ Back', callback_data="delback")
         ]]
         await query.message.edit(
             text=f"<b>Are You Sure To Delete This File?</b>",
