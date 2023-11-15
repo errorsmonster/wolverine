@@ -732,7 +732,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             for row in keyboard_buttons
         ]
         btn.append(
-            [InlineKeyboardButton("Close", callback_data="close_data")]
+            [InlineKeyboardButton("⛔️ Close", callback_data="close_data")]
             )
 
         await query.message.edit(
