@@ -774,7 +774,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             disable_web_page_preview=True,
         )
     elif query.data.startswith("confirm_yes#"):
-        limit, file_type = query.data.split("#")[1].split("_")
+        file_type, limit = query.data.split("#")[1].split("_")
         await delete_files(query, limit, file_type)
 
     elif query.data == "confirm_no":
