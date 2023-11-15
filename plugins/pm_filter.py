@@ -718,6 +718,29 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
 
+    elif query.data == "delback":
+        keyboard_buttons = [
+            ["PreDVD", "PreDVDRip"],
+            ["HDTS", "HDTC"],
+            ["HDCam", "HD-Cams"],
+            ["CamRip", "S-Print"]
+        ]
+
+        btn = [
+            [InlineKeyboardButton(button, callback_data=button.lower().replace("-", "")) for button in row]
+            for row in keyboard_buttons
+        ]
+        btn.append(
+            [InlineKeyboardButton("Close", callback_data="close_data"),
+             InlineKeyboardButton("Back", callback_data="delback")]
+            )
+
+        await query.message.edit(
+            text="<b>Select The Type Of Files You Want To Delete..?</b>",
+            reply_markup=InlineKeyboardMarkup(btn),
+            quote=True
+        )
+        
     elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hdtss", "hdtc"]:
         buttons = [[
             InlineKeyboardButton('Hell No', callback_data=f"confirm_no")

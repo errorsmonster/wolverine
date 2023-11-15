@@ -453,17 +453,19 @@ async def delete_all_index(bot, message):
 async def delete_multiple_files(bot, message):
     keyboard_buttons = [
         ["PreDVD", "PreDVDRip"],
-        ["HDTS", "HDTSS"],
+        ["HDTS", "HDTC"],
         ["HDCam", "HD-Cams"],
-        ["CamRip", "S-Print"],
-        ["HDTC", "CamRip"]
+        ["CamRip", "S-Print"]
     ]
 
     btn = [
         [InlineKeyboardButton(button, callback_data=button.lower().replace("-", "")) for button in row]
         for row in keyboard_buttons
     ]
-    btn.append([InlineKeyboardButton("Close", callback_data="close_data")])
+    btn.append(
+        [InlineKeyboardButton("Close", callback_data="close_data"),
+         InlineKeyboardButton("Back", callback_data="delback")]
+        )
 
     await message.reply_text(
         text="<b>Select The Type Of Files You Want To Delete..?</b>",
