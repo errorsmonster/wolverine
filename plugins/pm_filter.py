@@ -19,7 +19,7 @@ from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from profanity import profanity
-from database.ia_filterdb import Media, get_file_details, get_search_results
+from database.ia_filterdb import Media, get_file_details, get_search_results, get_bad_files
 from database.filters_mdb import (
     del_all,
     find_filter,
@@ -313,6 +313,24 @@ async def advantage_spoll_choker(bot, query):
             k = await query.message.edit('This Movie Not Found In DataBase')
             await asyncio.sleep(10)
             await k.delete()
+
+async def delete_files(query, file_type):
+    k = await Client.send_message(chat_id=query.message.chat.id, text=f"<b>Deleting {file_type} files... Please wait...</b>")
+    files, _, _ = await get_bad_files(file_type.lower(), offset=0)
+    deleted = 0
+
+    for file in files:
+        file_ids = file.file_id
+        result = await Media.collection.delete_one({'_id': file_ids})
+
+        if result.deleted_count:
+            logger.info(f'{file_type.capitalize()} File Found! Successfully deleted from database.')
+
+        deleted += 1
+
+    deleted = str(deleted)
+    await k.edit_text(text=f"<b>Successfully deleted {deleted} {file_type.capitalize()} files.</b>")
+
     
 
 @Client.on_callback_query()
@@ -697,7 +715,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
+
+    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hdtss", "hq"]:
+        await delete_files(query, query.data)
+
     await query.answer('Share & Support Us♥️')
+
     
 
 async def auto_filter(client, msg, spoll=False):
