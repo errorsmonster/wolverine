@@ -801,7 +801,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         search = query.data.split("#")[1]
         await query.answer(text=f"Searching for your request :)")
         text, markup = await callback_auto_filter(query, search)
-        await query.message.edit(text=f"{text}", reply_markup=markup, disable_web_page_preview=True)
+        await query.message.edit(text=f"<b>{text}</b>", reply_markup=markup, disable_web_page_preview=True)
 
 
     await query.answer('Share & Support Us♥️')
