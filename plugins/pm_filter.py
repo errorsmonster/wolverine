@@ -778,8 +778,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
                 files, _, _ = await get_search_results(msg.lower())
                 if files:
-                    if len(msg) > 30:
-                        truncated_messages.append(msg[:30 - 3])
+                    if len(msg) > 20:
+                        truncated_messages.append(msg[:20 - 3])
                     else:
                         truncated_messages.append(msg)
 
@@ -800,9 +800,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]
         await query.answer(text=f"Searching for your request :)")
-        text, markup = await callback_auto_filter(query, search)
-        await query.message.edit(text=f"<b>{text}</b>", reply_markup=markup, disable_web_page_preview=True)
-
+        premium_status = await db.is_premium_status(query.from_user.id)
+        if premium_status is True:
+            text, markup = await callback_paid_filter(query, search)
+            await query.message.edit(text=f"<b>{text}</b>", reply_markup=markup, disable_web_page_preview=True)
+        else:    
+            text, markup = await callback_auto_filter(query, search)
+            await query.message.edit(text=f"<b>{text}</b>", reply_markup=markup, disable_web_page_preview=True)
 
     await query.answer('Share & Support Us♥️')
 
@@ -891,7 +895,37 @@ async def callback_auto_filter(query, msg, spoll=False):
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
     cap = f"Here is what i found for your query {search}"
-    return f"<b>{cap}</b>\n\n{search_results_text}", InlineKeyboardMarkup(btn)
+    return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
+
+# callback autofilter
+async def callback_paid_filter(query, msg, spoll=False):
+    search=msg
+    files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+    # Construct a text message with hyperlinks
+    search_results_text = []
+    for file in files:
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        search_results_text.append(file_link)
+
+    search_results_text = "\n\n".join(search_results_text)
+
+    btn = []
+    if offset != "":
+        message = query.message
+        key = f"{message.chat.id}-{message.id}"
+        BUTTONS[key] = search
+        req = query.from_user.id if query.from_user else 0
+        btn.append(
+            [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
+             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"free_{req}_{key}_{offset}")]
+        )
+    else:
+        btn.append(
+            [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
+        )
+    cap = f"Here is what i found for your query {search}"
+    return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
 
 
 async def advantage_spell_chok(msg):
