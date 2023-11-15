@@ -456,7 +456,7 @@ async def delete_multiple_files(bot, message):
         ["HDTS", "HDTSS"],
         ["HDCam", "HD-Cams"],
         ["CamRip", "S-Print"],
-        ["HQ", "CamRip"]
+        ["HDTC", "CamRip"]
     ]
 
     btn = [

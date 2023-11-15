@@ -718,10 +718,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
 
-    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hdtss", "hq"]:
+    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hdtss", "hdtc"]:
         buttons = [[
-            InlineKeyboardButton('Hell No', callback_data=f"confirm_no"),            
-            InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{query.data}"),
+            InlineKeyboardButton('Hell No', callback_data=f"confirm_no")
+            ],[           
+            InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{query.data}")
+            ],[
             InlineKeyboardButton('No, Nevermind', callback_data="confirm_no"),
         ]]
         await query.message.edit(
