@@ -450,14 +450,14 @@ async def delete_multiple_files(bot, message):
         ["HDTS", "HDTSS"],
         ["HDCam", "HD-Cams"],
         ["CamRip", "S-Print"],
-        ["HQ", "CamRip"], 
-        ["Cancel"]
+        ["HQ", "CamRip"]
     ]
 
     btn = [
         [InlineKeyboardButton(button, callback_data=button.lower().replace("-", "")) for button in row]
         for row in keyboard_buttons
     ]
+    btn.append([InlineKeyboardButton("Cancel", callback_data="close_data")])
 
     await message.reply_text(
         text="<b>Select The Type Of Files You Want To Delete..?</b>",
