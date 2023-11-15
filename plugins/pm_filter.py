@@ -798,7 +798,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton("◀️ Back", callback_data="home")
             ])
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.edit(f"Here is the top searches of the day", reply_markup=reply_markup, disable_web_page_preview=True)
+        await query.message.edit(f"<b>Here is the top searches of the day</b>", reply_markup=reply_markup, disable_web_page_preview=True)
 
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]
