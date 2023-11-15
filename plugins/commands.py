@@ -430,9 +430,15 @@ async def delete_all_index(bot, message):
             [
                 [
                     InlineKeyboardButton(
-                        text="YES", callback_data="autofilter_delete"
+                        text="Hell No", callback_data="close_data"
                     )
                 ],
+                [
+                    InlineKeyboardButton(
+                        text="Yes", callback_data="autofilter_delete"
+                    )
+                ],
+
                 [
                     InlineKeyboardButton(
                         text="CANCEL", callback_data="close_data"
@@ -442,6 +448,29 @@ async def delete_all_index(bot, message):
         ),
         quote=True,
     )
+
+@Client.on_message(filters.command("deletefiles") & filters.user(ADMINS))
+async def delete_multiple_files(bot, message):
+    keyboard_buttons = [
+        ["PreDVD", "PreDVDRip"],
+        ["HDTS", "HDTSS"],
+        ["HDCam", "HD-Cams"],
+        ["CamRip", "S-Print"],
+        ["HDTC", "CamRip"]
+    ]
+
+    btn = [
+        [InlineKeyboardButton(button, callback_data=button.lower().replace("-", "")) for button in row]
+        for row in keyboard_buttons
+    ]
+    btn.append([InlineKeyboardButton("Close", callback_data="close_data")])
+
+    await message.reply_text(
+        text="<b>Select The Type Of Files You Want To Delete..?</b>",
+        reply_markup=InlineKeyboardMarkup(btn),
+        quote=True
+    )
+
 
 
 @Client.on_callback_query(filters.regex(r'^autofilter_delete'))
