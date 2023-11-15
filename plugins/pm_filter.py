@@ -317,8 +317,9 @@ async def advantage_spoll_choker(bot, query):
             await k.delete()
 
 async def delete_files(query, limit, file_type):
+    limits = int(limit)
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
-    files, _, _ = await get_search_results(file_type.lower(), max_results=limit, offset=0)
+    files, _, _ = await get_search_results(file_type.lower(), max_results=limits, offset=0)
     deleted = 0
 
     for file in files:
