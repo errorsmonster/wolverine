@@ -309,18 +309,23 @@ async def start(client, message):
             f_caption=f_caption
     if f_caption is None:
         f_caption = f"{files.file_name}"
+
+    premium_status = await db.is_premium_status(message.from_user.id)
+    button = [[
+        InlineKeyboardButton("Support", url=f"https://t.me/iPrimehub"),
+        InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
+        ]]
+    if premium_status is True:
+        button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
+
     media_id = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
         protect_content=True if pre == 'filep' else False,
         caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
-        reply_markup=InlineKeyboardMarkup(
-            [[
-                InlineKeyboardButton('Support', url=f"https://t.me/iPrimehub"),
-                InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
-                ]]
-            )
+        reply_markup=InlineKeyboardMarkup(button)
         )
+    
     # for counting each files for user
     files_counts = await db.get_files_count(message.from_user.id)
     lifetime_files = await db.get_lifetime_files(message.from_user.id)
@@ -463,7 +468,7 @@ async def delete_multiple_files(bot, message):
         for row in keyboard_buttons
     ]
     btn.append(
-        [InlineKeyboardButton("Close", callback_data="close_data")]
+        [InlineKeyboardButton("⛔️ Close", callback_data="close_data")]
         )
 
     await message.reply_text(

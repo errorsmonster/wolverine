@@ -8,13 +8,13 @@ from urllib.parse import quote
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME, MAINTAINENCE_MODE, PROFANITY_FILTER
+from info import ADMINS, BIN_CHANNEL, URL, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME, MAINTAINENCE_MODE, PROFANITY_FILTER
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from database.top_msg import mdb
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist
+from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist, fetch_quote_content
 from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
@@ -614,7 +614,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await del_msg.edit("__⊘ This message was deleted__")
 
     elif query.data == "pages":
-        await query.answer('Share & Support Us♥️')
+        qoute = await fetch_quote_content()
+        await query.answer(f"<b>{qoute}</b>", show_alert=True)
     elif query.data == "home":
         buttons = [[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
@@ -732,7 +733,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             for row in keyboard_buttons
         ]
         btn.append(
-            [InlineKeyboardButton("Close", callback_data="close_data")]
+            [InlineKeyboardButton("⛔️ Close", callback_data="close_data")]
             )
 
         await query.message.edit(
@@ -746,11 +747,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[           
             InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{query.data}")
             ],[
-            InlineKeyboardButton('Close', callback_data="close_data"),
-            InlineKeyboardButton('Back', callback_data="delback")
+            InlineKeyboardButton('⛔️ Close', callback_data="close_data"),
+            InlineKeyboardButton('◀️ Back', callback_data="delback")
         ]]
         await query.message.edit(
-            text=f"<b>Are You Sure To Delete This File?</b>",
+            text=f"<b>Are You Sure To Delete {query.data.upper()} Files?</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
@@ -798,7 +799,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton("◀️ Back", callback_data="home")
             ])
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.edit(f"Here is the top searches of the day", reply_markup=reply_markup, disable_web_page_preview=True)
+        await query.message.edit(f"<b>Here is the top searches of the day</b>", reply_markup=reply_markup, disable_web_page_preview=True)
 
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]
@@ -810,6 +811,27 @@ async def cb_handler(client: Client, query: CallbackQuery):
         else:    
             text, markup = await callback_auto_filter(query, search)
             await query.message.edit(text=f"<b>{text}</b>", reply_markup=markup, disable_web_page_preview=True)
+ 
+    # get download button
+    elif query.data.startswith("download#"):
+        file_id = query.data.split("#")[1]
+        msg = await client.send_cached_media(
+            chat_id=BIN_CHANNEL,
+            file_id=file_id)
+        await client.send_message(
+            text=f"<b>Requested By</b>:\n{query.from_user.mention} <code>{query.from_user.id}</code>\n<b>Link:</b>\n{URL}/watch/{msg.id}",
+            chat_id=BIN_CHANNEL,
+            disable_web_page_preview=True)
+        online = f"{URL}/watch/{msg.id}"
+        download = f"{URL}/download/{msg.id}"
+        await query.edit_message_reply_markup(
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("Watch", url=online),
+                InlineKeyboardButton("Download", url=download)
+                ],[
+                InlineKeyboardButton("Close", callback_data='close_data')
+                ]]
+        ))
 
     await query.answer('Share & Support Us♥️')
 
