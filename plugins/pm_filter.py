@@ -316,9 +316,9 @@ async def advantage_spoll_choker(bot, query):
             await asyncio.sleep(10)
             await k.delete()
 
-async def delete_files(query, file_type):
+async def delete_files(query, limit, file_type):
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
-    files, _, _ = await get_search_results(file_type.lower(), max_results=100, offset=0)
+    files, _, _ = await get_search_results(file_type.lower(), max_results=limit, offset=0)
     deleted = 0
 
     for file in files:
@@ -743,23 +743,43 @@ async def cb_handler(client: Client, query: CallbackQuery):
         
     elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hq", "hdtc"]:
         buttons = [[
-            InlineKeyboardButton('Hell No', callback_data=f"confirm_no")
-            ],[           
-            InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{query.data}")
+            InlineKeyboardButton("10", callback_data=f"dlt#10_{query.data}")
+            ],[
+            InlineKeyboardButton("100", callback_data=f"dlt#100_{query.data}")
+            ],[
+            InlineKeyboardButton("1000", callback_data=f"dlt#1000_{query.data}")
             ],[
             InlineKeyboardButton('⛔️ Close', callback_data="close_data"),
             InlineKeyboardButton('◀️ Back', callback_data="delback")
         ]]
         await query.message.edit(
-            text=f"<b>Are You Sure To Delete {query.data.upper()} Files?</b>",
+            text=f"<b>How Many {query.data.upper()} Files You Want To Delete?</b>",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True
+        )
+    
+    elif query.data.startswith("dlt#"):
+        limit, file_type = query.data.split("#")[1].split("_")
+        buttons = [[
+            InlineKeyboardButton('Hell No', callback_data=f"confirm_no")
+            ],[           
+            InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{limit}_{file_type}")
+            ],[
+            InlineKeyboardButton('⛔️ Close', callback_data="close_data")
+        ]]
+        await query.message.edit(
+            text=f"<b>Are You Sure To Delete {limit} {file_type.upper()} Files?</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
     elif query.data.startswith("confirm_yes#"):
-        file_type = query.data.split("#")[1]
-        await delete_files(query, file_type)
+        limits, file_type = query.data.split("#")[1].split("_")
+        limit = int(limits)
+        await delete_files(query, limit, file_type)
+
     elif query.data == "confirm_no":
         await query.message.edit(text=f"<b>Deletion canceled.</b>", reply_markup=None)
+
 
     # Function for getting the top search results
     elif query.data == "topsearch":
