@@ -14,7 +14,7 @@ from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from database.top_msg import mdb
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist
+from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist, fetch_quote_content
 from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
@@ -614,7 +614,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await del_msg.edit("__⊘ This message was deleted__")
 
     elif query.data == "pages":
-        await query.answer('Share & Support Us♥️')
+        qoute = await fetch_quote_content()
+        await query.answer(f"<b>{qoute}</b>", show_alert=True)
     elif query.data == "home":
         buttons = [[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
@@ -818,7 +819,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             chat_id=BIN_CHANNEL,
             file_id=file_id)
         await client.send_message(
-            text=f"<b>Requested By</b>:\n{query.from_user.mention} <code>{query.from_user.id}</code>\n<b>Link:</b>\nhttps://{URL}/watch/{msg.id}",
+            text=f"<b>Requested By</b>:\n{query.from_user.mention} <code>{query.from_user.id}</code>\n<b>Link:</b>\n{URL}/watch/{msg.id}",
             chat_id=BIN_CHANNEL,
             disable_web_page_preview=True)
         online = f"{URL}/watch/{msg.id}"
