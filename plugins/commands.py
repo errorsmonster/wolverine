@@ -44,7 +44,7 @@ async def start(client, message):
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
                     InlineKeyboardButton('📎 Refer', callback_data="refer"),
-                    InlineKeyboardButton('🔥 Top Search', url=f"https://t.me/{temp.U_NAME}?start=topsearch"),
+                    InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🗣️ Request', callback_data="request")
