@@ -799,9 +799,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
     # Fixing typo and using proper method
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]
-        k = await query.message.edit(text=f"<b>Searching for your request ~ {search}</b>", reply_markup=None)
+        await query.answer(text=f"<b>Searching for your request ~ {search}</b>", show_alert=True)
         text, markup = await callback_auto_filter(query, search)
-        await k.edit(text=f"Here is what i found for your query {search}\n\n {text}", reply_markup=markup, disable_web_page_preview=True)
+        await query.message.edit(text=f"Here is what i found for your query {search}\n\n {text}", reply_markup=markup, disable_web_page_preview=True)
 
 
     await query.answer('Share & Support Us♥️')
