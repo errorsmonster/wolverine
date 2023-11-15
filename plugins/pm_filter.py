@@ -717,7 +717,21 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.edit_reply_markup(reply_markup)
 
     elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hdtss", "hq"]:
-        await delete_files(client, query, query.data)
+        buttons = [[
+            InlineKeyboardButton('Yes', callback_data=f"confirm_yes#{query.data}"),
+            InlineKeyboardButton('No', callback_data="confirm_no"),
+        ]]
+        await query.message.edit(
+            text="Are You Sure To Delete This File?",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
+    elif query.data.startswith("confirm_yes#"):
+        # Extract the file_type from the callback data
+        file_type = query.data.split("#")[1]
+        await delete_files(client, query, file_type)
+    elif query.data == "confirm_no":
+        await query.message.edit(text="Deletion canceled.", reply_markup=None)
 
     await query.answer('Share & Support Us♥️')
 
