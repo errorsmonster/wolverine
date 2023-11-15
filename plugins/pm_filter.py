@@ -741,7 +741,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             quote=True
         )
         
-    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hdtss", "hdtc"]:
+    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hq", "hdtc"]:
         buttons = [[
             InlineKeyboardButton('Hell No', callback_data=f"confirm_no")
             ],[           
@@ -750,7 +750,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('No, Nevermind', callback_data="confirm_no"),
         ]]
         await query.message.edit(
-            text="Are You Sure To Delete This File?",
+            text=f"<b>Are You Sure To Delete This File?</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
@@ -758,7 +758,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         file_type = query.data.split("#")[1]
         await delete_files(query, file_type)
     elif query.data == "confirm_no":
-        await query.message.edit(text="Deletion canceled.", reply_markup=None)
+        await query.message.edit(text=f"<b>Deletion canceled.</b>", reply_markup=None)
 
     await query.answer('Share & Support Us♥️')
 
