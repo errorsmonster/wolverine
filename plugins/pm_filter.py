@@ -766,7 +766,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         def is_valid_string(string):
             return bool(re.match('^[a-zA-Z0-9 ]*$', string))
 
-        await query.answer('Please Wait, Fetching Top Searches...', show_alert=True)
+        await query.answer(f"<b>Please Wait, Fetching Top Searches...</b>", show_alert=True)
         top_searches = await mdb.get_top_messages(30)
 
         unique_messages = set()
@@ -799,7 +799,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     # Fixing typo and using proper method
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]
-        await query.answer(text=f"<b>Searching for your request ~ {search}</b>", show_alert=True)
+        await query.answer(text=f"Searching for your request :)")
         text, markup = await callback_auto_filter(query, search)
         await query.message.edit(text=f"Here is what i found for your query {search}\n\n {text}", reply_markup=markup, disable_web_page_preview=True)
 
@@ -878,7 +878,8 @@ async def callback_auto_filter(query, msg, spoll=False):
 
     btn = []   
     if offset != "":
-        key = f"{query.chat.id}-{query.id}"
+        message = query.message
+        key = f"{message.chat.id}-{message.id}"
         BUTTONS[key] = search
         req = query.from_user.id if query.from_user else 0
         btn.append(
