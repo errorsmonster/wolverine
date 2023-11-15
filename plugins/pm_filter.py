@@ -793,10 +793,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     row_buttons.append(InlineKeyboardButton(msg, callback_data=f"search#{msg}"))
             keyboard.append(row_buttons)
 
+        keyboard.append([
+            InlineKeyboardButton("⛔️ Close", callback_data="close_data"),
+            InlineKeyboardButton("◀️ Back", callback_data="home")
+            ])
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.edit(f"Here is the top searches of the day", reply_markup=reply_markup, disable_web_page_preview=True)
 
-    # Fixing typo and using proper method
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]
         await query.answer(text=f"Searching for your request :)")
