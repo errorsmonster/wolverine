@@ -474,7 +474,6 @@ async def delete_multiple_files(bot, message):
     )
 
 
-
 @Client.on_callback_query(filters.regex(r'^autofilter_delete'))
 async def delete_all_index_confirm(bot, message):
     await Media.collection.drop()
