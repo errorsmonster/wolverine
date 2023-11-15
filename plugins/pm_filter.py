@@ -749,7 +749,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton("100", callback_data=f"dlt#100_{query.data}")
             ],[
             InlineKeyboardButton("1000", callback_data=f"dlt#1000_{query.data}")
-        ]] 
+            ],[
+            InlineKeyboardButton('⛔️ Close', callback_data="close_data"),
+            InlineKeyboardButton('◀️ Back', callback_data="delback")
+        ]]
         await query.message.edit(
             text=f"<b>How Many {query.data.upper()} Files You Want To Delete?</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
@@ -763,8 +766,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[           
             InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{file_type}_{limit}")
             ],[
-            InlineKeyboardButton('⛔️ Close', callback_data="close_data"),
-            InlineKeyboardButton('◀️ Back', callback_data="delback")
+            InlineKeyboardButton('⛔️ Close', callback_data="close_data")
         ]]
         await query.message.edit(
             text=f"<b>Are You Sure To Delete {file_type.upper()} Files?</b>",
