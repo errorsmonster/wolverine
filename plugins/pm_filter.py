@@ -767,7 +767,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             return bool(re.match('^[a-zA-Z0-9 ]*$', string))
 
         await query.answer(f"<b>Fetching Top Searches, Be Patience It'll Take Some Time</b>", show_alert=True)
-        top_searches = await mdb.get_top_messages(30)
+        top_searches = await mdb.get_top_messages(20)
 
         unique_messages = set()
         truncated_messages = []
