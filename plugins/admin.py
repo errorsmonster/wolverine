@@ -355,7 +355,7 @@ async def latests(client, message):
         if msg.lower() not in unique_messages and is_valid_string(msg):
             unique_messages.add(msg.lower())
 
-            files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
+            files, _, _ = await get_search_results(msg.lower())
             if files:
                 if len(msg) > 30:
                     truncated_messages.append(msg[:30 - 3])
