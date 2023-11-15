@@ -746,7 +746,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[           
             InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{query.data}")
             ],[
-            InlineKeyboardButton('No', callback_data="confirm_no"),
+            InlineKeyboardButton('Close', callback_data="close_data"),
             InlineKeyboardButton('◀️ Back', callback_data="delback")
         ]]
         await query.message.edit(
