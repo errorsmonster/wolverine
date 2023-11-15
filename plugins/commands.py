@@ -329,7 +329,7 @@ async def start(client, message):
     print(f"File sent {files_counts + 1} to {message.from_user.first_name} - {message.from_user.id}")
 
     del_msg = await client.send_message(
-        text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
+        text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",
         chat_id=message.from_user.id,
         reply_to_message_id=media_id.id)
     
