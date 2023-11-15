@@ -316,8 +316,8 @@ async def advantage_spoll_choker(bot, query):
             await asyncio.sleep(10)
             await k.delete()
 
-async def delete_files(client, query, file_type):
-    k = await client.send_message(chat_id=query.message.chat.id, text=f"Deleting <b>{file_type.upper()}</b> files...")
+async def delete_files(query, file_type):
+    k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
     files, _, _ = await get_bad_files(file_type.lower(), offset=0)
     deleted = 0
 
@@ -720,8 +720,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hdtss", "hq"]:
         buttons = [[
-            InlineKeyboardButton('Yes', callback_data=f"confirm_yes#{query.data}"),
-            InlineKeyboardButton('No', callback_data="confirm_no"),
+            InlineKeyboardButton('Hell No', callback_data=f"confirm_no"),            
+            InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{query.data}"),
+            InlineKeyboardButton('No, Nevermind', callback_data="confirm_no"),
         ]]
         await query.message.edit(
             text="Are You Sure To Delete This File?",
@@ -729,9 +730,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             disable_web_page_preview=True,
         )
     elif query.data.startswith("confirm_yes#"):
-        # Extract the file_type from the callback data
         file_type = query.data.split("#")[1]
-        await delete_files(client, query, file_type)
+        await delete_files(query, file_type)
     elif query.data == "confirm_no":
         await query.message.edit(text="Deletion canceled.", reply_markup=None)
 
