@@ -8,7 +8,7 @@ from urllib.parse import quote
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME, MAINTAINENCE_MODE, PROFANITY_FILTER
+from info import ADMINS, BIN_CHANNEL, URL, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME, MAINTAINENCE_MODE, PROFANITY_FILTER
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -1034,3 +1034,23 @@ async def manual_filters(client, message, text=False):
                 break
     else:
         return False
+
+@Client.on_callback_query(filters.regex(r"^stream"))
+async def stream_downloader(bot, query):
+    file_id = query.data.split('#', 1)[1]
+    msg = await bot.send_cached_media(
+        chat_id=BIN_CHANNEL,
+        file_id=file_id)
+    online = f"{URL}watch/{msg.id}"
+    download = f"{URL}download/{msg.id}"
+    await query.edit_message_reply_markup(
+        reply_markup=InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("Watch", url=online),
+                InlineKeyboardButton("Download", url=download)
+            ],[
+                InlineKeyboardButton("Close", callback_data='close_data')
+            ]
+        ]
+    ))
