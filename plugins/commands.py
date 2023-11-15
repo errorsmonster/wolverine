@@ -457,7 +457,7 @@ async def delete_multiple_files(bot, message):
         [InlineKeyboardButton(button, callback_data=button.lower().replace("-", "")) for button in row]
         for row in keyboard_buttons
     ]
-    btn.append([InlineKeyboardButton("Cancel", callback_data="close_data")])
+    btn.append([InlineKeyboardButton("Close", callback_data="close_data")])
 
     await message.reply_text(
         text="<b>Select The Type Of Files You Want To Delete..?</b>",
