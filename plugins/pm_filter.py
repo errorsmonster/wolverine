@@ -19,7 +19,7 @@ from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from profanity import profanity
-from database.ia_filterdb import Media, get_file_details, get_search_results
+from database.ia_filterdb import Media, get_file_details, get_search_results, get_bad_files
 from database.filters_mdb import (
     del_all,
     find_filter,
@@ -223,6 +223,8 @@ async def next_page(bot, query):
     m = int(req)
     k = await bot.get_users(m)
     name = k.first_name if not k.last_name else k.first_name + " " + k.last_name
+    if not name:
+        name = "Anonymous"
     if int(req) not in [query.from_user.id, 0]:
         return await query.answer(f"{name}\ncan only access this query", show_alert=True)
     try:
@@ -313,6 +315,24 @@ async def advantage_spoll_choker(bot, query):
             k = await query.message.edit('This Movie Not Found In DataBase')
             await asyncio.sleep(10)
             await k.delete()
+
+async def delete_files(query, file_type):
+    k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
+    files, _, _ = await get_bad_files(file_type.lower(), offset=0)
+    deleted = 0
+
+    for file in files:
+        file_ids = file.file_id
+        result = await Media.collection.delete_one({'_id': file_ids})
+
+        if result.deleted_count:
+            logger.info(f'{file_type.capitalize()} File Found! Successfully deleted from database.')
+
+        deleted += 1
+
+    deleted = str(deleted)
+    await k.edit_text(text=f"<b>Successfully deleted {deleted} {file_type.upper()} files.</b>")
+
     
 
 @Client.on_callback_query()
@@ -697,7 +717,28 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
+
+    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hdtss", "hdtc"]:
+        buttons = [[
+            InlineKeyboardButton('Hell No', callback_data=f"confirm_no")
+            ],[           
+            InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{query.data}")
+            ],[
+            InlineKeyboardButton('No, Nevermind', callback_data="confirm_no"),
+        ]]
+        await query.message.edit(
+            text="Are You Sure To Delete This File?",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
+    elif query.data.startswith("confirm_yes#"):
+        file_type = query.data.split("#")[1]
+        await delete_files(query, file_type)
+    elif query.data == "confirm_no":
+        await query.message.edit(text="Deletion canceled.", reply_markup=None)
+
     await query.answer('Share & Support Us♥️')
+
     
 
 async def auto_filter(client, msg, spoll=False):

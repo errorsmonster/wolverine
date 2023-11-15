@@ -10,7 +10,6 @@ class script(object):
     #status_text
     STATUS_TXT = """Total Files: <code>{}</code>
 Total Users: <code>{}</code>
-Total Chats: <code>{}</code>
 """
 
     REQ_TEXT  = """#NewRequest
