@@ -794,7 +794,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             keyboard.append(row_buttons)
 
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.edit(f"Here, What I found in my database", reply_markup=reply_markup, disable_web_page_preview=True)
+        await query.message.edit(f"Here is the top searches of the day", reply_markup=reply_markup, disable_web_page_preview=True)
 
     # Fixing typo and using proper method
     elif query.data.startswith("search#"):
