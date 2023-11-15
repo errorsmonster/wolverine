@@ -246,7 +246,7 @@ async def userinfo(client, message):
 
 
 @Client.on_message(filters.command(['upgrade', 'premium']))
-async def upgrademsg(client, message):
+async def upgrademsg(_, message):
     buttons = [[
                 InlineKeyboardButton('💫 Confirm', callback_data="confirm"),
                 InlineKeyboardButton('◀️ Back', callback_data="home")
@@ -286,7 +286,7 @@ async def allcommands(client, message):
     
 # Add functions for refferal system
 @Client.on_message(filters.command("refer"))
-async def reffer(client, message):
+async def reffer(_, message):
     m = await message.reply_text(f"<b>Generating Your Refferal Link...</b>")
     await asyncio.sleep(2)
     user_id = message.from_user.id
@@ -297,9 +297,16 @@ async def reffer(client, message):
                  reply_markup=keyboard,
                  disable_web_page_preview=True)
     
+@Client.on_message(filters.command("redeem"))
+async def redeem_req(_, message):
+    keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Purchase Now", callback_data="remads")]])
+    await message.reply(
+        text=f"<b>Kindly Provide The Redeem Code For Premium Activation.\n\n⚠️ If ou don't have a redeem code, you can purchase one here.</b>",
+        reply_markup=keyboard
+    )
 
 @Client.on_message(filters.command('top'))
-async def top(client, message):
+async def top(_, message):
 
     def is_alphanumeric(string):
         return bool(re.match('^[a-zA-Z0-9 ]*$', string))
@@ -335,7 +342,7 @@ async def top(client, message):
 
 
 @Client.on_message(filters.command('latest'))
-async def latests(client, message):
+async def latests(_, message):
 
     def is_valid_string(string):
         return bool(re.match('^[a-zA-Z0-9 ]*$', string))
