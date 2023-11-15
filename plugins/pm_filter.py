@@ -818,7 +818,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             chat_id=BIN_CHANNEL,
             file_id=file_id)
         await client.send_message(
-            text=f"<b>Requested By</b>:\n{query.from_user.mention} <code>{query.from_user.id}</code>\n<b>Link:</b>\nhttps://{URL}/watch/{msg.id}",
+            text=f"<b>Requested By</b>:\n{query.from_user.mention} <code>{query.from_user.id}</code>\n<b>Link:</b>\n{URL}/watch/{msg.id}",
             chat_id=BIN_CHANNEL,
             disable_web_page_preview=True)
         online = f"{URL}/watch/{msg.id}"
