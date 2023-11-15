@@ -615,7 +615,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "pages":
         qoute = await fetch_quote_content()
-        await query.answer(f"{qoute}", show_alert=True)
+        await query.answer(f"<b>{qoute}</b>", show_alert=True)
     elif query.data == "home":
         buttons = [[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
