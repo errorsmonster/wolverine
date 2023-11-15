@@ -766,7 +766,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         def is_valid_string(string):
             return bool(re.match('^[a-zA-Z0-9 ]*$', string))
 
-        await query.answer(f"<b>Please Wait, Fetching Top Searches...</b>", show_alert=True)
+        await query.answer(f"<b>Fetching Top Searches, Be Patience It'll Take Some Time</b>", show_alert=True)
         top_searches = await mdb.get_top_messages(30)
 
         unique_messages = set()
@@ -801,7 +801,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         search = query.data.split("#")[1]
         await query.answer(text=f"Searching for your request :)")
         text, markup = await callback_auto_filter(query, search)
-        await query.message.edit(text=f"Here is what i found for your query {search}\n\n {text}", reply_markup=markup, disable_web_page_preview=True)
+        await query.message.edit(text=f"{text}", reply_markup=markup, disable_web_page_preview=True)
 
 
     await query.answer('Share & Support Us♥️')
