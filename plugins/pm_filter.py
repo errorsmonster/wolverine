@@ -317,9 +317,8 @@ async def advantage_spoll_choker(bot, query):
             await k.delete()
 
 async def delete_files(query, limit, file_type):
-    limits = int(limit)
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
-    files, _, _ = await get_search_results(file_type.lower(), max_results=limits, offset=0)
+    files, _, _ = await get_search_results(file_type.lower(), max_results=limit, offset=0)
     deleted = 0
 
     for file in files:
@@ -764,17 +763,18 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [[
             InlineKeyboardButton('Hell No', callback_data=f"confirm_no")
             ],[           
-            InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{file_type}_{limit}")
+            InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{limit}_{file_type}")
             ],[
             InlineKeyboardButton('⛔️ Close', callback_data="close_data")
         ]]
         await query.message.edit(
-            text=f"<b>Are You Sure To Delete {file_type.upper()} Files?</b>",
+            text=f"<b>Are You Sure To Delete {limit} {file_type.upper()} Files?</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
     elif query.data.startswith("confirm_yes#"):
-        file_type, limit = query.data.split("#")[1].split("_")
+        limits, file_type = query.data.split("#")[1].split("_")
+        limit = int(limits)
         await delete_files(query, limit, file_type)
 
     elif query.data == "confirm_no":
