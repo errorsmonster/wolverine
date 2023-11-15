@@ -814,9 +814,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
     # get download button
     elif query.data.startswith("download#"):
         file_id = query.data.split("#")[1]
-        msg = await client.send_cached_media(
+        msg = await file_id.forward(
             chat_id=BIN_CHANNEL,
             file_id=file_id)
+        await client.send_message(
+            text=f"<b>Requested By</b>:{query.from_user.mention}  <code>{query.from_user.id}</code>",
+            chat_id=BIN_CHANNEL,
+            disable_web_page_preview=True)
         online = f"{URL}/watch/{msg.id}"
         download = f"{URL}/download/{msg.id}"
         await query.edit_message_reply_markup(
