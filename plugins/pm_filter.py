@@ -814,7 +814,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     # get download button
     elif query.data.startswith("download#"):
         file_id = query.data.split("#")[1]
-        msg = await file_id.forward(
+        msg = await client.send_cached_media(
             chat_id=BIN_CHANNEL,
             file_id=file_id)
         await client.send_message(
@@ -831,7 +831,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 InlineKeyboardButton("Close", callback_data='close_data')
                 ]]
         ))
-        
+
     await query.answer('Share & Support Us♥️')
 
     
