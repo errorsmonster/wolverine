@@ -817,8 +817,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         msg = await client.send_cached_media(
             chat_id=BIN_CHANNEL,
             file_id=file_id)
-        online = f"{URL}watch/{msg.id}"
-        download = f"{URL}download/{msg.id}"
+        online = f"{URL}/watch/{msg.id}"
+        download = f"{URL}/download/{msg.id}"
         await query.edit_message_reply_markup(
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton("Watch", url=online),
