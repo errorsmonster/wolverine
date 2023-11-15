@@ -314,8 +314,8 @@ async def advantage_spoll_choker(bot, query):
             await asyncio.sleep(10)
             await k.delete()
 
-async def delete_files(query, file_type):
-    k = await Client.send_message(chat_id=query.message.chat.id, text=f"<b>Deleting {file_type} files... Please wait...</b>")
+async def delete_files(client, query, file_type):
+    k = await client.send_message(chat_id=query.message.chat.id, text=f"<b>Deleting {file_type} files... Please wait...</b>")
     files, _, _ = await get_bad_files(file_type.lower(), offset=0)
     deleted = 0
 
@@ -717,7 +717,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.edit_reply_markup(reply_markup)
 
     elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hdtss", "hq"]:
-        await delete_files(query, query.data)
+        await delete_files(client, query, query.data)
 
     await query.answer('Share & Support Us♥️')
 
