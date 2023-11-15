@@ -315,7 +315,7 @@ async def advantage_spoll_choker(bot, query):
             await k.delete()
 
 async def delete_files(client, query, file_type):
-    k = await client.send_message(chat_id=query.message.chat.id, text=f"<b>Deleting {file_type} files... Please wait...</b>")
+    k = await client.send_message(chat_id=query.message.chat.id, text=f"Deleting <b>{file_type.text.upper()}</b> files...")
     files, _, _ = await get_bad_files(file_type.lower(), offset=0)
     deleted = 0
 
@@ -329,7 +329,7 @@ async def delete_files(client, query, file_type):
         deleted += 1
 
     deleted = str(deleted)
-    await k.edit_text(text=f"<b>Successfully deleted {deleted} {file_type.capitalize()} files.</b>")
+    await k.edit_text(text=f"<b>Successfully deleted {deleted} {file_type.text.upper()} files.</b>")
 
     
 
