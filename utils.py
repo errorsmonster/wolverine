@@ -419,3 +419,13 @@ async def replace_blacklist(file_name, blacklist):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
     return file_name
+
+# To fetch random Quotes
+async def fetch_quote_content():
+    url = "https://api.quotable.io/quotes/random"
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                quote_data = await response.json()
+                return quote_data.get("content", None)
