@@ -19,7 +19,7 @@ from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from profanity import profanity
-from database.ia_filterdb import Media, get_file_details, get_search_results, get_bad_files
+from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
     find_filter,
@@ -318,7 +318,7 @@ async def advantage_spoll_choker(bot, query):
 
 async def delete_files(query, file_type):
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
-    files, _, _ = await get_bad_files(file_type.lower(), offset=0)
+    files, _, _ = await get_search_results(file_type.lower(), max_results=100, offset=0)
     deleted = 0
 
     for file in files:
@@ -731,14 +731,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
             for row in keyboard_buttons
         ]
         btn.append(
-            [InlineKeyboardButton("Close", callback_data="close_data"),
-             InlineKeyboardButton("Back", callback_data="delback")]
+            [InlineKeyboardButton("Close", callback_data="close_data")]
             )
 
         await query.message.edit(
             text="<b>Select The Type Of Files You Want To Delete..?</b>",
-            reply_markup=InlineKeyboardMarkup(btn),
-            quote=True
+            reply_markup=InlineKeyboardMarkup(btn)
         )
         
     elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hq", "hdtc"]:
@@ -747,7 +745,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[           
             InlineKeyboardButton('Yes, Delete', callback_data=f"confirm_yes#{query.data}")
             ],[
-            InlineKeyboardButton('No, Nevermind', callback_data="confirm_no"),
+            InlineKeyboardButton('Close', callback_data="close_data"),
+            InlineKeyboardButton('Back', callback_data="delback")
         ]]
         await query.message.edit(
             text=f"<b>Are You Sure To Delete This File?</b>",
