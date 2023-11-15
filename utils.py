@@ -428,4 +428,14 @@ async def fetch_quote_content():
         async with session.get(url) as response:
             if response.status == 200:
                 quote_data = await response.json()
+                
+                # Check if the response is a list of quotes
+                if isinstance(quote_data, list) and len(quote_data) > 0:
+                    quote = quote_data[0]
+                    return quote.get("content", None)
+                
+                # If not a list, assume it's a single quote
                 return quote_data.get("content", None)
+            else:
+                print(f"Error: Unable to fetch quote. Status code: {response.status}")
+                return None
