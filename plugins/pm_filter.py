@@ -810,6 +810,24 @@ async def cb_handler(client: Client, query: CallbackQuery):
         else:    
             text, markup = await callback_auto_filter(query, search)
             await query.message.edit(text=f"<b>{text}</b>", reply_markup=markup, disable_web_page_preview=True)
+ 
+    # get download button
+    elif query.data.startswith("download#"):
+        file_id = query.data.split("#")[1]
+        msg = await client.send_cached_media(
+            chat_id=BIN_CHANNEL,
+            file_id=file_id)
+        online = f"{URL}watch/{msg.id}"
+        download = f"{URL}download/{msg.id}"
+        await query.edit_message_reply_markup(
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("Watch", url=online),
+                InlineKeyboardButton("Download", url=download)
+                ],[
+                InlineKeyboardButton("Close", callback_data='close_data')
+                ]]
+        ))
+
 
     await query.answer('Share & Support Us♥️')
 
@@ -1034,23 +1052,3 @@ async def manual_filters(client, message, text=False):
                 break
     else:
         return False
-
-@Client.on_callback_query(filters.regex(r"^stream"))
-async def stream_downloader(bot, query):
-    file_id = query.data.split('#', 1)[1]
-    msg = await bot.send_cached_media(
-        chat_id=BIN_CHANNEL,
-        file_id=file_id)
-    online = f"{URL}watch/{msg.id}"
-    download = f"{URL}download/{msg.id}"
-    await query.edit_message_reply_markup(
-        reply_markup=InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton("Watch", url=online),
-                InlineKeyboardButton("Download", url=download)
-            ],[
-                InlineKeyboardButton("Close", callback_data='close_data')
-            ]
-        ]
-    ))

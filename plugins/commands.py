@@ -316,7 +316,7 @@ async def start(client, message):
         InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
         ]]
     if premium_status is True:
-        button.append([InlineKeyboardButton("Watch & Download", callback_data=f"stream#{file_id}")])
+        button.append([[InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")]])
 
     media_id = await client.send_cached_media(
         chat_id=message.from_user.id,
