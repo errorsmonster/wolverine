@@ -468,7 +468,7 @@ async def delete_multiple_files(bot, message):
         for row in keyboard_buttons
     ]
     btn.append(
-        [InlineKeyboardButton("Close", callback_data="close_data")]
+        [InlineKeyboardButton("⛔️ Close", callback_data="close_data")]
         )
 
     await message.reply_text(
