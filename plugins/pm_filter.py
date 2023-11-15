@@ -766,7 +766,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         def is_valid_string(string):
             return bool(re.match('^[a-zA-Z0-9 ]*$', string))
 
-        await query.answer('Please Wait, Fetching Top Searches...')
+        await query.answer('Please Wait, Fetching Top Searches...', show_alert=True)
         top_searches = await mdb.get_top_messages(30)
 
         unique_messages = set()
@@ -783,21 +783,25 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     else:
                         truncated_messages.append(msg)
 
+        # Display two buttons in a row
         keyboard = []
-        for msg in truncated_messages:
-            keyboard.append([InlineKeyboardButton(msg, callback_data=f"search#{msg}")])
+        for i in range(0, len(truncated_messages), 2):
+            row_buttons = []
+            for j in range(2):
+                if i + j < len(truncated_messages):
+                    msg = truncated_messages[i + j]
+                    row_buttons.append(InlineKeyboardButton(msg, callback_data=f"search#{msg}"))
+            keyboard.append(row_buttons)
 
         reply_markup = InlineKeyboardMarkup(keyboard)
-        # Join all truncated messages with newline for display
-        messages_text = '\n'.join(truncated_messages)
-        await query.message.edit(f"What I found in my database\n\n{messages_text}", reply_markup=reply_markup, disable_web_page_preview=True)
+        await query.message.edit(f"Here, What I found in my database", reply_markup=reply_markup, disable_web_page_preview=True)
 
     # Fixing typo and using proper method
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]
-        k = await query.message.edit(text=f"<b>Searching for your request ~ {search}...</b>", reply_markup=None)
+        k = await query.message.edit(text=f"<b>Searching for your request ~ {search}</b>", reply_markup=None)
         text, markup = await callback_auto_filter(query, search)
-        await k.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
+        await k.edit(text=f"Here is what i found for your query {search}\n\n {text}", reply_markup=markup, disable_web_page_preview=True)
 
 
     await query.answer('Share & Support Us♥️')
