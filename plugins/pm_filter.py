@@ -831,8 +831,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 InlineKeyboardButton("Close", callback_data='close_data')
                 ]]
         ))
-
-
+        
     await query.answer('Share & Support Us♥️')
 
     
