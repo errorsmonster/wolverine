@@ -750,7 +750,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('◀️ Back', callback_data="delback")
         ]]
         await query.message.edit(
-            text=f"<b>Are You Sure To Delete This File?</b>",
+            text=f"<b>Are You Sure To Delete {query.data.upper()} Files?</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
