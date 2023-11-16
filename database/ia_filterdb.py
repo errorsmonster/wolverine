@@ -169,4 +169,7 @@ async def get_all_file_ids(batch_size=1000):
 
         offset += batch_size
 
+        print(f"Fetched {len(all_file_ids)} file_ids so far...")
+
+    print("Finished fetching all file_ids.")
     return all_file_ids
