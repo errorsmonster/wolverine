@@ -42,7 +42,7 @@ async def get_files_from_database(client, message, file_type):
     await m.edit(f"**Successfully forwarded {total} files from the database.**")
 
 
-@Client.on_message(filters.command("copy_database") & filters.user(ADMINS))
+@Client.on_message(filters.command("copydb") & filters.user(ADMINS))
 async def get_files(client, message):
     file_type = "mkv"
     try:
