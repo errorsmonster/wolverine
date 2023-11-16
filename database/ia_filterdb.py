@@ -151,25 +151,3 @@ def unpack_new_file_id(new_file_id):
     )
     file_ref = encode_file_ref(decoded.file_reference)
     return file_id, file_ref
-
-async def get_all_file_ids(batch_size=1000):
-    """Fetch all file_ids from the database in chunks."""
-    all_file_ids = []
-    offset = 0
-
-    while True:
-        cursor = Media.find().skip(offset).limit(batch_size)
-        batch_results = await cursor.to_list(length=batch_size)
-
-        if not batch_results:
-            break  # No more results
-
-        batch_file_ids = [result.get('_id') for result in batch_results if result.get('_id')]
-        all_file_ids.extend(batch_file_ids)
-
-        offset += batch_size
-
-        print(f"Fetched {len(all_file_ids)} file_ids so far...")
-
-    print("Finished fetching all file_ids.")
-    return all_file_ids

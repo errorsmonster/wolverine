@@ -25,20 +25,20 @@ async def forward_file(client, file_id, caption):
         return False
 
 
-async def get_files_from_database(client, message):
+async def get_files_from_database(client, message, file_type):
     global cancel_forwarding
     m = await message.reply_text(text=f"**Fetching files from the database.**")
     
     cancel_forwarding = False
     
-    files = await get_all_file_ids()
+    files, _, _ = await get_search_results(file_type, max_results=1000000, offset=0)
     total = 0
-    for file_id in files:
+    for file in files:
         if cancel_forwarding:
             await m.edit("**File forwarding process has been canceled.**")
             return
 
-        file_id = file_id.file_id
+        file_id = file.file_id
         file_details = await get_file_details(file_id)
         file_info = file_details[0]
         caption = file_info.caption or file_info.file_name
@@ -64,8 +64,8 @@ async def copydb_command(client, message):
             cancel_forwarding = True
             await message.reply("**File forwarding canceled.**")
             return
-
+    file_type = "mkv"
     try:
-        await get_files_from_database(client, message)
+        await get_files_from_database(client, message, file_type)
     except Exception as e:
         await message.reply(f"**Error: {e}**")
