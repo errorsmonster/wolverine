@@ -1,6 +1,5 @@
-from pyrogram import Client, filters
-from database.ia_filterdb import Media, get_file_details, get_search_results
-from info import ADMINS, FORWARD_CHANNEL
+from database.ia_filterdb import get_file_details, get_search_results
+from info import FORWARD_CHANNEL
 from pyrogram.errors import FloodWait
 import asyncio
 import logging
@@ -29,7 +28,7 @@ async def get_files_from_database(client, query, max_results):
     files, _, _ = await get_search_results(query, max_results, offset=0)
     total = 0
 
-    for i, file in enumerate(files, start=1):
+    for file in files:
         file_id = file.file_id
         file_details = await get_file_details(file_id)
         file_info = file_details[0]
@@ -43,8 +42,5 @@ async def get_files_from_database(client, query, max_results):
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
             await asyncio.sleep(e.x)
-
-        if i % 10 == 0:
-            logging.info(f"Forwarded {i}/{len(files)} files from the database.")
 
     await m.edit(f"**Successfully forwarded {total} files from the database.**")
