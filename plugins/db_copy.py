@@ -23,10 +23,11 @@ async def get_files_from_database(client, query, max_results):
     m = await client.send_message(
         chat_id=FORWARD_CHANNEL,
         text=f"**Fetching {max_results} files from the database and forwarding**",
-    )
+    ) 
 
     files, _, _ = await get_search_results(query, max_results, offset=0)
     total = 0
+
 
     for file in files:
         file_id = file.file_id
@@ -35,9 +36,7 @@ async def get_files_from_database(client, query, max_results):
         caption = file_info.caption or file_info.file_name
 
         try:
-            success = await forward_file(client, file_id, caption)
-            if success:
-                logging.info(f"Forwarded file: {caption}")
+            await forward_file(client, file_id, caption)
             total += 1
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
