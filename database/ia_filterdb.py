@@ -150,3 +150,9 @@ def unpack_new_file_id(new_file_id):
     )
     file_ref = encode_file_ref(decoded.file_reference)
     return file_id, file_ref
+
+async def get_all_file_ids():
+    """Fetch all file_ids from the database."""
+    cursor = Media.find()
+    all_file_ids = await cursor.distinct('file_id')
+    return all_file_ids

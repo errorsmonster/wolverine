@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from database.ia_filterdb import get_file_details, get_search_results
+from database.ia_filterdb import get_file_details, get_search_results, get_all_file_ids
 from info import FORWARD_CHANNEL, ADMINS
 from pyrogram.errors import FloodWait
 import asyncio
@@ -32,7 +32,7 @@ async def get_files_from_database(client, message, file_type):
     # Reset the cancellation flag before starting the process
     cancel_forwarding = False
     
-    files, _, _ = await get_search_results(file_type, max_results=1000000, offset=0)
+    files = await get_all_file_ids()
     total = 0
     for file in files:
         if cancel_forwarding:
@@ -59,7 +59,6 @@ async def get_files_from_database(client, message, file_type):
 async def copydb_command(client, message):
     global cancel_forwarding
 
-    # Check if the command has a sub-command
     if len(message.command) > 1:
         sub_command = message.command[1].lower()
         if sub_command == "cancel":
@@ -67,9 +66,7 @@ async def copydb_command(client, message):
             await message.reply("**File forwarding process canceled.**")
             return
 
-    # If no sub-command or an unrecognized sub-command is provided, proceed with the file forwarding process
-    file_type = "mkv"
     try:
-        await get_files_from_database(client, message, file_type)
+        await get_files_from_database(client, message)
     except Exception as e:
         await message.reply(f"**Error: {e}**")
