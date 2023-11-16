@@ -22,7 +22,7 @@ async def forward_file(client, file_id, caption):
 
 async def get_files_from_database(client, message, file_type):
     total = 0
-    m = await message.edit(
+    m = await message.reply_text(
         text=f"**Fetching files from the database and forwarding**",
     ) 
 
