@@ -36,7 +36,7 @@ async def get_files_from_database(client, message, file_type):
         try:
             success = await forward_file(client, file_id, caption)
             await m.edit(
-                text=f"**Total - {total}**",
+                text=f"Total - **{total}**\nfiles has been forwarded",
             )
             if success:
                 total += 1
