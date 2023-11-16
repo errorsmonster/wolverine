@@ -25,7 +25,7 @@ async def get_files_from_database(client, query):
         text=f"**Fetching files from the database and forwarding**",
     ) 
 
-    files, _, _ = await get_search_results(query, max_results=100, offset=0)
+    files, _, _ = await get_search_results(query, max_results=1000000, offset=0)
     total = 0
 
 
