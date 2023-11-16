@@ -33,12 +33,12 @@ async def get_files_from_database(client, message):
     
     files = await get_all_file_ids()
     total = 0
-    for file in files:
+    for file_id in files:
         if cancel_forwarding:
             await m.edit("**File forwarding process has been canceled.**")
             return
 
-        file_id = file.file_id
+        file_id = file_id.file_id
         file_details = await get_file_details(file_id)
         file_info = file_details[0]
         caption = file_info.caption or file_info.file_name
