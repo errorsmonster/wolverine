@@ -427,18 +427,3 @@ async def reply_stream(client, message):
         ),
         disable_web_page_preview=True
     )
-
-
-@Client.on_message(filters.command("copy_database") & filters.user(ADMINS))
-async def get_files(client, message):
-    m = await message.reply_text("**Forwarding files from the database**")
-    total_files = await Media.count_documents()
-    limit = int(total_files)
-    print(limit)
-    query = "mkv"
-
-    try:
-        await get_files_from_database(client, query)
-        await m.edit("**Successfully forwarded all files from the database.**")
-    except Exception as e:
-        await m.edit(f"**Error: {e}**")
