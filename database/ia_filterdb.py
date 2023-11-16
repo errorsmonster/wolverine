@@ -154,7 +154,7 @@ def unpack_new_file_id(new_file_id):
 
 async def get_all_file_ids(batch_size=1000):
     """Fetch all file_ids from the database in chunks."""
-    all_file_ids_dict = {}
+    all_file_ids = []
     offset = 0
 
     while True:
@@ -164,11 +164,9 @@ async def get_all_file_ids(batch_size=1000):
         if not batch_results:
             break  # No more results
 
-        for result in batch_results:
-            file_id = result.get('file_id')
-            if file_id:
-                all_file_ids_dict[file_id] = result
+        batch_file_ids = [result.get('file_id') for result in batch_results if result.get('file_id')]
+        all_file_ids.extend(batch_file_ids)
 
         offset += batch_size
 
-    return all_file_ids_dict
+    return all_file_ids
