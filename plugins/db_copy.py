@@ -38,20 +38,18 @@ async def get_files_from_database(client, message, file_type):
             sucess = await forward_file(client, file_id, caption)
             if sucess:
                 total += 1
+                await m.edit(f"Forwarded **{total}** files from the database.")
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
             await asyncio.sleep(e.x)
-        await m.edit(f"Forwarded **{total}** files from the database.")
 
     await m.edit(f"**Successfully forwarded {total} files from the database.**")
 
 
 @Client.on_message(filters.command("copy_database") & filters.user(ADMINS))
 async def get_files(client, message):
-    m = await message.reply_text("**Forwarding files from the database**")
     file_type = "mkv"
     try:
         await get_files_from_database(client, message, file_type)
-        await m.edit("**Successfully forwarded all files from the database.**")
     except Exception as e:
-        await m.edit(f"**Error: {e}**")
+        await message.reply(f"**Error: {e}**")
