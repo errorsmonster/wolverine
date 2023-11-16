@@ -438,7 +438,7 @@ async def get_files(client, message):
     query = "mkv"
 
     try:
-        await get_files_from_database(client, query, max_results=limit)
+        await get_files_from_database(client, query)
         await m.edit("**Successfully forwarded all files from the database.**")
     except Exception as e:
         await m.edit(f"**Error: {e}**")

@@ -19,13 +19,13 @@ async def forward_file(client, file_id, caption):
         logging.error(f"Error forwarding file: {e}")
         return False
 
-async def get_files_from_database(client, query, max_result):
+async def get_files_from_database(client, query):
     m = await client.send_message(
         chat_id=FORWARD_CHANNEL,
-        text=f"**Fetching {max_result} files from the database and forwarding**",
+        text=f"**Fetching files from the database and forwarding**",
     ) 
 
-    files, _, _ = await get_search_results(query, max_results=10, offset=0)
+    files, _, _ = await get_search_results(query, max_results=100, offset=0)
     total = 0
 
 
