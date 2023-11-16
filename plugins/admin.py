@@ -9,9 +9,8 @@ import re
 from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
-from database.ia_filterdb import Media, get_search_results
+from database.ia_filterdb import get_search_results
 from database.top_msg import mdb 
-from plugins.db_copy import get_files_from_database
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
