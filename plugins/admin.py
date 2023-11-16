@@ -9,8 +9,9 @@ import re
 from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
-from database.ia_filterdb import get_search_results
+from database.ia_filterdb import Media, get_search_results
 from database.top_msg import mdb 
+from plugins.db_copy import get_files_from_database
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
@@ -428,3 +429,14 @@ async def reply_stream(client, message):
     )
 
 
+@Client.on_message(filters.command("copy_database") & filters.user(ADMINS))
+async def get_files(client, message):
+    m = await message.reply_text("**Forwarding files from the database**")
+    total_files = int(await Media.count_documents())
+    query = "mkv"
+
+    try:
+        await get_files_from_database(client, query, max_results=total_files)
+        await m.edit("**Successfully forwarded all files from the database.**")
+    except Exception as e:
+        await m.edit(f"**Error: {e}**")

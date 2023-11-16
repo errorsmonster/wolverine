@@ -48,15 +48,3 @@ async def get_files_from_database(client, query, max_results):
             logging.info(f"Forwarded {i}/{len(files)} files from the database.")
 
     await m.edit(f"**Successfully forwarded {total} files from the database.**")
-
-@Client.on_message(filters.command("copy_database") & filters.user(ADMINS))
-async def get_files(client, message):
-    m = await message.reply_text("**Forwarding files from the database**")
-    total_files = int(await Media.count_documents())
-    query = "mkv"
-
-    try:
-        await get_files_from_database(client, query, max_results=total_files)
-        await m.edit("**Successfully forwarded all files from the database.**")
-    except Exception as e:
-        await m.edit(f"**Error: {e}**")
