@@ -152,8 +152,23 @@ def unpack_new_file_id(new_file_id):
     file_ref = encode_file_ref(decoded.file_reference)
     return file_id, file_ref
 
-async def get_all_file_ids():
-    """Fetch all file_ids from the database."""
-    cursor = Media.find()
-    all_file_ids = await cursor.distinct('_id')
-    return all_file_ids
+async def get_all_file_ids(batch_size=1000):
+    """Fetch all file_ids from the database in chunks."""
+    all_file_ids_dict = {}
+    offset = 0
+
+    while True:
+        cursor = Media.find().skip(offset).limit(batch_size)
+        batch_results = await cursor.to_list(length=batch_size)
+
+        if not batch_results:
+            break  # No more results
+
+        for result in batch_results:
+            file_id = result.get('file_id')
+            if file_id:
+                all_file_ids_dict[file_id] = result
+
+        offset += batch_size
+
+    return all_file_ids_dict
