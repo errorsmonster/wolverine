@@ -164,7 +164,7 @@ async def get_all_file_ids(batch_size=1000):
         if not batch_results:
             break  # No more results
 
-        batch_file_ids = [result.get('file_id') for result in batch_results if result.get('file_id')]
+        batch_file_ids = [result.get('_id') for result in batch_results if result.get('_id')]
         all_file_ids.extend(batch_file_ids)
 
         offset += batch_size
