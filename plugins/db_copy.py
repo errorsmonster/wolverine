@@ -8,6 +8,7 @@ import logging
 # Set up logging
 logging.basicConfig(level=logging.ERROR)
 
+# Global variable to track cancellation
 cancel_forwarding = False
 
 
@@ -26,12 +27,16 @@ async def forward_file(client, file_id, caption):
 
 async def get_files_from_database(client, message, file_type):
     global cancel_forwarding
-    m = await message.reply_text(text=f"Fetching files from the database, send <code>/copydb cancel</code> to cancel the process.")
+    m = await message.reply_text(text=f"Fetching files from the database.")
+    
+    # Reset the cancellation flag before starting the process
+    cancel_forwarding = False
+    
     files, _, _ = await get_search_results(file_type, max_results=1000000, offset=0)
     total = 0
     for file in files:
         if cancel_forwarding:
-            await m.edit("**File forwarding process canceled.**")
+            await m.edit("**File forwarding process has been canceled.**")
             return
 
         file_id = file.file_id
@@ -53,12 +58,16 @@ async def get_files_from_database(client, message, file_type):
 @Client.on_message(filters.command("copydb") & filters.user(ADMINS))
 async def copydb_command(client, message):
     global cancel_forwarding
+
+    # Check if the command has a sub-command
     if len(message.command) > 1:
         sub_command = message.command[1].lower()
         if sub_command == "cancel":
             cancel_forwarding = True
             await message.reply("**File forwarding process canceled.**")
             return
+
+    # If no sub-command or an unrecognized sub-command is provided, proceed with the file forwarding process
     file_type = "mkv"
     try:
         await get_files_from_database(client, message, file_type)
