@@ -21,12 +21,13 @@ async def forward_file(client, file_id, caption):
         return False
 
 async def get_files_from_database(client, message, file_type):
-    total = 0
+
     m = await message.reply_text(
         text=f"**Fetching files from the database and forwarding**",
     ) 
 
     files, _, _ = await get_search_results(file_type, max_results=1000000, offset=0)
+    total = 0
     for file in files:
         file_id = file.file_id
         file_details = await get_file_details(file_id)
@@ -34,15 +35,13 @@ async def get_files_from_database(client, message, file_type):
         caption = file_info.caption or file_info.file_name
 
         try:
-            success = await forward_file(client, file_id, caption)
-            await m.edit(
-                text=f"Total - **{total}**\nfiles has been forwarded",
-            )
-            if success:
+            sucess = await forward_file(client, file_id, caption)
+            if sucess:
                 total += 1
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
             await asyncio.sleep(e.x)
+        await m.edit(f"Forwarded **{total}** files from the database.")
 
     await m.edit(f"**Successfully forwarded {total} files from the database.**")
 
