@@ -25,11 +25,10 @@ async def forward_file(client, file_id, caption):
         return False
 
 
-async def get_files_from_database(client, message, file_type):
+async def get_files_from_database(client, message):
     global cancel_forwarding
-    m = await message.reply_text(text=f"Fetching files from the database.")
+    m = await message.reply_text(text=f"**Fetching files from the database.**")
     
-    # Reset the cancellation flag before starting the process
     cancel_forwarding = False
     
     files = await get_all_file_ids()
@@ -63,7 +62,7 @@ async def copydb_command(client, message):
         sub_command = message.command[1].lower()
         if sub_command == "cancel":
             cancel_forwarding = True
-            await message.reply("**File forwarding process canceled.**")
+            await message.reply("**File forwarding canceled.**")
             return
 
     try:
