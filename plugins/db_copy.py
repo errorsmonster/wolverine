@@ -34,11 +34,12 @@ async def get_files_from_database(client, message, file_type):
         caption = file_info.caption or file_info.file_name
 
         try:
-            await forward_file(client, file_id, caption)
-            total += 1
+            success = await forward_file(client, file_id, caption)
             await m.edit(
-                text=f"**Total - {total}** files has been forwarded from the database.",
+                text=f"**Total - {total}**",
             )
+            if success:
+                total += 1
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
             await asyncio.sleep(e.x)
