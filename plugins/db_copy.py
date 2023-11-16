@@ -8,6 +8,7 @@ import logging
 # Set up logging
 logging.basicConfig(level=logging.ERROR)
 
+
 async def forward_file(client, file_id, caption):
     try:
         await client.send_cached_media(
@@ -19,13 +20,10 @@ async def forward_file(client, file_id, caption):
     except Exception as e:
         logging.error(f"Error forwarding file: {e}")
         return False
+    
 
 async def get_files_from_database(client, message, file_type):
-
-    m = await message.reply_text(
-        text=f"**Fetching files from the database and forwarding**",
-    ) 
-
+    m = await message.reply_text(text=f"**Fetching files from the database and forwarding**") 
     files, _, _ = await get_search_results(file_type, max_results=1000000, offset=0)
     total = 0
     for file in files:
@@ -33,7 +31,6 @@ async def get_files_from_database(client, message, file_type):
         file_details = await get_file_details(file_id)
         file_info = file_details[0]
         caption = file_info.caption or file_info.file_name
-
         try:
             sucess = await forward_file(client, file_id, caption)
             if sucess:
@@ -42,7 +39,6 @@ async def get_files_from_database(client, message, file_type):
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
             await asyncio.sleep(e.x)
-
     await m.edit(f"**Successfully forwarded {total} files from the database.**")
 
 
