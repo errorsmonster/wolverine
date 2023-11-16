@@ -434,6 +434,7 @@ async def get_files(client, message):
     m = await message.reply_text("**Forwarding files from the database**")
     total_files = await Media.count_documents()
     limit = int(total_files)
+    print(limit)
     query = "mkv"
 
     try:
