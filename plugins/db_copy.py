@@ -23,7 +23,7 @@ async def forward_file(client, file_id, caption):
     
 
 async def get_files_from_database(client, message, file_type):
-    m = await message.reply_text(text=f"Fetching files from the database and forwarding") 
+    m = await message.reply_text(text=f"Fetching files from the database.") 
     files, _, _ = await get_search_results(file_type, max_results=1000000, offset=0)
     total = 0
     for file in files:
@@ -42,7 +42,7 @@ async def get_files_from_database(client, message, file_type):
     await m.edit(f"**Successfully forwarded {total} files from the database.**")
 
 
-@Client.on_message(filters.command("copy_database") & filters.user(ADMINS))
+@Client.on_message(filters.command("copydb") & filters.user(ADMINS))
 async def get_files(client, message):
     file_type = "mkv"
     try:
