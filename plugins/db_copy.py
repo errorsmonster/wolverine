@@ -8,6 +8,8 @@ import logging
 # Set up logging
 logging.basicConfig(level=logging.ERROR)
 
+cancel_forwarding = False
+
 
 async def forward_file(client, file_id, caption):
     try:
@@ -20,30 +22,43 @@ async def forward_file(client, file_id, caption):
     except Exception as e:
         logging.error(f"Error forwarding file: {e}")
         return False
-    
+
 
 async def get_files_from_database(client, message, file_type):
-    m = await message.reply_text(text=f"Fetching files from the database.") 
+    global cancel_forwarding
+    m = await message.reply_text(text=f"Fetching files from the database, send <code>/copydb cancel</code> to cancel the process.")
     files, _, _ = await get_search_results(file_type, max_results=1000000, offset=0)
     total = 0
     for file in files:
+        if cancel_forwarding:
+            await m.edit("**File forwarding process canceled.**")
+            return
+
         file_id = file.file_id
         file_details = await get_file_details(file_id)
         file_info = file_details[0]
         caption = file_info.caption or file_info.file_name
         try:
-            sucess = await forward_file(client, file_id, caption)
-            if sucess:
+            success = await forward_file(client, file_id, caption)
+            if success:
                 total += 1
-                await m.edit(f"**{total}** files has been forwarded.")
+                await m.edit(f"**{total}** files have been forwarded.")
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
             await asyncio.sleep(e.x)
+
     await m.edit(f"**Successfully forwarded {total} files from the database.**")
 
 
 @Client.on_message(filters.command("copydb") & filters.user(ADMINS))
-async def get_files(client, message):
+async def copydb_command(client, message):
+    global cancel_forwarding
+    if len(message.command) > 1:
+        sub_command = message.command[1].lower()
+        if sub_command == "cancel":
+            cancel_forwarding = True
+            await message.reply("**File forwarding process canceled.**")
+            return
     file_type = "mkv"
     try:
         await get_files_from_database(client, message, file_type)
