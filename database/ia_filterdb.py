@@ -155,5 +155,5 @@ def unpack_new_file_id(new_file_id):
 async def get_all_file_ids():
     """Fetch all file_ids from the database."""
     cursor = Media.find()
-    all_file_ids = await cursor.distinct('file_id')
+    all_file_ids = await cursor.distinct('_id')
     return all_file_ids
