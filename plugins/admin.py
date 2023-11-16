@@ -433,6 +433,7 @@ async def reply_stream(client, message):
 async def get_files(client, message):
     m = await message.reply_text("**Forwarding files from the database**")
     total_files = int(await Media.count_documents())
+    print(total_files)
     query = "mkv"
 
     try:
