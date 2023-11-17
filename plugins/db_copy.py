@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from database.ia_filterdb import get_file_details, get_search_results, get_all_file_ids
+from database.ia_filterdb import get_file_details, get_search_results
 from info import FORWARD_CHANNEL, ADMINS
 from pyrogram.errors import FloodWait
 import asyncio
