@@ -692,7 +692,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "terms":
         buttons = [[
-                    InlineKeyboardButton("✅ Accept Terms & Conditions", callback_data="home"),
+                    InlineKeyboardButton("✅ Accept Terms", callback_data="home"),
                 ]]
         await query.message.edit(
             text=script.TERMS,
