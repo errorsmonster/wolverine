@@ -43,6 +43,23 @@ Name - {}
     CNFRM_TEXT = """
 **To Confirm Payment Process Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/lemx4>ｒｙｍｅ</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
 """
+    # Terms & Conditions
+    TERMS = """
+**Use of our service implies agreement to the following terms:**
+
+1. The bot is provided "as is," and we reserve the right to modify or discontinue it without prior notice.
+2. While we strive for accurate movie information, availability cannot be guaranteed.
+3. We retain the right to update these terms without prior notification.
+4. Advertisements are independent of us; any actions resulting from them are your sole responsibility.
+5. The bot may collect your user ID for updates and record payment history for premium users.
+6. We reserves the right to terminate services for users who violate these terms or engage in any form of abuse or misconduct.
+7. We disclaim responsibility for any copyright infringement, and users are solely responsible for the utilization of our services.
+
+**Your utilization of the bot signifies acknowledgment and acceptance of these terms.**
+"""
+
+
+
     # removing blacklisted words
     BLACKLIST = ['www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'bot', 'flix',

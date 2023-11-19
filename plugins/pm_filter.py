@@ -683,7 +683,17 @@ async def cb_handler(client: Client, query: CallbackQuery):
         referral_points = await db.get_refferal_count(user_id)
         await query.answer(f"You have {referral_points} refferal points.", show_alert=True
         )
-                                         
+
+    elif query.data == "terms":
+        buttons = [
+                    InlineKeyboardButton("✅ Accept Terms & Conditions", callback_data="home"),
+                ]
+        await query.message.edit(
+            text=script.TERMS,
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
+                
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         grpid = await active_connection(str(query.from_user.id))

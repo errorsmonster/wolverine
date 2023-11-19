@@ -38,7 +38,20 @@ async def start(client, message):
             total=await client.get_chat_members_count(message.chat.id)
             await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
             await db.add_chat(message.chat.id, message.chat.title)
-        return 
+        return
+    
+    if not await db.is_user_exist(message.from_user.id) and len(message.command) != 2:
+        button = [
+            InlineKeyboardButton("📜 Terms & Condition", callback_data="terms")
+        ]
+        reply_markup = InlineKeyboardMarkup(button)
+        await message.reply(
+            f"Welcome to our {temp.B_NAME} Bot! By using our service, you agree to be bound by these Terms and Conditions. Please read them carefully before accessing or using our bot",
+            reply_markup=reply_markup,
+            disable_web_page_preview=True
+        )
+        return
+    
     if len(message.command) != 2:
         buttons = [[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
