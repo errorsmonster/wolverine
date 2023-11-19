@@ -154,7 +154,7 @@ def unpack_new_file_id(new_file_id):
 
 
 
-async def get_all_file_ids(offset=0, batch_size=20):
+async def get_all_file_ids(offset=0, batch_size=100):
     """Retrieve file IDs from the database with asynchronous pagination"""
     filter = {}  # No specific filter, fetch all documents
     total_results = await Media.count_documents(filter)
