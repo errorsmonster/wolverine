@@ -177,7 +177,7 @@ async def get_all_file_ids(offset=0, batch_size=100):
             {'$project': {'_id': 1}},
         ]
 
-        cursor = Media.aggregate(pipeline)
+        cursor = db[COLLECTION_NAME].aggregate(pipeline)
 
         # Get file IDs for the current batch
         batch_file_ids = await cursor.to_list(length=batch_size)
