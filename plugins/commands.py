@@ -53,7 +53,7 @@ async def start(client, message):
             disable_web_page_preview=True
         )
         return
-    
+
     if len(message.command) != 2:
         buttons = [[
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
