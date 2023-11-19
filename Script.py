@@ -50,7 +50,7 @@ Name - {}
 • The bot is provided on an "as is" basis, and we reserve the right to modify or discontinue its services without prior notice.
 • While we make every effort to provide accurate movie information, we cannot guarantee the availability of all content.
 • Advertisements displayed are independent of our control; any actions resulting from them are solely your responsibility.
-• The bot may collect your user ID for the purpose of providing updates and recording purchase history for premium services.
+• The bot collect user IDs for the purpose of providing updates and recording purchase history for premium services.
 • We disclaim any responsibility for copyright infringement, and users are solely accountable for the utilization of our services.
 
 **Your use of the bot signifies acknowledgment and acceptance of these terms**
