@@ -42,7 +42,8 @@ async def start(client, message):
     
     if not await db.is_user_exist(message.from_user.id) and len(message.command) != 2:
         button = [
-            [InlineKeyboardButton("📜 Terms & Conditions", callback_data="terms")]
+            [InlineKeyboardButton("📜 Terms & Conditions", callback_data="terms")],
+            [InlineKeyboardButton("✅ Accept", callback_data="home")]
             
         ]
         reply_markup = InlineKeyboardMarkup(button)
