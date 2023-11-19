@@ -67,6 +67,7 @@ async def get_files_from_db(client, message):
             return
 
         file_id = file
+        logging.warning(file_id)
         file_details = await get_file_details(file_id)
         file_info = file_details[0]
         caption = file_info.caption or file_info.file_name
