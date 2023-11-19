@@ -72,10 +72,10 @@ async def filters_private_handlers(client, message):
     if referral is None or referral <= 0:
         await db.update_refferal_count(user_id, 0)
 
-    if referral is not None and referral >= 100:
-        await db.update_refferal_count(user_id, referral - 100)
+    if referral is not None and referral >= 50:
+        await db.update_refferal_count(user_id, referral - 50)
         await db.add_user_as_premium(user_id, 28, tody)
-        await message.reply_text(f"**Congratulations! {message.from_user.mention},\nYou Have Received 1 Month Premium Subscription For Inviting 10 Users.**", disable_web_page_preview=True)
+        await message.reply_text(f"**Congratulations! {message.from_user.mention},\nYou Have Received 1 Month Premium Subscription For Inviting 5 Users.**", disable_web_page_preview=True)
         return
         
     if last_reset != today:
@@ -223,10 +223,8 @@ async def next_page(bot, query):
     m = int(req)
     k = await bot.get_users(m)
     name = k.first_name if not k.last_name else k.first_name + " " + k.last_name
-    if not name:
-        name = "Anonymous"
     if int(req) not in [query.from_user.id, 0]:
-        return await query.answer(f"{name}\ncan only access this query", show_alert=True)
+        return await query.answer(f"<b>{name}</b>\nonly can access this query", show_alert=True)
     try:
         offset = int(offset)
     except:
@@ -632,6 +630,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup=reply_markup,
         disable_web_page_preview=True,
         )
+        if not await db.is_user_exist(query.from_user.id):
+            await db.add_user(
+                query.from_user.id,
+                query.from_user.first_name
+                )
+            
     elif query.data == "close_data":
         await query.message.delete()
     elif query.data == "request":
@@ -675,7 +679,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
         await query.message.edit(
-            text=f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will get 10 refferal points and after 100 points you will get 1 month premium subscription.</b>",
+            text=f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will get 10 refferal points and after 50 points you will get 1 month premium subscription.</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
@@ -685,7 +689,17 @@ async def cb_handler(client: Client, query: CallbackQuery):
         referral_points = await db.get_refferal_count(user_id)
         await query.answer(f"You have {referral_points} refferal points.", show_alert=True
         )
-                                         
+
+    elif query.data == "terms":
+        buttons = [[
+                    InlineKeyboardButton("✅ Accept Terms", callback_data="home"),
+                ]]
+        await query.message.edit(
+            text=script.TERMS,
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
+                
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         grpid = await active_connection(str(query.from_user.id))
@@ -724,8 +738,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         keyboard_buttons = [
             ["PreDVD", "PreDVDRip"],
             ["HDTS", "HDTC"],
-            ["HDCam", "HD-Cams"],
-            ["CamRip", "S-Print"]
+            ["HDCam", "Sample"],
+            ["CamRip", "Print"]
         ]
 
         btn = [
@@ -741,7 +755,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup(btn)
         )
         
-    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hq", "hdtc"]:
+    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "print", "hdts", "Sample", "hdtc"]:
         buttons = [[
             InlineKeyboardButton("10", callback_data=f"dlt#10_{query.data}")
             ],[

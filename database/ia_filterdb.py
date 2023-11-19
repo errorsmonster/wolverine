@@ -2,6 +2,7 @@ import logging
 from struct import pack
 import re
 import base64
+import asyncio
 from pyrogram.file_id import FileId
 from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
@@ -150,3 +151,24 @@ def unpack_new_file_id(new_file_id):
     )
     file_ref = encode_file_ref(decoded.file_reference)
     return file_id, file_ref
+
+
+
+async def get_all_file_ids(offset=0, batch_size=20):
+    """Retrieve file IDs from the database with asynchronous pagination"""
+    filter = {} 
+    total_results = await Media.count_documents(filter)
+
+    num_batches = -(-total_results // batch_size) 
+    file_ids = []
+    for i in range(num_batches):
+        cursor = Media.find(filter)
+        cursor.sort('$natural', 1) 
+
+        current_offset = i * batch_size
+        cursor.skip(current_offset).limit(batch_size)
+
+        batch_file_ids = await cursor.distinct('_id')
+        file_ids.extend(batch_file_ids)
+
+    return file_ids
