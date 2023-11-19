@@ -186,4 +186,3 @@ async def get_all_file_ids(offset=0, batch_size=100):
         file_ids.extend(batch_file_ids)
 
     return file_ids
-
