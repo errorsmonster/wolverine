@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from database.ia_filterdb import get_file_details, get_search_results, get_all_file_ids
+from database.ia_filterdb import get_file_details, get_all_file_ids
 from info import FORWARD_CHANNEL, ADMINS
 from pyrogram.errors import FloodWait
 import asyncio
@@ -63,7 +63,6 @@ async def copydb_command(client, message):
             cancel_forwarding = True
             await message.reply("**File forwarding canceled.**")
             return
-    file_type = "mkv"
     try:
         await get_files_from_db(client, message)
     except Exception as e:
