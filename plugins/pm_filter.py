@@ -723,7 +723,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ["PreDVD", "PreDVDRip"],
             ["HDTS", "HDTC"],
             ["HDCam", "HD-Cams"],
-            ["CamRip", "S-Print"]
+            ["CamRip", "Print"]
         ]
 
         btn = [
@@ -739,7 +739,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup(btn)
         )
         
-    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "sprint", "hdts", "hq", "hdtc"]:
+    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "print", "hdts", "hq", "hdtc"]:
         buttons = [[
             InlineKeyboardButton("10", callback_data=f"dlt#10_{query.data}")
             ],[
