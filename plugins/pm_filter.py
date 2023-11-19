@@ -691,7 +691,14 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
 
     elif query.data == "terms":
-        await query.answer(text=script.TERMS)
+        buttons = [[
+                    InlineKeyboardButton("✅ Accept Terms & Conditions", callback_data="home"),
+                ]]
+        await query.message.edit(
+            text=script.TERMS,
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
                 
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
