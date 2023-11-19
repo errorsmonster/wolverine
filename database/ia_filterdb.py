@@ -170,18 +170,18 @@ async def get_all_file_ids(offset=0, batch_size=100):
 
         # Aggregation pipeline to group by _id and fetch distinct values
         pipeline = [
-            {'$sort': {'$natural': 1}},  # Adjust the sorting as needed
+            {'$sort': {'natural_order': 1}},  # Adjust the sorting as needed
             {'$skip': current_offset},
             {'$limit': batch_size},
             {'$group': {'_id': '$_id'}},
-            {'$project': {'_id': 1}},
+            {'$project': {'file_id': '$_id'}},  # Rename _id to file_id
         ]
 
         cursor = db[COLLECTION_NAME].aggregate(pipeline)
 
         # Get file IDs for the current batch
         batch_file_ids = await cursor.to_list(length=batch_size)
-        batch_file_ids = [doc['_id'] for doc in batch_file_ids]
+        batch_file_ids = [doc['file_id'] for doc in batch_file_ids]
 
         # Append the batch to the result
         file_ids.extend(batch_file_ids)
