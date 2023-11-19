@@ -46,7 +46,7 @@ async def start(client, message):
         ]]
         reply_markup = InlineKeyboardMarkup(button)
         await message.reply(
-            f"<b>Welcome to our {temp.B_NAME} Bot! Before using our service, you agree to these Terms & Conditions.Please read them carefully before accessing or using our bot</b>",
+            f"<b>Welcome to our {temp.B_NAME} Bot! Before using our service, you agree to these Terms & Conditions.Please read them carefully.</b>",
             reply_markup=reply_markup,
             disable_web_page_preview=True
         )
