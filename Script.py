@@ -45,15 +45,15 @@ Name - {}
 """
     # Terms & Conditions
     TERMS = """
-**Use of our service implies agreement to the following terms:**
+**By using our service, you agree to adhere to the following terms**:
 
-1. The bot is provided "as is," and we reserve the right to modify or discontinue it without prior notice.
-2. While we strive for accurate movie information, availability cannot be guaranteed.
-3. Advertisements are independent of us; any actions resulting from them are your sole responsibility.
-4. The bot may collect your user ID for updates and record payment history for premium users.
-5. We disclaim responsibility for any copyright infringement, and users are solely responsible for the utilization of our services.
+• The bot is provided on an "as is" basis, and we reserve the right to modify or discontinue its services without prior notice.
+• While we make every effort to provide accurate movie information, we cannot guarantee the availability of all content.
+• Advertisements displayed are independent of our control; any actions resulting from them are solely your responsibility.
+• The bot may collect your user ID for the purpose of providing updates and recording purchase history for premium services.
+• We disclaim any responsibility for copyright infringement, and users are solely accountable for the utilization of our services.
 
-**Your utilization of the bot signifies acknowledgment and acceptance of these terms.**
+**Your use of the bot signifies acknowledgment and acceptance of these terms**
 """
 
 
