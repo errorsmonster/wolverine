@@ -49,11 +49,9 @@ Name - {}
 
 1. The bot is provided "as is," and we reserve the right to modify or discontinue it without prior notice.
 2. While we strive for accurate movie information, availability cannot be guaranteed.
-3. We retain the right to update these terms without prior notification.
-4. Advertisements are independent of us; any actions resulting from them are your sole responsibility.
-5. The bot may collect your user ID for updates and record payment history for premium users.
-6. We reserves the right to terminate services for users who violate these terms or engage in any form of abuse or misconduct.
-7. We disclaim responsibility for any copyright infringement, and users are solely responsible for the utilization of our services.
+3. Advertisements are independent of us; any actions resulting from them are your sole responsibility.
+4. The bot may collect your user ID for updates and record payment history for premium users.
+5. We disclaim responsibility for any copyright infringement, and users are solely responsible for the utilization of our services.
 
 **Your utilization of the bot signifies acknowledgment and acceptance of these terms.**
 """
