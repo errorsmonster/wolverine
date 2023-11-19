@@ -153,7 +153,6 @@ def unpack_new_file_id(new_file_id):
     return file_id, file_ref
 
 
-
 async def get_all_file_ids(offset=0, batch_size=100):
     """Retrieve file IDs from the database with asynchronous pagination"""
     filter = {}  # No specific filter, fetch all documents
@@ -168,19 +167,19 @@ async def get_all_file_ids(offset=0, batch_size=100):
         # Calculate the offset for each batch
         current_offset = i * batch_size
 
-        # Aggregation pipeline to group by _id and fetch distinct values
+        # Aggregation pipeline to fetch distinct file IDs
         pipeline = [
-            {'$sort': {'natural_order': 1}},  # Adjust the sorting as needed
+            {'$sort': {'_id': 1}},  # Adjust the sorting as needed
             {'$skip': current_offset},
             {'$limit': batch_size},
-            {'$group': {'_id': '$_id'}},
+            {'$group': {'_id': None, 'file_ids': {'$addToSet': '$_id'}}},
         ]
 
         cursor = db[COLLECTION_NAME].aggregate(pipeline)
 
         # Get file IDs for the current batch
-        batch_file_ids = await cursor.to_list(length=batch_size)
-        batch_file_ids = [doc['_id'] for doc in batch_file_ids]
+        result = await cursor.to_list(length=1)
+        batch_file_ids = result[0]['file_ids'] if result else []
 
         # Append the batch to the result
         file_ids.extend(batch_file_ids)
