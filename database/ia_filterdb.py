@@ -173,7 +173,7 @@ async def get_all_file_ids(offset=0, batch_size=100):
         cursor.skip(current_offset).limit(batch_size)
 
         # Get file IDs for the current batch
-        batch_file_ids = await cursor.distinct('_id')
+        batch_file_ids = await cursor.distinct('file_id')
 
         # Append the batch to the result
         file_ids.extend(batch_file_ids)
