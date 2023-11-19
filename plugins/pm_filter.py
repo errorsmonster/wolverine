@@ -630,6 +630,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup=reply_markup,
         disable_web_page_preview=True,
         )
+        if not await db.is_user_exist(query.from_user.id):
+            await db.add_user(
+                query.from_user.id,
+                query.from_user.first_name
+                )
+            
     elif query.data == "close_data":
         await query.message.delete()
     elif query.data == "request":
