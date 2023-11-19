@@ -53,10 +53,8 @@ Name - {}
 • The bot collect user IDs for the purpose of providing updates and recording purchase history for premium services.
 • We disclaim any responsibility for copyright infringement, and users are solely accountable for the utilization of our services.
 
-**Your use of the bot signifies acknowledgment and acceptance of these terms**
+**By using our bot, you acknowledge that you have read, understood, and agreed these Terms.**
 """
-
-
 
     # removing blacklisted words
     BLACKLIST = ['www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
