@@ -156,19 +156,26 @@ def unpack_new_file_id(new_file_id):
 
 async def get_all_file_ids(offset=0, batch_size=20):
     """Retrieve file IDs from the database with asynchronous pagination"""
-    filter = {} 
+    filter = {}  # No specific filter, fetch all documents
     total_results = await Media.count_documents(filter)
 
-    num_batches = -(-total_results // batch_size) 
+    # Calculate the number of batches
+    num_batches = -(-total_results // batch_size)  # Equivalent to math.ceil(total_results / batch_size)
+
+    # Fetch file IDs in batches using asynchronous pagination
     file_ids = []
     for i in range(num_batches):
         cursor = Media.find(filter)
-        cursor.sort('$natural', 1) 
+        cursor.sort('$natural', 1)  # Adjust the sorting as needed
 
+        # Calculate the offset for each batch
         current_offset = i * batch_size
         cursor.skip(current_offset).limit(batch_size)
 
+        # Get file IDs for the current batch
         batch_file_ids = await cursor.distinct('_id')
+
+        # Append the batch to the result
         file_ids.extend(batch_file_ids)
 
     return file_ids
