@@ -72,10 +72,10 @@ async def filters_private_handlers(client, message):
     if referral is None or referral <= 0:
         await db.update_refferal_count(user_id, 0)
 
-    if referral is not None and referral >= 100:
-        await db.update_refferal_count(user_id, referral - 100)
+    if referral is not None and referral >= 50:
+        await db.update_refferal_count(user_id, referral - 50)
         await db.add_user_as_premium(user_id, 28, tody)
-        await message.reply_text(f"**Congratulations! {message.from_user.mention},\nYou Have Received 1 Month Premium Subscription For Inviting 10 Users.**", disable_web_page_preview=True)
+        await message.reply_text(f"**Congratulations! {message.from_user.mention},\nYou Have Received 1 Month Premium Subscription For Inviting 5 Users.**", disable_web_page_preview=True)
         return
         
     if last_reset != today:
@@ -679,7 +679,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
         await query.message.edit(
-            text=f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will get 10 refferal points and after 100 points you will get 1 month premium subscription.</b>",
+            text=f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will get 10 refferal points and after 50 points you will get 1 month premium subscription.</b>",
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
