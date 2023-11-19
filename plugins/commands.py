@@ -41,9 +41,11 @@ async def start(client, message):
         return
     
     if not await db.is_user_exist(message.from_user.id) and len(message.command) != 2:
-        button = [[
-            InlineKeyboardButton("📜 Terms & Conditions", callback_data="terms")
-        ]]
+        button = [
+            [InlineKeyboardButton("📜 Terms & Conditions", callback_data="terms")],
+            [InlineKeyboardButton("✅ Accept", callback_data="terms")]
+            
+        ]
         reply_markup = InlineKeyboardMarkup(button)
         await message.reply(
             f"<b>Welcome to our {temp.B_NAME} Bot! Before using our service, you agree to these Terms & Conditions.Please read them carefully.</b>",
