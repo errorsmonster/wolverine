@@ -24,35 +24,6 @@ async def forward_file(client, file_id, caption):
         return False
 
 
-async def get_files_from_database(client, message, file_type):
-    global cancel_forwarding
-    m = await message.reply_text(text=f"**Fetching files from the database.**")
-    
-    cancel_forwarding = False
-    
-    files, _, _ = await get_search_results(file_type, max_results=1000000, offset=0)
-    total = 0
-    for file in files:
-        if cancel_forwarding:
-            await m.edit("**File forwarding process has been canceled.**")
-            return
-
-        file_id = file.file_id
-        file_details = await get_file_details(file_id)
-        file_info = file_details[0]
-        caption = file_info.caption or file_info.file_name
-        try:
-            success = await forward_file(client, file_id, caption)
-            if success:
-                total += 1
-                await m.edit(f"**{total}** files have been forwarded.")
-        except FloodWait as e:
-            logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
-            await asyncio.sleep(e.x)
-
-    await m.edit(f"**Successfully forwarded {total} files from the database.**")
-
-
 async def get_files_from_db(client, message):
     global cancel_forwarding
     m = await message.reply_text(text=f"**Fetching files from the database.**")
@@ -67,7 +38,6 @@ async def get_files_from_db(client, message):
             return
 
         file_id = file
-        logging.warning(file_id)
         file_details = await get_file_details(file_id)
         file_info = file_details[0]
         caption = file_info.caption or file_info.file_name
