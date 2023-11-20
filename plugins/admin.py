@@ -428,35 +428,33 @@ async def reply_stream(client, message):
         disable_web_page_preview=True
     )
 
-@Client.on_message(filters.command("send") & filters.private)
-async def send_message(client, message):
-    reply_message = message.reply_to_message
-    try:
-        if message.reply_to_message is None:
-            return await message.reply("Please reply to a message with the /send command.")
 
+@Client.on_message(filters.command("admin", prefixes='@') & filters.private)
+async def admin(client, message):
+    try:
+        reply_message = message.reply_to_message
         admin_id = 2141736280
         user_id = message.from_user.id
-        u_id = message.command[1] 
 
-        file_id = reply_message.document or reply_message.video or reply_message.audio or reply_message.voice or reply_message.animation or reply_message.photo or reply_message.sticker
-        file_name = file_id.file_name if file_id else None
-        text = reply_message.text
-
+        if reply_message is None:
+            return await message.reply("Please reply to a message with the @admin.")
         if user_id in ADMINS:
-            if len(message.command) < 2:
-                return await message.reply("Please reply with a user id /send user_id")
-            if file_id:
-                await client.send_cached_media(chat_id=u_id, file_id=file_id.file_id, caption=file_name)
-            elif text:
-                await client.send_message(text=text, chat_id=u_id)
-            await message.reply(f"Message sent to {user_id}.")
-        else:
-            if file_id:
-                await reply_message.forward(chat_id=admin_id)
-            elif text:
-                await reply_message.forward(chat_id=admin_id)
-            await message.reply("Your message has been sent to the admin.")
-
+            return await message.reply("You are an admin; you can't use this command.")
+        await reply_message.forward(chat_id=admin_id)
+        await message.reply("Your message has been sent to the admin.")
+    except Exception as e:
+        await message.reply(f"Error: {str(e)}")
+ 
+@Client.on_message(filters.command("send") & filters.group)
+async def send(client, message):
+    try:
+        if message.from_user.id in ADMINS:
+            text = message.reply_to_message.text
+            user_id = message.command[1]
+            if not text:
+                return await message.reply("Please reply to a message.")
+            if not user_id:
+                return await message.reply(f"Please reply with user id <code>/send user_id</code>")
+            await client.send_message(user_id, text)
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
