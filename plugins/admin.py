@@ -1,4 +1,4 @@
-from pyrogram import filters
+from pyrogram import Client, filters
 from database.users_chats_db import db
 from info import ADMINS
 import asyncio
@@ -13,7 +13,6 @@ from database.ia_filterdb import get_search_results
 from database.top_msg import mdb 
 import pyromod.listen
 from pyromod.exceptions import ListenerTimeout
-from pyromod import Client
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
