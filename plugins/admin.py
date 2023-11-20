@@ -441,7 +441,7 @@ async def send_message_to_admin(client, message):
         if user_id in ADMINS:
             return await message.reply("You are an admin; you can't use this command.")
         await reply_message.forward(chat_id=admin_id)
-        await message.reply("Your message has been sent to the admin.")
+        await message.reply(f"Your message has been submitted to the admin, admin will reply you soon.\n(**Note**: Don't spam the admin, otherwise you will be banned.)")
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
  
