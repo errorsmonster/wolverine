@@ -446,10 +446,11 @@ async def send_message_to_user(client, message):
 
         # Send the media to the specified user_id
         media = message.reply_to_message.media
+        caption = media.caption if media.caption else None
         text = message.reply_to_message.text
 
         if media:
-            await client.forward_messages(user_id, message.from_user.id, media.id)
+            await client.send_cached_media(chat_id=user_id, file_id=media.id, caption=caption)
         elif text:
             await client.send_message(user_id, text)
         
