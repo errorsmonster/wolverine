@@ -11,8 +11,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyb
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
 from database.top_msg import mdb 
-import pyromod.listen
-from pyromod.exceptions import ListenerTimeout
+
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
@@ -430,23 +429,21 @@ async def reply_stream(client, message):
     )
 
 @Client.on_message(filters.private & filters.command("send") & filters.user(ADMINS))
-async def send_message_user(client, message):
+async def send_messageS_user(client, message):
     try:
-        user_msg = client.ask(text="Send Me The User Id", chat_id=message.chat.id, timeout=30)
-        if user_msg:
-            user_id = int(user_msg)
-            user = await client.get_users(user_id)
-            if user:
-                msg = await client.ask(text="Send Me The Message", chat_id=message.chat.id, timeout=30)
-                if msg:
-                    await client.send_message(chat_id=user_id, text=msg)
-                    await message.reply_text("Message Sent Successfully")
-                elif msg is None:
-                    await message.reply_text("You Didn't Send Any Message")
-            elif user is None:
-                await message.reply_text("Invalid User Id")
-        elif user_msg is None:
-            await message.reply_text("You Didn't Send Any User Id")
+        user_id = message.command[1]
+        if not user_id:
+            return await message.reply("Please provide a user id")
+            
+        user = await client.get_users(user_id)
+        if not user:
+            return await message.reply("Invalid user id")
+            
+        text = message.text.split(None, 2)[2]
+        if not text:
+            return await message.reply("Please provide a message to send")
+            
+        await client.send_message(user_id, text)
 
-    except ListenerTimeout:
-        await message.reply('You took too long to answer.')
+    except Exception as e:
+        await message.reply(f"Error: {str(e)}")

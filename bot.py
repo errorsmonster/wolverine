@@ -14,7 +14,6 @@ from info import SESSION, API_ID, API_HASH, BOT_TOKEN
 from utils import temp
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
-import pyromod.listen
 
 from aiohttp import web
 from plugins.web import web_server
