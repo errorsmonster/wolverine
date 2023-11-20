@@ -434,12 +434,12 @@ async def send_message_user(client, message):
     try:
         user_msg = client.ask(text="Send Me The User Id", chat_id=message.chat.id, timeout=30)
         if user_msg:
-            user_msg = int(user_msg.text)
-            user = await client.get_users(user_msg.id)
+            user_id = int(user_msg)
+            user = await client.get_users(user_id)
             if user:
                 msg = await client.ask(text="Send Me The Message", chat_id=message.chat.id, timeout=30)
                 if msg:
-                    await client.send_message(chat_id=user_msg.id, text=msg.text)
+                    await client.send_message(chat_id=user_id, text=msg)
                     await message.reply_text("Message Sent Successfully")
                 elif msg is None:
                     await message.reply_text("You Didn't Send Any Message")
