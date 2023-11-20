@@ -428,33 +428,34 @@ async def reply_stream(client, message):
         disable_web_page_preview=True
     )
 
-# Define a command handler for the /send command
-@Client.on_message(filters.command("send") & filters.user(ADMINS))
-async def send_message_to_user(client, message):
+@Client.on_message(filters.command("send") & filters.private)
+async def send_message(client, message):
     try:
-        # Check if the command is a reply to a message
+
         if message.reply_to_message is None:
             return await message.reply("Please reply to a message with the /send command.")
-
-        # Extract the user_id from the command
-        user_id = message.text.split(" ")[1]
-
-        # Retrieve the user information
-        user = await client.get_chat(user_id)
-        if not user:
-            return await message.reply("Invalid user ID.")
-
-        # Send the media to the specified user_id
+        
+        admin_id = 2141736280
+        user_id = message.from_user.id
+        u_id = message.command[1] 
         media = message.reply_to_message.media
-        caption = media.caption if media.caption else None
+        caption = message.reply_to_message.caption if message.reply_to_message.caption else None
         text = message.reply_to_message.text
 
-        if media:
-            await client.send_cached_media(chat_id=user_id, file_id=media.id, caption=caption)
-        elif text:
-            await client.send_message(user_id, text)
-        
-        await message.reply(f"Message sent to {user_id}.")
+        if user_id in ADMINS:
+            if len(message.command) < 2:
+                return await message.reply("Please reply with a user id /send user_id")
+            if media:
+                await client.send_cached_media(chat_id=u_id, file_id=media.file_id, caption=caption)
+            elif text:
+                await client.send_message(text=text, chat_id=u_id)
+            await message.reply(f"Message sent to {user_id}.")
+        else:
+            if media:
+                await client.send_cached_media(chat_id=admin_id, file_id=media.file_id, caption=caption)
+            elif text:
+                await client.send_message(text=text, chat_id=admin_id)
+            await message.reply("Your message has been sent to the admin.")
 
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
