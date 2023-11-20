@@ -89,7 +89,7 @@ async def filters_private_handlers(client, message):
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
-    if 2 < len(message.text) < 100:
+    if 1 < len(message.text) < 100:
         search = message.text.lower()
         encoded_search = quote(search)
     
