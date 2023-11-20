@@ -89,7 +89,7 @@ async def filters_private_handlers(client, message):
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
-    if 2 < len(message.text) < 100:
+    if 1 < len(message.text) < 100:
         search = message.text.lower()
         encoded_search = quote(search)
     
@@ -755,7 +755,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup(btn)
         )
         
-    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "print", "hdts", "Sample", "hdtc"]:
+    elif query.data in ["predvd", "camrip", "predvdrip", "hdcam", "hdcams", "print", "hdts", "sample", "hdtc"]:
         buttons = [[
             InlineKeyboardButton("10", callback_data=f"dlt#10_{query.data}")
             ],[

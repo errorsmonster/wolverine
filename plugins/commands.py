@@ -474,8 +474,8 @@ async def delete_multiple_files(bot, message):
     keyboard_buttons = [
         ["PreDVD", "PreDVDRip"],
         ["HDTS", "HDTC"],
-        ["HDCam", "HD-Cams"],
-        ["CamRip", "S-Print"]
+        ["HDCam", "Sample"],
+        ["CamRip", "Print"]
     ]
 
     btn = [
