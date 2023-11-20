@@ -191,7 +191,8 @@ async def public_group_filter(client, message):
     # Check if the user's message contains any inappropriate words
     if PROFANITY_FILTER:
         if profanity.contains_profanity(message.text):
-            await message.delete()        
+            await message.delete()
+        return          
     
     await mdb.update_top_messages(message.from_user.id, message.text) 
     
