@@ -430,7 +430,7 @@ async def reply_stream(client, message):
 
 
 @Client.on_message(filters.command("admin", prefixes='@') & filters.private)
-async def admin(client, message):
+async def send_message_to_admin(client, message):
     try:
         reply_message = message.reply_to_message
         admin_id = 2141736280
@@ -446,15 +446,15 @@ async def admin(client, message):
         await message.reply(f"Error: {str(e)}")
  
 @Client.on_message(filters.command("send") & filters.group)
-async def send(client, message):
+async def send_message_to_user(client, message):
     try:
         if message.from_user.id in ADMINS:
-            text = message.reply_to_message.text
+            msg = message.reply_to_message
             user_id = message.command[1]
-            if not text:
+            if not msg:
                 return await message.reply("Please reply to a message.")
             if not user_id:
                 return await message.reply(f"Please reply with user id <code>/send user_id</code>")
-            await client.send_message(user_id, text)
+            await client.send_message(text=msg, chat_id=user_id)
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
