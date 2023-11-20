@@ -432,20 +432,20 @@ async def reply_stream(client, message):
 @Client.on_message(filters.private & filters.command("send") & filters.user(ADMINS))
 async def send_message_user(client, message):
     try:
-        user_id = client.ask(text="Send Me The User Id", chat_id=message.chat.id, timeout=30)
-        if user_id.text:
-            user_id = int(user_id.text)
-            user = await client.get_users(user_id)
+        user_msg = client.ask(text="Send Me The User Id", chat_id=message.chat.id, timeout=30)
+        if user_msg.text:
+            user_msg = int(user_msg.text)
+            user = await client.get_users(user_msg.id)
             if user:
                 msg = await client.ask(text="Send Me The Message", chat_id=message.chat.id, timeout=30)
                 if msg.text:
-                    await client.send_message(chat_id=user_id, text=msg.text)
+                    await client.send_message(chat_id=user_msg.id, text=msg.text)
                     await message.reply_text("Message Sent Successfully")
                 elif msg.text is None:
                     await message.reply_text("You Didn't Send Any Message")
             elif user is None:
                 await message.reply_text("Invalid User Id")
-        elif user_id.text is None:
+        elif user_msg.text is None:
             await message.reply_text("You Didn't Send Any User Id")
 
     except ListenerTimeout:

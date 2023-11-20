@@ -65,14 +65,17 @@ async def copydb_command(client, message):
 
     if lock.locked():
         await message.reply('Wait until previous process complete.')
-
-    if len(message.command) > 1:
-        sub_command = message.command[1].lower()
-        if sub_command == "cancel":
-            cancel_forwarding = True
-            await message.reply("**File forwarding canceled.**")
-            return
-    try:
-        await get_files_from_db(client, message)
-    except Exception as e:
-        await message.reply(f"**Error: {e}**")
+    else:
+        while True:
+            if len(message.command) > 1:
+                sub_command = message.command[1].lower()
+                if sub_command == "cancel":
+                    cancel_forwarding = True
+                    await message.reply("**File forwarding canceled.**")
+                    return
+            try:
+                await get_files_from_db(client, message)
+                break
+            except Exception as e:
+                await message.reply(f"**Error: {e}**")
+                break
