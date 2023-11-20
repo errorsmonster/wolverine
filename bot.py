@@ -8,13 +8,13 @@ logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("imdbpy").setLevel(logging.ERROR)
 
 from pyrogram import Client, __version__
-from pyrogram.raw.all import layer
 from database.ia_filterdb import Media
 from database.users_chats_db import db
 from info import SESSION, API_ID, API_HASH, BOT_TOKEN
 from utils import temp
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
+import pyromod.listen
 
 from aiohttp import web
 from plugins.web import web_server

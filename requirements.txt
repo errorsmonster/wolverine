@@ -9,3 +9,4 @@ bs4
 cinemagoer
 aiohttp
 profanity
+pyromod

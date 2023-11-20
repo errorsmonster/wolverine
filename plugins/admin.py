@@ -11,6 +11,8 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyb
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
 from database.top_msg import mdb 
+import pyromod.listen
+from pyromod.exceptions import ListenerTimeout
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
@@ -129,7 +131,7 @@ async def resetdaily(client, message):
     await m.edit("Successfully reset daily files count!")
 
 #reset daily files count of user
-@Client.on_message(filters.command("resetuser") & filters.user(ADMINS))
+@Client.on_message(filters.command("resetusers") & filters.user(ADMINS))
 async def resetdailyuser(client, message):
     user_id = message.command[1]
     if not user_id:
@@ -426,3 +428,25 @@ async def reply_stream(client, message):
         ),
         disable_web_page_preview=True
     )
+
+    @Client.on_message(filters.private & filters.command("send") & filters.user(ADMINS))
+    async def send_messageS_user(client, message):
+        try:
+            user_id = client.ask(text="Send Me The User Id", chat_id=message.chat.id, timeout=30)
+            if user_id.text:
+                user_id = int(user_id.text)
+                user = await client.get_users(user_id)
+                if user:
+                    msg = await client.ask(text="Send Me The Message", chat_id=message.chat.id, timeout=30)
+                    if msg.text:
+                        await client.send_message(chat_id=user_id, text=msg.text)
+                        await message.reply_text("Message Sent Successfully")
+                    elif msg.text is None:
+                        await message.reply_text("You Didn't Send Any Message")
+                elif user is None:
+                    await message.reply_text("Invalid User Id")
+            elif user_id.text is None:
+                await message.reply_text("You Didn't Send Any User Id")
+
+        except ListenerTimeout:
+            await message.reply('You took too long to answer.')
