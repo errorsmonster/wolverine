@@ -4,6 +4,8 @@ from info import FORWARD_CHANNEL, ADMINS
 from pyrogram.errors import FloodWait
 import asyncio
 import logging
+from utils import replace_blacklist
+from Script import script
 
 # Set up logging
 logging.basicConfig(level=logging.ERROR)
@@ -42,7 +44,8 @@ async def get_files_from_db(client, message):
         file_id = file
         file_details = await get_file_details(file_id)
         file_info = file_details[0]
-        caption = file_info.caption or file_info.file_name
+        cap = file_info.caption or file_info.file_name
+        caption = f"<code>{await replace_blacklist(cap, script.BLACKLIST)}</code>"
         try:
             success = await forward_file(client, file_id, caption)
             if success:
