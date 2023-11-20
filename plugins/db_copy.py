@@ -29,7 +29,7 @@ async def forward_file(client, file_id, caption):
 async def get_files_from_db(client, message):
     global cancel_forwarding
 
-    m = await message.reply_text(text=f"**Calculating Database, It'll Take Long Time...**")
+    m = await message.reply_text(text=f"**Be Patience, It'll Take Some Time...**")
     
     cancel_forwarding = False
     
