@@ -428,22 +428,40 @@ async def reply_stream(client, message):
         disable_web_page_preview=True
     )
 
-@Client.on_message(filters.private & filters.command("send") & filters.user(ADMINS))
-async def send_messageS_user(client, message):
+from pyrogram import Client, filters
+
+ADMINS = [123456789]  # Replace with your admin user IDs
+
+app = Client("my_bot")
+
+# Define a command handler for the /send command
+@app.on_message(filters.command("send") & filters.user(ADMINS))
+async def send_message_to_user(client, message):
     try:
-        user_id = message.command[1]
-        if not user_id:
-            return await message.reply("Please provide a user id")
-            
-        user = await client.get_users(user_id)
+        # Check if the command is a reply to a message
+        if message.reply_to_message is None:
+            return await message.reply("Please reply to a message with the /send command.")
+
+        # Extract the user_id from the command
+        user_id = message.text.split(" ")[1]
+
+        # Retrieve the user information
+        user = await client.get_chat(user_id)
         if not user:
-            return await message.reply("Invalid user id")
-            
-        text = message.text.split(None, 2)[2]
-        if not text:
-            return await message.reply("Please provide a message to send")
-            
-        await client.send_message(user_id, text)
+            return await message.reply("Invalid user ID.")
+
+        # Send the media to the specified user_id
+        media = message.reply_to_message.media
+        text = message.reply_to_message.text
+
+        if media:
+            await client.forward_messages(user_id, message.from_user.id, media.id)
+        elif text:
+            await client.send_message(user_id, text)
+        
+        await message.reply(f"Message sent to {user_id}.")
 
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
+
+app.run()
