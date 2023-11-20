@@ -428,14 +428,8 @@ async def reply_stream(client, message):
         disable_web_page_preview=True
     )
 
-from pyrogram import Client, filters
-
-ADMINS = [123456789]  # Replace with your admin user IDs
-
-app = Client("my_bot")
-
 # Define a command handler for the /send command
-@app.on_message(filters.command("send") & filters.user(ADMINS))
+@Client.on_message(filters.command("send") & filters.user(ADMINS))
 async def send_message_to_user(client, message):
     try:
         # Check if the command is a reply to a message
