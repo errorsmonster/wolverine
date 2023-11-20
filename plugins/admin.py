@@ -430,6 +430,7 @@ async def reply_stream(client, message):
 
 @Client.on_message(filters.command("send") & filters.private)
 async def send_message(client, message):
+    reply_message = message.reply_to_message
     try:
         if message.reply_to_message is None:
             return await message.reply("Please reply to a message with the /send command.")
@@ -438,23 +439,23 @@ async def send_message(client, message):
         user_id = message.from_user.id
         u_id = message.command[1] 
 
-        media = message.reply_to_message.media
-        caption = message.reply_to_message.caption if message.reply_to_message.caption else None
-        text = message.reply_to_message.text
+        file_id = reply_message.document or reply_message.video or reply_message.audio or reply_message.voice or reply_message.animation or reply_message.photo or reply_message.sticker
+        file_name = file_id.file_name if file_id else None
+        text = reply_message.text
 
         if user_id in ADMINS:
             if len(message.command) < 2:
                 return await message.reply("Please reply with a user id /send user_id")
-            if media:
-                await client.send_cached_media(chat_id=u_id, file_id=media.file_id, caption=caption)
+            if file_id:
+                await client.send_cached_media(chat_id=u_id, file_id=file_id.file_id, caption=file_name)
             elif text:
                 await client.send_message(text=text, chat_id=u_id)
             await message.reply(f"Message sent to {user_id}.")
         else:
-            if media:
-                await client.send_cached_media(chat_id=admin_id, file_id=media.file_id, caption=caption)
+            if file_id:
+                await reply_message.forward(chat_id=admin_id)
             elif text:
-                await client.send_message(text=text, chat_id=admin_id)
+                await reply_message.forward(chat_id=admin_id)
             await message.reply("Your message has been sent to the admin.")
 
     except Exception as e:
