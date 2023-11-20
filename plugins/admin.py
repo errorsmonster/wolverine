@@ -431,13 +431,13 @@ async def reply_stream(client, message):
 @Client.on_message(filters.command("send") & filters.private)
 async def send_message(client, message):
     try:
-
         if message.reply_to_message is None:
             return await message.reply("Please reply to a message with the /send command.")
-        
+
         admin_id = 2141736280
         user_id = message.from_user.id
         u_id = message.command[1] 
+
         media = message.reply_to_message.media
         caption = message.reply_to_message.caption if message.reply_to_message.caption else None
         text = message.reply_to_message.text
