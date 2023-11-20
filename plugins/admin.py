@@ -457,5 +457,3 @@ async def send_message_to_user(client, message):
 
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
-
-app.run()
