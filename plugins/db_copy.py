@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from database.ia_filterdb import get_file_details, get_all_file_ids
+from database.ia_filterdb import get_file_details, get_all_file_ids, Media
 from info import FORWARD_CHANNEL, ADMINS
 from pyrogram.errors import FloodWait
 import asyncio
@@ -26,10 +26,12 @@ async def forward_file(client, file_id, caption):
 
 async def get_files_from_db(client, message):
     global cancel_forwarding
-    m = await message.reply_text(text=f"**Fetching files from the database.**")
+
+    m = await message.reply_text(text=f"**Calculating Database, It'll Take Long Time...**")
     
     cancel_forwarding = False
     
+    total_files = await Media.count_documents()
     files = await get_all_file_ids()
     total = 0
     for file in files:
@@ -45,7 +47,7 @@ async def get_files_from_db(client, message):
             success = await forward_file(client, file_id, caption)
             if success:
                 total += 1
-                await m.edit(f"**{total}** files have been forwarded.")
+                await m.edit(f"**{total}/{total_files}** files have been forwarded.")
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
             await asyncio.sleep(e.x)
