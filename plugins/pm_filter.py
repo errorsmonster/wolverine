@@ -209,7 +209,6 @@ async def public_group_filter(client, message):
             await message.delete()
             await m.delete()
 
-
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
