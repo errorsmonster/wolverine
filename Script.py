@@ -45,7 +45,7 @@ Name - {}
 """
     # Terms & Conditions
     TERMS = """
-**By using our service, you agree to adhere to the following terms**:
+**By using our service, you agree to adhere to the following terms:
 
 • The bot is provided on an "as is" basis, and we reserve the right to modify or discontinue its services without prior notice.
 • While we make every effort to provide accurate movie information, we cannot guarantee the availability of all content.
@@ -53,7 +53,7 @@ Name - {}
 • The bot collect user IDs for the purpose of providing updates and recording purchase history for premium services.
 • We disclaim any responsibility for copyright infringement, and users are solely accountable for the utilization of our services.
 
-**By using our bot, you acknowledge that you have read, understood, and agreed these Terms.**
+By using our bot, you acknowledge that you have read, understood, and agreed these Terms.**
 """
 
     # removing blacklisted words
