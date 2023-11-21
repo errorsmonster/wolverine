@@ -57,7 +57,7 @@ Name - {}
 """
 
     # removing blacklisted words
-    BLACKLIST = ['www', 'tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
+    BLACKLIST = ['tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'bot', 'flix',
                 '4u', 'hub', 'movies', 'otthd', 'telegram', 'hoichoihok',
                 '@', 'filmy', 'films', 'cinema', 'join', 'club', 'apd',

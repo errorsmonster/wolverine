@@ -12,6 +12,7 @@ from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
 from database.top_msg import mdb 
 
+
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
 DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
 TEXT = "<b>Hello {}, Welcome To {}</b>"
@@ -129,7 +130,7 @@ async def resetdaily(client, message):
     await m.edit("Successfully reset daily files count!")
 
 #reset daily files count of user
-@Client.on_message(filters.command("resetuser") & filters.user(ADMINS))
+@Client.on_message(filters.command("resetusers") & filters.user(ADMINS))
 async def resetdailyuser(client, message):
     user_id = message.command[1]
     if not user_id:
@@ -426,3 +427,64 @@ async def reply_stream(client, message):
         ),
         disable_web_page_preview=True
     )
+
+
+@Client.on_message(filters.command("admin", prefixes='@') & filters.private)
+async def send_message_to_admin(client, message):
+
+    if message.reply_to_message is None:
+            return await message.reply("Please reply to a message with the @admin.")
+    try:
+        msg = message.reply_to_message
+        admin_id = 2141736280
+        user_id = message.from_user.id
+        media = msg.photo or msg.video or msg.document
+        caption = f"**New Message:**\n\n**Name:** {message.from_user.mention}\n**User ID:** `{user_id}`\n\n**Message:**\n\n{msg.text if msg.text else msg.caption}"
+
+        if user_id in ADMINS:
+            return await message.reply("You are an admin; you can't use this command.")
+        
+        if media:
+            await client.send_cached_media(chat_id=admin_id, file_id=media.file_id, caption=caption)
+        elif msg.text:
+            await client.send_message(text=caption, chat_id=admin_id)
+
+        await message.reply(f"Your message has been submitted to the admin, admin will reply you soon.\n**(Spam=Ban)**")
+    except Exception as e:
+        await message.reply(f"Error: {str(e)}")
+ 
+
+@Client.on_message(filters.command("send") & filters.private & filters.user(ADMINS))
+async def send_message_to_user(client, message):
+    try:
+        if len(message.command) < 2:
+            return await message.reply("Please provide a user id.")
+
+        user_id = message.command[1]
+        user = await client.get_users(user_id)
+
+        if not user:
+            return await message.reply("Invalid user id")
+
+        if message.from_user.id not in ADMINS:
+            return await message.reply("You are not authorized to use this command.")
+
+        msg = message.reply_to_message
+
+        if not msg:
+            return await message.reply("Please reply to a message.")
+
+        media = msg.photo or msg.video or msg.document
+        caption = msg.caption or "None"
+
+        if media:
+            await client.send_cached_media(chat_id=user_id, file_id=media.file_id, caption=caption)
+        elif msg.text:
+            await client.send_message(text=msg.text, chat_id=user_id)
+
+        await message.reply(f"**Message sent to {user.first_name} successfully.**")    
+
+    except ValueError as ve:
+        await message.reply(f"Error: {str(ve)}")
+    except Exception as e:
+        await message.reply(f"An unexpected error occurred: {str(e)}")
