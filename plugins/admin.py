@@ -431,24 +431,25 @@ async def reply_stream(client, message):
 
 @Client.on_message(filters.command("admin", prefixes='@') & filters.private)
 async def send_message_to_admin(client, message):
+
+    if message.reply_to_message is None:
+            return await message.reply("Please reply to a message with the @admin.")
     try:
-        reply_message = message.reply_to_message
+        msg = message.reply_to_message
         admin_id = 2141736280
         user_id = message.from_user.id
-        media = message.reply_to_message.photo or message.reply_to_message.video or message.reply_to_message.document
-        caption = f"**New Message From User:**\n\n**Name:** {message.from_user.mention}\n**User ID:** `{user_id}`\n\n**Message:**\n\n{reply_message.text if reply_message.text else reply_message.caption}"
+        media = msg.photo or msg.video or msg.document
+        caption = f"**New Message:**\n\n**Name:** {message.from_user.mention}\n**User ID:** `{user_id}`\n\n**Message:**\n\n{msg.text if msg.text else msg.caption}"
 
-        if reply_message is None:
-            return await message.reply("Please reply to a message with the @admin.")
         if user_id in ADMINS:
             return await message.reply("You are an admin; you can't use this command.")
         
         if media:
             await client.send_cached_media(chat_id=admin_id, file_id=media.file_id, caption=caption)
-        elif reply_message.text:
+        elif msg.text:
             await client.send_message(text=caption, chat_id=admin_id)
 
-        await message.reply(f"**Your message has been submitted to the admin, admin will reply you soon. (Don't Spam)**")
+        await message.reply(f"Your message has been submitted to the admin, admin will reply you soon.\n**(Spam=Ban)**")
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
  
