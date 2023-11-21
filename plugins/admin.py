@@ -435,13 +435,20 @@ async def send_message_to_admin(client, message):
         reply_message = message.reply_to_message
         admin_id = 2141736280
         user_id = message.from_user.id
+        media = message.reply_to_message.photo or message.reply_to_message.video or message.reply_to_message.document
+        caption = f"**New Message From User:**\n\n**Name:** {message.from_user.mention}\n**User ID:** `{user_id}`\n\n**Message:**\n\n{reply_message.text if reply_message.text else reply_message.caption}"
 
         if reply_message is None:
             return await message.reply("Please reply to a message with the @admin.")
         if user_id in ADMINS:
             return await message.reply("You are an admin; you can't use this command.")
-        await reply_message.forward(chat_id=admin_id)
-        await message.reply(f"Your message has been submitted to the admin, admin will reply you soon.\n(**Note**: Don't spam the admin, otherwise you will be banned.)")
+        
+        if media:
+            await client.send_cached_media(chat_id=admin_id, file_id=media.file_id, caption=caption)
+        elif reply_message.text:
+            await client.send_message(text=caption, chat_id=admin_id)
+
+        await message.reply(f"**Your message has been submitted to the admin, admin will reply you soon.**\n\n**Note**: Don't spam the admin, otherwise you will be banned.")
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
  
@@ -454,6 +461,8 @@ async def send_message_to_user(client, message):
     try:
         if message.from_user.id in ADMINS:
             msg = message.reply_to_message
+            media = message.reply_to_message.photo or message.reply_to_message.video or message.reply_to_message.document
+            caption = msg.caption if msg.caption else "None"
             user_id = message.command[1]
             user = await client.get_users(user_id)
 
@@ -463,6 +472,11 @@ async def send_message_to_user(client, message):
             if not msg:
                 return await message.reply("Please reply to a message.")
             
-            await client.send_message(text=msg, chat_id=user_id)
+            if media:
+                await client.send_cached_media(chat_id=user_id, file_id=media.file_id, caption=caption)
+            elif msg.text:
+                await client.send_message(text=msg.text, chat_id=user_id)    
+            
+            await client.send_message(text=msg.text, chat_id=user_id)
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
