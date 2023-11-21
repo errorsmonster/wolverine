@@ -447,14 +447,22 @@ async def send_message_to_admin(client, message):
  
 @Client.on_message(filters.command("send") & filters.group)
 async def send_message_to_user(client, message):
+
+    if len(message.command) < 2:
+        return await message.reply("Please provide a user id.")
+    
     try:
         if message.from_user.id in ADMINS:
             msg = message.reply_to_message
             user_id = message.command[1]
+            user = await client.get_users(user_id)
+
+            if not user:
+                return await message.reply(f"Invalid user id")
+            
             if not msg:
                 return await message.reply("Please reply to a message.")
-            if not user_id:
-                return await message.reply(f"Please reply with user id <code>/send user_id</code>")
+            
             await client.send_message(text=msg, chat_id=user_id)
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
