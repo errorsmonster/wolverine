@@ -6,6 +6,7 @@ import asyncio
 import logging
 from utils import replace_blacklist
 from Script import script
+lock = asyncio.Lock()
 
 # Set up logging
 logging.basicConfig(level=logging.ERROR)
@@ -62,13 +63,19 @@ async def get_files_from_db(client, message):
 async def copydb_command(client, message):
     global cancel_forwarding
 
-    if len(message.command) > 1:
-        sub_command = message.command[1].lower()
-        if sub_command == "cancel":
-            cancel_forwarding = True
-            await message.reply("**File forwarding canceled.**")
-            return
-    try:
-        await get_files_from_db(client, message)
-    except Exception as e:
-        await message.reply(f"**Error: {e}**")
+    if lock.locked():
+        await message.reply('Wait until previous process complete.')
+    else:
+        while True:
+            if len(message.command) > 1:
+                sub_command = message.command[1].lower()
+                if sub_command == "cancel":
+                    cancel_forwarding = True
+                    await message.reply("**File forwarding canceled.**")
+                    return
+            try:
+                await get_files_from_db(client, message)
+                break
+            except Exception as e:
+                await message.reply(f"**Error: {e}**")
+                break

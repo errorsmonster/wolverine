@@ -415,10 +415,17 @@ def humanbytes(size):
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
 
-async def replace_blacklist(file_name, blacklist):
+async def replace_blacklist(file_name, blacklist, remove_emojis=True, remove_special_chars=True, remove_links=True):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
+    if remove_emojis:
+        file_name = re.sub(r'[\U00010000-\U0010ffff]', '', file_name)
+    if remove_special_chars:
+        file_name = re.sub(r'[^a-zA-Z0-9\s]', '', file_name)
+    if remove_links:
+        file_name = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', file_name)
     return file_name
+
 
 # To fetch random Quotes
 async def fetch_quote_content():

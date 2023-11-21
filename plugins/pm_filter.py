@@ -18,7 +18,6 @@ from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_
 from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
-from profanity import profanity
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -93,7 +92,7 @@ async def filters_private_handlers(client, message):
         search = message.text.lower()
         encoded_search = quote(search)
     
-        files, offset, total_results = await get_search_results(search, offset=0, filter=True)
+        files, _, _ = await get_search_results(search, offset=0, filter=True)
         if not files:
             google = "https://google.com/search?q="
             reply_markup = InlineKeyboardMarkup([
@@ -186,12 +185,7 @@ async def public_group_filter(client, message):
 
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
-        return 
-    
-    # Check if the user's message contains any inappropriate words
-    if PROFANITY_FILTER:
-        if profanity.contains_profanity(message.text):
-            await message.delete()        
+        return        
     
     await mdb.update_top_messages(message.from_user.id, message.text) 
     
@@ -214,7 +208,6 @@ async def public_group_filter(client, message):
             await asyncio.sleep(waitime)
             await message.delete()
             await m.delete()
-
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
