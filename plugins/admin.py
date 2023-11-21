@@ -445,7 +445,7 @@ async def send_message_to_admin(client, message):
     except Exception as e:
         await message.reply(f"Error: {str(e)}")
  
-@Client.on_message(filters.command("send") & filters.group)
+@Client.on_message(filters.command("send") & filters.private & filters.user(ADMINS))
 async def send_message_to_user(client, message):
 
     if len(message.command) < 2:
