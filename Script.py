@@ -45,7 +45,7 @@ Name - {}
 """
     # Terms & Conditions
     TERMS = """
-**By using our service, you agree to adhere to the following terms**:
+**By using our service, you agree to adhere to the following terms:
 
 • The bot is provided on an "as is" basis, and we reserve the right to modify or discontinue its services without prior notice.
 • While we make every effort to provide accurate movie information, we cannot guarantee the availability of all content.
@@ -53,15 +53,14 @@ Name - {}
 • The bot collect user IDs for the purpose of providing updates and recording purchase history for premium services.
 • We disclaim any responsibility for copyright infringement, and users are solely accountable for the utilization of our services.
 
-**By using our bot, you acknowledge that you have read, understood, and agreed these Terms.**
+By using our bot, you acknowledge that you have read, understood, and agreed these Terms.**
 """
 
     # removing blacklisted words
-    BLACKLIST = ['tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'link',
-                'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'bot', 'flix',
+    BLACKLIST = ['tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine',
+                'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'flix',
                 '4u', 'hub', 'movies', 'otthd', 'telegram', 'hoichoihok',
-                '@', 'filmy', 'films', 'cinema', 'join', 'club', 'apd',
+                'filmy', 'films', 'cinema', 'join', 'club', 'apd', 'F-Press', 'GDTOT', 'GD'
                 'backup', 'primeroom', 'theprofffesorr', 'premium', 'vip', '4wap', 'toonworld4all', 'mlwbd'
                 'Telegram@alpacinodump', 'bollywood', "AllNewEnglishMovie", "7MovieRulz", "1TamilMV",
-                'Bazar', '_Corner20', 'CornersOfficial❣️', 'support', 'iMediaShare', '[', ']', '&', '✅',
-                'Uᴘʟᴏᴀᴅᴇᴅ', 'Bʏ', ':', 'PFM', 'alpacinodump']
+                'Bazar', '_Corner20', 'CornersOfficial', 'support', 'iMediaShare', 'Uᴘʟᴏᴀᴅᴇᴅ', 'Bʏ', 'PFM', 'alpacinodump']
