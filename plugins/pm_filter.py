@@ -652,10 +652,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup=InlineKeyboardMarkup(buttons),
         disable_web_page_preview=True,
         )
-        
+
     elif query.data == "qrcode":
         buttons = [[
-            KeyboardButton(text="QR Code", web_app=WebAppInfo(url="https://i.ibb.co/Ns5qPCJ/qr.jpg")),
+            KeyboardButton(text="QR Code", web_app=WebAppInfo(url="https://i.ibb.co/Ns5qPCJ/qr.jpg"))
         ]]
         await query.message.edit(
             text=f"<b>Scan The QR Code To Pay</b>",
