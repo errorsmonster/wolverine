@@ -9,7 +9,7 @@ from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
 from info import ADMINS, BIN_CHANNEL, URL, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME, MAINTAINENCE_MODE, PROFANITY_FILTER
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, MenuButtonWebApp, WebAppInfo, KeyboardButton
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from database.top_msg import mdb
@@ -644,6 +644,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "remads":
         buttons = [[
                     InlineKeyboardButton('💫 Confirm', callback_data="confirm"),
+                    KeyboardButton(text="QR Code", web_app=WebAppInfo(url="https://i.ibb.co/Ns5qPCJ/qr.jpg")),
                     InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
         await query.message.edit(
