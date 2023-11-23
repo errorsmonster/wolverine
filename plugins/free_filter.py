@@ -43,7 +43,8 @@ async def free_next_page(bot, query):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await linkgen(f"https://telegram.me/{temp.U_NAME}?start=User-{query.from_user.id}_{file.file_id}")
+        encd_id = encode_to_base64(f"{query.from_user.id}_{file.file_id}")
+        shortlink = await linkgen(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{encd_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -109,7 +110,8 @@ async def free_filter(client, msg, spoll=False):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await linkgen(f"https://telegram.me/{temp.U_NAME}?start=User-{message.from_user.id}_{file.file_id}")
+        encd_id = encode_to_base64(f"{message.from_user.id}_{file.file_id}")
+        shortlink = await linkgen(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{encd_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
