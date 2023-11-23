@@ -148,11 +148,6 @@ async def start(client, message):
         )
         return
 
-    # Terms & Condition 
-    if message.command[1] == "terms":
-        await message.reply_text(text=f"<b>Terms & Condition Coming Soon</b>", disable_web_page_preview=True)
-        return
-    
     data = message.command[1]
     if data.startswith("User-"):
         _, _, userid, file_id = data.split('_', 3)
