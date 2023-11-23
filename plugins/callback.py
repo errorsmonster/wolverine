@@ -59,7 +59,7 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
         )
     elif query.data == "close_data":
         await query.message.delete()
-            
+
     # Function to delete unwanted files
     elif query.data == "delback":
         keyboard_buttons = [
@@ -245,7 +245,7 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
 
 
      #maintainance
-    elif query.data == "maintenance_toggle":
+    elif query.data == "maintenance":
         global maintenance_mode
         maintenance_mode = not maintenance_mode
         status_text = "Maintenance mode is now ON." if maintenance_mode else "Maintenance mode is now OFF."

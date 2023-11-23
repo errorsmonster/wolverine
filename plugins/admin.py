@@ -495,7 +495,7 @@ async def admin_controll(client, message):
         InlineKeyboardButton("DeleteFiles", callback_data="delback"),
         InlineKeyboardButton("Redeem Code", callback_data="redeem"),
         ],[
-        InlineKeyboardButton("Maintainence", callback_data="maintenance_toggle")
+        InlineKeyboardButton("Maintainence", callback_data="maintenance")
         ]]
     reply_markup = InlineKeyboardMarkup(button)
     await message.reply_text(
