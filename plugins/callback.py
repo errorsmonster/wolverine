@@ -1,7 +1,7 @@
 import re
 from urllib.parse import quote
 from Script import script
-from info import ADMINS, BIN_CHANNEL, URL, SLOW_MODE_DELAY, WAIT_TIME
+from info import ADMINS, BIN_CHANNEL, URL, SLOW_MODE_DELAY, WAIT_TIME, ACCESS_KEY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
@@ -12,8 +12,6 @@ from database.ia_filterdb import Media, get_file_details, get_search_results
 import base64
 import logging
 import aiohttp
-
-ACCESS_KEY = "PZUNTLGIZFE67MR0I0H0"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)

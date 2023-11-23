@@ -66,6 +66,7 @@ DB_URI = environ.get('DATABASE_URI', "mongodb+srv://msg:msg@msg.dkqp9lz.mongodb.
 PROFANITY_FILTER = is_enabled(environ.get("PROFANITY_FILTER", "False"), False)
 # for copying all files into db
 FORWARD_CHANNEL = int(environ.get('FORWARD_CHANNEL', "-1002039632804"))
+ACCESS_KEY = environ.get("ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0")
 
 # For stream purposes
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")
