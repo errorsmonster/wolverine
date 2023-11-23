@@ -159,7 +159,7 @@ async def start(client, message):
             return await message.reply(f"<b>No such file exists.</b>")
 
         if userid != str(message.from_user.id):
-            return await message.reply(f"<b>You can't access someone else's files, request your own files.</b>")
+            return await message.reply(f"<b>You can't access someone else's request, request your own.</b>")
         
         files = files_[0]
         premium_status = await db.is_premium_status(message.from_user.id)
