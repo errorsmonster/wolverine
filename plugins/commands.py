@@ -13,7 +13,6 @@ from utils import get_settings, get_size, is_subscribed, temp, replace_blacklist
 from database.connections_mdb import active_connection
 from database.ia_filterdb import get_search_results
 import re
-import json
 import base64
 logger = logging.getLogger(__name__)
 
@@ -243,13 +242,7 @@ async def start(client, message):
             filetype = msg.media
             file = getattr(msg, filetype)
             title = file.file_name
-            size=get_size(file.file_size)
             f_caption = f"<code>{title}</code>"
-            if CUSTOM_FILE_CAPTION:
-                try:
-                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
-                except:
-                    return
             await msg.edit_caption(f_caption)
             return
         except:
@@ -257,7 +250,6 @@ async def start(client, message):
         return await message.reply('No such file exist.')
     files = files_[0]
     title = files.file_name
-    size=get_size(files.file_size)
     f_caption=files.caption
     if f_caption is None:
         f_caption = f"{files.file_name}"
