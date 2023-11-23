@@ -151,6 +151,7 @@ async def start(client, message):
     data = message.command[1].strip()
     if data.startswith("User-"):
         split_data = data.rsplit('_', 2)
+        print(f"Split data: {split_data}")
         # Check if the split result has enough parts
         if len(split_data) == 3:
             _, userid, file_id = split_data
@@ -169,6 +170,7 @@ async def start(client, message):
                 caption=caption
             )
         else:
+            print(f"Invalid link format: {data}")
             return await message.reply('Invalid link format.')   
         return
     
