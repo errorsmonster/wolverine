@@ -289,19 +289,32 @@ async def start(client, message):
         return
     
     elif data.split("-", 1)[0] == "User":
-        _, _, userid, file_id = data.split('_', 3)
-        files_ = await get_file_details(file_id)
-        if not files_:
-            return await message.reply('No such file exists.')
-        if userid != str(message.from_user.id):
-            return await message.reply("You can't access someone else's files, request your own files.")
-        files = files_[0]
-        caption = f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>"
-        await Client.send_cached_media(
-            chat_id=message.from_user.id,
-            file_id=file_id,
-            caption=caption
-        )
+        split_data = data.split('_', 3)
+
+        # Check if the split result has enough parts
+        if len(split_data) >= 4:
+            _, _, userid, file_id = split_data
+
+            files_ = await get_file_details(file_id)
+
+            if not files_:
+                return await message.reply('No such file exists.')
+
+            if userid != str(message.from_user.id):
+                return await message.reply("You can't access someone else's files, request your own files.")
+
+            files = files_[0]
+            caption = f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>"
+
+            await Client.send_cached_media(
+                chat_id=message.from_user.id,
+                file_id=file_id,
+                caption=caption
+            )
+        else:
+            return await message.reply('Invalid link format.')
+        return
+        
 
     files_ = await get_file_details(file_id)           
     if not files_:
