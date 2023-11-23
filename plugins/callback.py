@@ -226,7 +226,7 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
         encoded_duration = base64.b64encode(str(duration).zfill(3).encode()).decode('utf-8').rstrip('=')
 
         codes_generated = []
-        for _ in range(count):
+        for _ in range(int(count)):
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=generate&days=90") as resp:
                     if resp.status == 200:
