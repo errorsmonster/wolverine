@@ -157,19 +157,44 @@ async def start(client, message):
         print(f"File_id: {file_id}")
 
         if not files_:
-            return await message.reply('No such file exists.')
+            return await message.reply(f"<b>No such file exists.</b>")
 
         if userid != str(message.from_user.id):
-            return await message.reply("You can't access someone else's files, request your own files.")
+            return await message.reply(f"<b>You can't access someone else's files, request your own files.</b>")
         
         files = files_[0]
-        caption = f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>"
-        await client.send_cached_media(
+        premium_status = await db.is_premium_status(message.from_user.id)
+        button = [[
+            InlineKeyboardButton("Support", url=f"https://t.me/iPrimehub"),
+            InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
+            ]]
+        if premium_status is True:
+            button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
+
+        media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
-            caption=caption
+            caption=f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            reply_markup=InlineKeyboardMarkup(button)
             )
-        return
+    
+        # for counting each files for user
+        files_counts = await db.get_files_count(message.from_user.id)
+        lifetime_files = await db.get_lifetime_files(message.from_user.id)
+        await db.update_files_count(message.from_user.id, files_counts + 1)
+        await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
+        print(f"File sent {files_counts + 1} to {message.from_user.first_name} - {message.from_user.id}")
+
+        del_msg = await client.send_message(
+            text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",
+            chat_id=message.from_user.id,
+            reply_to_message_id=media_id.id)
+    
+        await asyncio.sleep(waitime or 600)
+        await media_id.delete()
+        await del_msg.edit("__⊘ This message was deleted__")
+
+
     
     data = message.command[1]
     try:
