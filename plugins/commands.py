@@ -150,7 +150,7 @@ async def start(client, message):
     
 
     data = message.command[1].strip()
-    if data.startswith("PrimeHub-"):
+    if data.startswith("user-"):
         _, rest_of_data = data.split('-', 1)
         deta = decode_from_base64(rest_of_data)
         print(deta)
