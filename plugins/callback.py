@@ -238,4 +238,3 @@ async def delete_files(query, limit, file_type):
 
     deleted = str(deleted)
     await k.edit_text(text=f"<b>Successfully deleted {deleted} {file_type.upper()} files.</b>")
-
