@@ -231,6 +231,9 @@ async def start(client, message):
         return
         
     try:
+        data = message.command[1].strip()
+        pre, file_id = data.split("_", 1)
+        
         files_ = await get_file_details(file_id)   
         if not files_:
             file_id = None
