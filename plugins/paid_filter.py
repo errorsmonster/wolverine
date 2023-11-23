@@ -43,7 +43,7 @@ async def paid_next_page(bot, query):
         # Construct a text message with hyperlinks
         search_results_text = []
         for file in files:
-            shortlink = f"https://telegram.me/{temp.U_NAME}?start=#User_{query.from_user.id}_{file.file_id}"
+            shortlink = f"https://telegram.me/{temp.U_NAME}?start=User_{query.from_user.id}_{file.file_id}"
             file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
             search_results_text.append(file_link)
 

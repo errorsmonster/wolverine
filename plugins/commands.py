@@ -288,7 +288,7 @@ async def start(client, message):
             await message.reply_text("You already Invited or Joined")
         return
     
-    elif data.split("-", 1)[0] == "#User":
+    elif data.split("-", 1)[0] == "User":
         _, _, userid, file_id = data.split('_', 3)
         files_ = await get_file_details(file_id)
         if not files_:
