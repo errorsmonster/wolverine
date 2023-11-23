@@ -416,6 +416,7 @@ def humanbytes(size):
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
 
+
 async def replace_blacklist(file_name, blacklist, remove_emojis=True, remove_special_chars=True, remove_links=True):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
