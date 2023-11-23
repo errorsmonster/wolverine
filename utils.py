@@ -417,7 +417,7 @@ def humanbytes(size):
 
 
 
-async def replace_blacklist(file_name, blacklist, remove_emojis=True, remove_special_chars=True, remove_links=True):
+async def replace_blacklist(file_name, blacklist, remove_emojis=False, remove_special_chars=True, remove_links=False):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
     if remove_emojis:
