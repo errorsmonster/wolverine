@@ -488,3 +488,18 @@ async def send_message_to_user(client, message):
         await message.reply(f"Error: {str(ve)}")
     except Exception as e:
         await message.reply(f"An unexpected error occurred: {str(e)}")
+
+@Client.on_message(filters.command("admin") & filters.private & filters.user(ADMINS))
+async def admin_controll(client, message):
+    button = [[
+        InlineKeyboardButton("DeleteFiles", callback_data="extralol"),
+        InlineKeyboardButton("Redeem Code", callback_data="redeem"),
+        ],[
+        InlineKeyboardButton("Maintainence", callback_data="maintenance_toggle")
+        ]]
+    reply_markup = InlineKeyboardMarkup(button)
+    await message.reply_text(
+        text="**Admin Panel**",
+        reply_markup=reply_markup,
+        disable_web_page_preview=True
+    )
