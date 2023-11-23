@@ -118,7 +118,7 @@ async def start(client, message):
 
         truncated_messages = []
         for msg in top_messages:
-            files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
+            files, _, _ = await get_search_results(msg.lower(), offset=0, filter=True)
             if files:
                 if len(msg) > 30:
                     truncated_messages.append(msg[:30 - 3] + "...")
@@ -287,6 +287,21 @@ async def start(client, message):
         else:
             await message.reply_text("You already Invited or Joined")
         return
+    
+    elif data.startswith("#User"):
+        _, _, userid, file_id = data.split('_', 3)
+        files_ = await get_file_details(file_id)
+        if not files_:
+            return await message.reply('No such file exists.')
+        if userid != str(message.from_user.id):
+            return await message.reply("You can't access someone else's files, request your own files.")
+        files = files_[0]
+        caption = f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>"
+        await Client.send_cached_media(
+            chat_id=message.from_user.id,
+            file_id=file_id,
+            caption=caption
+        )
 
     files_ = await get_file_details(file_id)           
     if not files_:
@@ -316,12 +331,6 @@ async def start(client, message):
     title = files.file_name
     size=get_size(files.file_size)
     f_caption=files.caption
-    if CUSTOM_FILE_CAPTION:
-        try:
-            f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
-        except Exception as e:
-            logger.exception(e)
-            f_caption=f_caption
     if f_caption is None:
         f_caption = f"{files.file_name}"
 
@@ -356,6 +365,7 @@ async def start(client, message):
     await asyncio.sleep(waitime or 600)
     await media_id.delete()
     await del_msg.edit("__⊘ This message was deleted__")
+
                     
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
 async def channel_info(bot, message):
