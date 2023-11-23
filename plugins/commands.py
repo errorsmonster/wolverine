@@ -164,7 +164,7 @@ async def start(client, message):
         
         files = files_[0]
         caption = f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>"
-        await Client.send_cached_media(
+        await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
             caption=caption
