@@ -38,11 +38,12 @@ class Database:
 
 
 
-    def create_configuration_data(self, maintenance_mode=False, auto_accept=False, one_link=False):
+    def create_configuration_data(self, maintenance_mode=False, auto_accept=False, one_link=False, slow_mode=False):
         return {
             'maintenance_mode': maintenance_mode,
             'auto_accept': auto_accept,
-            'one_link': one_link
+            'one_link': one_link,
+            'slow_mode': slow_mode
         }
 
     async def update_configuration(self, key, value):

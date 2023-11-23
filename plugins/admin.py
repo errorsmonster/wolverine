@@ -3,7 +3,7 @@ from database.users_chats_db import db
 from info import ADMINS
 import asyncio
 from Script import script
-from info import LOG_CHANNEL, AUTH_GROUPS, APPROVE, BIN_CHANNEL, URL
+from info import LOG_CHANNEL, AUTH_GROUPS, BIN_CHANNEL, URL
 from utils import temp
 import re
 from datetime import datetime, timedelta
@@ -385,6 +385,7 @@ async def latests(_, message):
 async def autoapprove(client: Client, message: ChatJoinRequest):
     chat=message.chat
     user=message.from_user
+    APPROVE = await mdb.get_configuration_value("auto_accept")
     try:
         if APPROVE == True:
             await client.approve_chat_join_request(chat.id, user.id)
