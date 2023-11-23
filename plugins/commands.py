@@ -287,8 +287,9 @@ async def start(client, message):
         await del_msg.edit("__⊘ This message was deleted__")
     except Exception as e:
         await message.reply(f"Something went wrong:\n{e}\n\nPlease report this issue by replying @admin")
+        logger.error(e)
 
-                    
+        
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
 async def channel_info(bot, message):
            
