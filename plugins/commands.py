@@ -13,7 +13,6 @@ from utils import get_settings, get_size, is_subscribed, temp, replace_blacklist
 from database.connections_mdb import active_connection
 from database.ia_filterdb import get_search_results
 import re
-import json
 import base64
 logger = logging.getLogger(__name__)
 
@@ -72,6 +71,7 @@ async def start(client, message):
         )
         return
     data = message.command[1]
+    print(f"Data: {data}")
     if not data.split("-", 1)[0] == "ReferID" and FORCESUB_CHANNEL and not await is_subscribed(client, message):
         try:
             invite_link = await client.create_chat_invite_link(int(FORCESUB_CHANNEL), creates_join_request=True)
@@ -230,71 +230,74 @@ async def start(client, message):
             await message.reply_text("You already Invited or Joined")
         return
         
-
-    files_ = await get_file_details(file_id)           
-    if not files_:
-        pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("utf-16")).split("_", 1)
+    try:
+        data = message.command[1].strip()
         try:
-            msg = await client.send_cached_media(
-                chat_id=message.from_user.id,
-                file_id=file_id,
-                protect_content=True if pre == 'filep' else False,
-                )
-            filetype = msg.media
-            file = getattr(msg, filetype)
-            title = file.file_name
-            size=get_size(file.file_size)
-            f_caption = f"<code>{title}</code>"
-            if CUSTOM_FILE_CAPTION:
-                try:
-                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
-                except:
-                    return
-            await msg.edit_caption(f_caption)
-            return
+            pre, file_id = data.split('_', 1)
         except:
-            pass
-        return await message.reply('No such file exist.')
-    files = files_[0]
-    title = files.file_name
-    size=get_size(files.file_size)
-    f_caption=files.caption
-    if f_caption is None:
-        f_caption = f"{files.file_name}"
+            file_id = data
+            pre = ""
 
-    premium_status = await db.is_premium_status(message.from_user.id)
-    button = [[
-        InlineKeyboardButton("Support", url=f"https://t.me/iPrimehub"),
-        InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
-        ]]
-    if premium_status is True:
-        button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
+        files_ = await get_file_details(file_id)   
+        if not files_:
+            file_id = None
+            try:
+                pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("utf-16")).split("_", 1)
+                msg = await client.send_cached_media(
+                    chat_id=message.from_user.id,
+                    file_id=file_id,
+                )
+                filetype = msg.media
+                file = getattr(msg, filetype)
+                title = file.file_name
+                f_caption = f"<code>{title}</code>"
+                await msg.edit_caption(f_caption)
+                return
+            except Exception as e:
+                await message.reply(f'Error processing file: {e}')
+            return await message.reply('No such file exist.')
 
-    media_id = await client.send_cached_media(
-        chat_id=message.from_user.id,
-        file_id=file_id,
-        protect_content=True if pre == 'filep' else False,
-        caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
-        reply_markup=InlineKeyboardMarkup(button)
-        )
+        files = files_[0]
+        title = files.file_name
+        f_caption=files.caption
+        if f_caption is None:
+            f_caption = f"{files.file_name}"
+
+        premium_status = await db.is_premium_status(message.from_user.id)
+        button = [[
+            InlineKeyboardButton("Support", url=f"https://t.me/iPrimehub"),
+            InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
+            ]]
+        if premium_status is True:
+            button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
+
+        media_id = await client.send_cached_media(
+            chat_id=message.from_user.id,
+            file_id=file_id,
+            protect_content=True if pre == 'filep' else False,
+            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            reply_markup=InlineKeyboardMarkup(button)
+            )
     
-    # for counting each files for user
-    files_counts = await db.get_files_count(message.from_user.id)
-    lifetime_files = await db.get_lifetime_files(message.from_user.id)
-    await db.update_files_count(message.from_user.id, files_counts + 1)
-    await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
-    print(f"File sent {files_counts + 1} to {message.from_user.first_name} - {message.from_user.id}")
+        # for counting each files for user
+        files_counts = await db.get_files_count(message.from_user.id)
+        lifetime_files = await db.get_lifetime_files(message.from_user.id)
+        await db.update_files_count(message.from_user.id, files_counts + 1)
+        await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
 
-    del_msg = await client.send_message(
-        text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",
-        chat_id=message.from_user.id,
-        reply_to_message_id=media_id.id)
+        del_msg = await client.send_message(
+            text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",
+            chat_id=message.from_user.id,
+            reply_to_message_id=media_id.id)
     
-    await asyncio.sleep(waitime or 600)
-    await media_id.delete()
-    await del_msg.edit("__⊘ This message was deleted__")
+        await asyncio.sleep(waitime or 600)
+        await media_id.delete()
+        await del_msg.edit("__⊘ This message was deleted__")
+    except Exception as e:
+        await message.reply(f"Something went wrong:\n{e}\n\nPlease report this issue by replying @admin")
+        logger.error(e)
 
-                    
+        
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
 async def channel_info(bot, message):
            
