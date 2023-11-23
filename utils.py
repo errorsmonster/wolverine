@@ -448,10 +448,10 @@ async def fetch_quote_content():
                 print(f"Error: Unable to fetch quote. Status code: {response.status}")
                 return None
 
-async def encode_to_base64(text):
+def encode_to_base64(text):
     encoded_data = base64.b64encode(text.encode('utf-8')).decode('utf-8')
     return encoded_data
 
-async def decode_from_base64(text):
+def decode_from_base64(text):
     decoded_data = base64.b64decode(text.encode('utf-8'))
     return decoded_data
