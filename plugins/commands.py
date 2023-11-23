@@ -153,9 +153,7 @@ async def start(client, message):
     if data.startswith("User-"):
         _, rest_of_data = data.split('-', 1)
         userid, file_id = rest_of_data.split('_', 1)
-        print(f"Split data: {rest_of_data}")
         files_ = await get_file_details(file_id)
-        print(f"File_id: {file_id}")
 
         if not files_:
             return await message.reply(f"<b>No such file exists.</b>")
