@@ -1,4 +1,3 @@
-import asyncio
 import re
 from urllib.parse import quote
 from Script import script
@@ -10,7 +9,11 @@ from database.top_msg import mdb
 from utils import get_size, temp, replace_blacklist
 from plugins.shortner import get_shortlink
 from database.ia_filterdb import Media, get_file_details, get_search_results
+import base64
 import logging
+import aiohttp
+
+ACCESS_KEY = "PZUNTLGIZFE67MR0I0H0"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -20,6 +23,7 @@ SPELL_CHECK = {}
 blacklist = script.BLACKLIST
 slow_mode = SLOW_MODE_DELAY
 waitime = WAIT_TIME
+maintenance_mode = False
 
 @Client.on_callback_query()
 async def callbacks_handlers(client: Client, query: CallbackQuery):
@@ -188,8 +192,67 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
                     ]]
             ))
         except Exception as e:
-            await query.answer(f"Error:\n{e}", show_alert=True)        
+            await query.answer(f"Error:\n{e}", show_alert=True)     
 
+    # generate redeem code
+    elif query.data.startswith("redeem"):
+        buttons = [[
+            InlineKeyboardButton("1 Month", callback_data="Reedem#1")
+            ],[
+            InlineKeyboardButton("3 Months", callback_data="Reedem#3")
+            ],[
+            InlineKeyboardButton("6 Months", callback_data="Reedem#6")
+            ]]
+        await query.message.edit(
+            f"<b>Choose the duration</b>",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
+    elif query.data.startswith("Reedem#"):
+        duration = query.data.split("#")[1:]
+        buttons = [[
+            InlineKeyboardButton("1 Redeem Code", callback_data=f"license#{duration}#1")
+            ],[
+            InlineKeyboardButton("5 Redeem Codes", callback_data=f"license#{duration}#5")
+            ],[
+            InlineKeyboardButton("10 Redeem Codes", callback_data=f"license#{duration}#10")
+            ]]  
+        await query.message.edit(f"<b>How many redeem codes you want?</b>", 
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )    
+    elif query.data.startswith("license#"):
+        duration, count = query.data.split("#")[1:]
+        encoded_duration = base64.b64encode(str(duration).zfill(3).encode()).decode('utf-8').rstrip('=')
+
+        codes_generated = []
+        for _ in range(count):
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=generate&days=90") as resp:
+                    if resp.status == 200:
+                        json_response = await resp.json()
+                        license_code = f"{json_response.get('license_code')[:10]}{encoded_duration}{json_response.get('license_code')[10:]}"
+                        codes_generated.append(license_code)
+                    else:
+                        await query.answer(f"Error generating license code.{resp.status}", show_alert=True)
+                        return
+                
+        codes_str = "\n".join(f"`{code}`" for code in codes_generated)
+        await query.message.edit(f"<b>Redeem codes:</b>\n\n{codes_str}")
+
+
+     #maintainance
+    elif query.data == "maintenance_toggle":
+        global maintenance_mode
+        maintenance_mode = not maintenance_mode
+        status_text = "Maintenance mode is now ON." if maintenance_mode else "Maintenance mode is now OFF."
+        keyboard = InlineKeyboardMarkup([
+            InlineKeyboardButton("Toggle Maintenance Mode", callback_data="maintenance_toggle")
+            ],[
+            InlineKeyboardButton("⛔️ Close", callback_data="close_data")
+            ])
+        query.answer(status_text)
+        query.edit_message_text(status_text, reply_markup=keyboard)
 
 # callback autofilter
 async def callback_auto_filter(msg, spoll=False):

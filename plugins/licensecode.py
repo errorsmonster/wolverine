@@ -11,7 +11,7 @@ from datetime import datetime
 ACCESS_KEY = "PZUNTLGIZFE67MR0I0H0"
 
 @Client.on_message(filters.command("license") & filters.user(ADMINS))
-async def generate(client, message):
+async def redeem_generate(client, message):
     num_codes = 1  # default value
     duration = 28  # default duration
 

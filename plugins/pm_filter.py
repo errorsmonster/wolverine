@@ -18,6 +18,7 @@ from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_
 from plugins.shortner import get_shortlink
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
+from plugins.callback import maintenance_mode
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import (
     del_all,
@@ -82,7 +83,7 @@ async def filters_private_handlers(client, message):
         await mdb.delete_all_messages()
         return 
     
-    if MAINTAINENCE_MODE == True:
+    if maintenance_mode == True:
         await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later, or Try This Bot Instead <a href=https://t.me/flimrobot>R O S I E</a></b>", disable_web_page_preview=True)
         return
  
