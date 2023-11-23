@@ -269,8 +269,17 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
         else:
             await mdb.update_configuration("one_link", True)
             await query.message.edit(f"<b>One link One file enabled.</b>", reply_markup=None)
+
+    elif query.data == "autoapprove":
+        config = await mdb.get_configuration("auto_accept")
+        if config == True:
+            await mdb.update_configuration("auto_accept", False)
+            await query.message.edit(f"<b>Auto approve disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("auto_accept", True)
+            await query.message.edit(f"<b>Auto approve enabled.</b>", reply_markup=None)
+                
                                
-        
 # callback autofilter
 async def callback_auto_filter(msg, spoll=False):
     search=msg

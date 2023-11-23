@@ -497,7 +497,10 @@ async def admin_controll(client, message):
         ],[
         InlineKeyboardButton("Maintainence", callback_data="maintenance"),
         InlineKeyboardButton("One Link", callback_data="1link1file"),
+        ],[
+        InlineKeyboardButton("Auto Approve", callback_data="autoapprove"),
         ]]
+
     reply_markup = InlineKeyboardMarkup(button)
     await message.reply_text(
         text="**Admin Panel**",
