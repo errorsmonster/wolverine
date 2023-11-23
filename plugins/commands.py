@@ -9,7 +9,7 @@ from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from database.top_msg import mdb 
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, FORCESUB_CHANNEL, WAIT_TIME
-from utils import get_settings, get_size, is_subscribed, temp, replace_blacklist
+from utils import get_settings, get_size, is_subscribed, temp, replace_blacklist, encode_to_base64, decode_from_base64
 from database.connections_mdb import active_connection
 from database.ia_filterdb import get_search_results
 import re
@@ -150,15 +150,20 @@ async def start(client, message):
     
 
     data = message.command[1].strip()
-    if data.startswith("User-"):
-        _, rest_of_data = data.split('-', 1)
-        userid, file_id = rest_of_data.split('_', 1)
+    if data.startswith("Primehub-"):
+        data_to_decode = data[len("Primehub-"):]  # Remove "Primehub-" prefix
+        decoded_data = await decode_from_base64(data_to_decode)
+        print(decoded_data)
+    
+        # Extract user_id and file_id
+        user_id, file_id = decoded_data.split('_', 1)
+        print("User ID:", user_id, "\nFile ID:", file_id)
         files_ = await get_file_details(file_id)
 
         if not files_:
             return await message.reply(f"<b>No such file exists.</b>")
 
-        if userid != str(message.from_user.id):
+        if user_id != str(message.from_user.id):
             return await message.reply(f"<b>You can't access someone else's request, request your own.</b>")
         
         files = files_[0]

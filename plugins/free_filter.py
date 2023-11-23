@@ -8,7 +8,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from database.users_chats_db import db
 from pyrogram.errors import MessageNotModified
-from utils import get_size, replace_blacklist, temp
+from utils import get_size, replace_blacklist, temp, encode_to_base64, decode_from_base64
 from database.ia_filterdb import get_search_results
 from plugins.shortner import linkgen
 

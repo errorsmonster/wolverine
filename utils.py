@@ -13,6 +13,7 @@ from database.users_chats_db import db
 from bs4 import BeautifulSoup
 import aiohttp
 from urllib.parse import quote_plus
+import base64
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -446,3 +447,11 @@ async def fetch_quote_content():
             else:
                 print(f"Error: Unable to fetch quote. Status code: {response.status}")
                 return None
+
+async def encode_to_base64(text):
+    encoded_data = base64.b64encode(text.encode('utf-8')).decode('utf-8')
+    return encoded_data
+
+async def decode_from_base64(text):
+    decoded_data = base64.b64decode(text.encode('utf-8'))
+    return decoded_data
