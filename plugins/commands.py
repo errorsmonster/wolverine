@@ -231,24 +231,24 @@ async def start(client, message):
         return
         
     try:
-        files_ = await get_file_details(file_id)           
+        files_ = await get_file_details(file_id)   
         if not files_:
-            pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("utf-16")).split("_", 1)
             try:
+                pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("utf-16")).split("_", 1)
                 msg = await client.send_cached_media(
                     chat_id=message.from_user.id,
                     file_id=file_id,
-                    protect_content=True if pre == 'filep' else False,
-                    )
+                )
                 filetype = msg.media
                 file = getattr(msg, filetype)
                 title = file.file_name
                 f_caption = f"<code>{title}</code>"
                 await msg.edit_caption(f_caption)
                 return
-            except:
-                pass
+            except Exception as e:
+                await message.reply(f'Error processing file: {e}')
             return await message.reply('No such file exist.')
+
         files = files_[0]
         title = files.file_name
         f_caption=files.caption
