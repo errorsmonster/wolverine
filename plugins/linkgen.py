@@ -20,4 +20,4 @@ async def genetare_file_link(client, message):
         media_id = media.file_id
         link = f"{user_id}_{media_id}"
         encod = await encode_to_base64(link)
-        await message.reply_text(f"<b>Here Is Your Link</b>\n\nhttps://telegram.me/{temp.U_NAME}?start=encrypt-{encod}\n(You Can Only Access This)", disable_web_page_preview=True)
+        await message.reply_text(f"<b>Here Is Your Link</b>\n\nhttps://telegram.me/{temp.U_NAME}?start=encrypt-{encod}\n\n(You Can Only Access This)", disable_web_page_preview=True)
