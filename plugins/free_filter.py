@@ -8,7 +8,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from database.users_chats_db import db
 from pyrogram.errors import MessageNotModified
-from utils import get_size, replace_blacklist, temp
+from utils import get_size, replace_blacklist, temp, encode_to_base64, decode_from_base64
 from database.ia_filterdb import get_search_results
 from plugins.shortner import linkgen
 
@@ -43,7 +43,7 @@ async def free_next_page(bot, query):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await linkgen(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+        shortlink = await linkgen(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_idid}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -109,7 +109,7 @@ async def free_filter(client, msg, spoll=False):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await linkgen(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+        shortlink = await linkgen(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
