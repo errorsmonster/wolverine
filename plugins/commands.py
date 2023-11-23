@@ -152,9 +152,10 @@ async def start(client, message):
     data = message.command[1].strip()
     if data.startswith("user-"):
         _, rest_of_data = data.split('-', 1)
-        deta = decode_from_base64(rest_of_data)
-        print(deta)
-        userid, file_id = deta.split('_', 1)
+        decoded_data = decode_from_base64(rest_of_data)
+        decoded_string = decoded_data.decode('utf-8')  # Convert bytes to string
+
+        userid, file_id = decoded_string.split('_', 1)
         print(userid, file_id)
         files_ = await get_file_details(file_id)
 
