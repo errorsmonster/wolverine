@@ -57,6 +57,9 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
+    elif query.data == "close_data":
+        await query.message.delete()
+            
     # Function to delete unwanted files
     elif query.data == "delback":
         keyboard_buttons = [
