@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from utils import encode_to_base64, temp
 
 
-@Client.on_message(filters.command("linkgen") & ~filters.edited)
+@Client.on_message(filters.command("linkgen"))
 async def genetare_file_link(client, message):
     msg = message.reply_to_message
 
