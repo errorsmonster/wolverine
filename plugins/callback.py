@@ -5,7 +5,7 @@ from info import ADMINS, BIN_CHANNEL, URL, SLOW_MODE_DELAY, WAIT_TIME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
-from database.top_msg import mdb
+from database.config_panel import mdb
 from utils import get_size, temp, replace_blacklist
 from plugins.shortner import get_shortlink
 from database.ia_filterdb import Media, get_file_details, get_search_results
