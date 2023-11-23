@@ -59,4 +59,4 @@ class Database:
 
 
 
-mdb = Database(DB_URI, "config")
+mdb = Database(DB_URI, "admin_database")
