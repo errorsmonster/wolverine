@@ -150,28 +150,25 @@ async def start(client, message):
 
     data = message.command[1].strip()
     if data.startswith("User-"):
-        split_data = data.rsplit('_', 2)
-        print(f"Split data: {split_data}")
-        # Check if the split result has enough parts
-        if len(split_data) == 3:
-            _, userid, file_id = split_data
-            files_ = await get_file_details(file_id)
+        _, rest_of_data = data.split('-', 1)
+        userid, file_id = rest_of_data.split('_', 1)
+        print(f"Split data: {rest_of_data}")
+        files_ = await get_file_details(file_id)
+        print(f"File_id: {file_id}")
 
-            if not files_:
-                return await message.reply('No such file exists.')
+        if not files_:
+            return await message.reply('No such file exists.')
 
-            if userid != str(message.from_user.id):
-                return await message.reply("You can't access someone else's files, request your own files.")
-            files = files_[0]
-            caption = f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>"
-            await Client.send_cached_media(
-                chat_id=message.from_user.id,
-                file_id=file_id,
-                caption=caption
+        if userid != str(message.from_user.id):
+            return await message.reply("You can't access someone else's files, request your own files.")
+        
+        files = files_[0]
+        caption = f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>"
+        await Client.send_cached_media(
+            chat_id=message.from_user.id,
+            file_id=file_id,
+            caption=caption
             )
-        else:
-            print(f"Invalid link format: {data}")
-            return await message.reply('Invalid link format.')   
         return
     
     data = message.command[1]
