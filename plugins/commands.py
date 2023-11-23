@@ -152,6 +152,7 @@ async def start(client, message):
     data = message.command[1].strip()
     if data.startswith("encrypt-"):
         _, rest_of_data = data.split('-', 1)
+        
         decoded_data = decode_from_base64(rest_of_data)
         decoded_string = decoded_data.decode('utf-8')  # Convert bytes to string
 
