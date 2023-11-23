@@ -244,17 +244,33 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
 
      #maintainance
     elif query.data == "maintenance":
-        global maintenance_mode
-        maintenance_mode = not maintenance_mode
-        status_text = "Maintenance mode is now ON." if maintenance_mode else "Maintenance mode is now OFF."
-        keyboard = InlineKeyboardMarkup([
-            InlineKeyboardButton("Toggle Maintenance Mode", callback_data="maintenance_toggle")
+        buttons = [[
+            InlineKeyboardButton("🟢 Enable", callback_data="enable_maintenance")
             ],[
-            InlineKeyboardButton("⛔️ Close", callback_data="close_data")
-            ])
-        query.answer(status_text)
-        query.edit_message_text(status_text, reply_markup=keyboard)
+            InlineKeyboardButton("🔴 Disable", callback_data="disable_maintenance")
+            ]]
+        await query.message.edit(f"<b>Choose the option</b>",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
 
+    elif query.data == "enable_maintenance":
+        await mdb.update_configuration("maintenance", True)
+        await query.message.edit(f"<b>Maintenance mode enabled.</b>", reply_markup=None)
+    elif query.data == "disable_maintenance":
+        await mdb.update_configuration("maintenance", False)
+        await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
+
+    elif query.data == "1link1file":
+        config = await mdb.get_configuration("one_link")
+        if config:
+            await mdb.update_configuration("one_link", False)
+            await query.message.edit(f"<b>One link One file disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("one_link", True)
+            await query.message.edit(f"<b>One link One file enabled.</b>", reply_markup=None)
+                               
+        
 # callback autofilter
 async def callback_auto_filter(msg, spoll=False):
     search=msg
