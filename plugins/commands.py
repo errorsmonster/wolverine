@@ -147,6 +147,7 @@ async def start(client, message):
                      disable_web_page_preview=True
         )
         return
+    
 
     data = message.command[1].strip()
     if data.startswith("User-"):
@@ -195,7 +196,6 @@ async def start(client, message):
         await del_msg.edit("__⊘ This message was deleted__")
 
 
-    
     data = message.command[1]
     try:
         pre, file_id = data.split('_', 1)
