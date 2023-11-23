@@ -492,7 +492,7 @@ async def send_message_to_user(client, message):
 @Client.on_message(filters.command("admin") & filters.private & filters.user(ADMINS))
 async def admin_controll(client, message):
     button = [[
-        InlineKeyboardButton("DeleteFiles", callback_data="extralol"),
+        InlineKeyboardButton("DeleteFiles", callback_data="delback"),
         InlineKeyboardButton("Redeem Code", callback_data="redeem"),
         ],[
         InlineKeyboardButton("Maintainence", callback_data="maintenance_toggle")
