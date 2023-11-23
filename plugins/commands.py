@@ -153,6 +153,7 @@ async def start(client, message):
     if data.startswith("PrimeHub-"):
         _, rest_of_data = data.split('-', 1)
         deta = await decode_from_base64(rest_of_data)
+        print(deta)
         userid, file_id = deta.split('_', 1)
         files_ = await get_file_details(file_id)
 
