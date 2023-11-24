@@ -55,7 +55,7 @@ class Database:
 
     async def get_configuration_value(self, key):
         configuration = await self.config_col.find_one({})
-        return configuration.get(key, False) if configuration is not None else False
+        return configuration.get(key, False)
 
 
 
