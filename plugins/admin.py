@@ -1,9 +1,8 @@
 from pyrogram import Client, filters
 from database.users_chats_db import db
-from info import ADMINS
 import asyncio
 from Script import script
-from info import LOG_CHANNEL, AUTH_GROUPS, BIN_CHANNEL, URL
+from info import LOG_CHANNEL, AUTH_GROUPS, BIN_CHANNEL, URL, ADMINS
 from utils import temp
 import re
 from datetime import datetime, timedelta
