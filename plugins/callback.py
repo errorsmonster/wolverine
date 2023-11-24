@@ -247,11 +247,11 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
         config = await mdb.get_configuration_value("maintenance")
         print(f"Maintainance Mode: {config}")
         if config is True:
-            await mdb.update_configuration("maintenance", True)
-            await query.message.edit(f"<b>Maintenance mode enabled.</b>", reply_markup=None)
-        else:
             await mdb.update_configuration("maintenance", False)
             await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("maintenance", True)
+            await query.message.edit(f"<b>Maintenance mode enabled.</b>", reply_markup=None)
 
     elif query.data == "1link1file":
         config = await mdb.get_configuration_value("one_link")
