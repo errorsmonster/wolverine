@@ -263,6 +263,7 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
 
     elif query.data == "1link1file":
         config = await mdb.get_configuration_value("one_link")
+        print(f"{config}")
         if config is True:
             await mdb.update_configuration("one_link", False)
             await query.message.edit(f"<b>One link One file disabled.</b>", reply_markup=None)
