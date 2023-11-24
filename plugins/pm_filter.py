@@ -8,11 +8,11 @@ from urllib.parse import quote
 from Script import script
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
-from info import ADMINS, BIN_CHANNEL, URL, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ONE_LINK_ONE_FILE, ACCESS_GROUPS, WAIT_TIME, MAINTAINENCE_MODE, PROFANITY_FILTER
+from info import ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, SLOW_MODE_DELAY, FORCESUB_CHANNEL, ACCESS_GROUPS, WAIT_TIME, BIN_CHANNEL, URL, ACCESS_KEY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
-from database.top_msg import mdb
+from database.config_panel import mdb
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings, replace_blacklist, fetch_quote_content
 from plugins.shortner import get_shortlink
@@ -25,6 +25,18 @@ from database.filters_mdb import (
     get_filters,
 )
 import logging
+import base64
+import aiohttp
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
+
+BUTTONS = {}
+SPELL_CHECK = {}
+blacklist = script.BLACKLIST
+slow_mode = SLOW_MODE_DELAY
+waitime = WAIT_TIME
+maintenance_mode = False
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -64,7 +76,11 @@ async def filters_private_handlers(client, message):
     next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
     time_difference = round(time_difference)
- 
+
+    maintenance_mode = await mdb.get_configuration_value("maintenance_mode")
+    one_file_one_link = await mdb.get_configuration_value("one_link")
+    private_filter = await mdb.get_configuration_value("private_filter")
+
     # Todays Date
     today = datetime.now().strftime("%Y-%m-%d")
 
@@ -82,8 +98,11 @@ async def filters_private_handlers(client, message):
         await mdb.delete_all_messages()
         return 
     
-    if MAINTAINENCE_MODE == True:
-        await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later, or Try This Bot Instead <a href=https://t.me/flimrobot>R O S I E</a></b>", disable_web_page_preview=True)
+    if maintenance_mode is True:
+        await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later</b>", disable_web_page_preview=True)
+        return
+    
+    if private_filter is not None and private_filter is False:
         return
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
@@ -149,7 +168,7 @@ async def filters_private_handlers(client, message):
         
             auto, keyboard = await auto_filter(client, message)
             free, button = await free_filter(client, message)
-            if ONE_LINK_ONE_FILE:
+            if one_file_one_link is not None and one_file_one_link is True:
                 if files_counts is not None and files_counts >= 1:
                     m = await msg.edit(text=free, reply_markup=button, disable_web_page_preview=True)
                 else:
@@ -158,7 +177,6 @@ async def filters_private_handlers(client, message):
                 m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
  
     except Exception as e:
-        print(e)
         await msg.edit(f"<b>Opps! Something Went Wrong.</b>")
 
     finally:
@@ -306,24 +324,6 @@ async def advantage_spoll_choker(bot, query):
             k = await query.message.edit('This Movie Not Found In DataBase')
             await asyncio.sleep(10)
             await k.delete()
-
-async def delete_files(query, limit, file_type):
-    k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
-    files, _, _ = await get_search_results(file_type.lower(), max_results=limit, offset=0)
-    deleted = 0
-
-    for file in files:
-        file_ids = file.file_id
-        result = await Media.collection.delete_one({'_id': file_ids})
-
-        if result.deleted_count:
-            logger.info(f'{file_type.capitalize()} File Found! Successfully deleted from database.')
-
-        deleted += 1
-
-    deleted = str(deleted)
-    await k.edit_text(text=f"<b>Successfully deleted {deleted} {file_type.upper()} files.</b>")
-
     
 
 @Client.on_callback_query()
@@ -693,39 +693,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
-                
-    elif query.data.startswith("setgs"):
-        ident, set_type, status, grp_id = query.data.split("#")
-        grpid = await active_connection(str(query.from_user.id))
-
-        if str(grp_id) != str(grpid):
-            await query.message.edit("Your Active Connection Has Been Changed. Go To /settings.")
-            return await query.answer('Share & Support Us♥️')
-
-        if status == "True":
-            await save_group_settings(grpid, set_type, False)
-        else:
-            await save_group_settings(grpid, set_type, True)
-
-        settings = await get_settings(grpid)
-
-        if settings is not None:
-            buttons = [
-                [
-                    InlineKeyboardButton('File Secure',
-                                         callback_data=f'setgs#file_secure#{settings["file_secure"]}#{str(grp_id)}'),
-                    InlineKeyboardButton('✅ Yes' if settings["file_secure"] else '❌ No',
-                                         callback_data=f'setgs#file_secure#{settings["file_secure"]}#{str(grp_id)}')
-                ],
-                [
-                    InlineKeyboardButton('Spell Check',
-                                         callback_data=f'setgs#spell_check#{settings["spell_check"]}#{str(grp_id)}'),
-                    InlineKeyboardButton('✅ Yes' if settings["spell_check"] else '❌ No',
-                                         callback_data=f'setgs#spell_check#{settings["spell_check"]}#{str(grp_id)}')
-                ]
-            ]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            await query.message.edit_reply_markup(reply_markup)
 
     # Function to delete unwanted files
     elif query.data == "delback":
@@ -842,24 +809,149 @@ async def cb_handler(client: Client, query: CallbackQuery):
  
     # get download button
     elif query.data.startswith("download#"):
-        file_id = query.data.split("#")[1]
-        msg = await client.send_cached_media(
-            chat_id=BIN_CHANNEL,
-            file_id=file_id)
-        await client.send_message(
-            text=f"<b>Requested By</b>:\n{query.from_user.mention} <code>{query.from_user.id}</code>\n<b>Link:</b>\n{URL}/watch/{msg.id}",
-            chat_id=BIN_CHANNEL,
-            disable_web_page_preview=True)
-        online = f"{URL}/watch/{msg.id}"
-        download = f"{URL}/download/{msg.id}"
-        await query.edit_message_reply_markup(
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Watch", url=online),
-                InlineKeyboardButton("Download", url=download)
-                ],[
-                InlineKeyboardButton("Close", callback_data='close_data')
-                ]]
-        ))
+        try:
+            file_id = query.data.split("#")[1]
+            msg = await client.send_cached_media(
+                chat_id=BIN_CHANNEL,
+                file_id=file_id)
+            await client.send_message(
+                text=f"<b>Requested By</b>:\n{query.from_user.mention} <code>{query.from_user.id}</code>\n<b>Link:</b>\n{URL}/watch/{msg.id}",
+                chat_id=BIN_CHANNEL,
+                disable_web_page_preview=True)
+            online = f"{URL}/watch/{msg.id}"
+            download = f"{URL}/download/{msg.id}"
+            await query.edit_message_reply_markup(
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("Watch", url=online),
+                    InlineKeyboardButton("Download", url=download)
+                    ],[
+                    InlineKeyboardButton("Close", callback_data='close_data')
+                    ]]
+            ))
+        except Exception as e:
+            await query.answer(f"Error:\n{e}", show_alert=True)     
+
+    # generate redeem code
+    elif query.data.startswith("redeem"):
+        buttons = [[
+            InlineKeyboardButton("1 Month", callback_data="Reedem#1")
+            ],[
+            InlineKeyboardButton("3 Months", callback_data="Reedem#3")
+            ],[
+            InlineKeyboardButton("6 Months", callback_data="Reedem#6")
+            ]]
+        await query.message.edit(
+            f"<b>Choose the duration</b>",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
+    elif query.data.startswith("Reedem#"):
+        duration = query.data.split("#")[1:]
+        buttons = [[
+            InlineKeyboardButton("1 Redeem Code", callback_data=f"license#{duration}#1")
+            ],[
+            InlineKeyboardButton("5 Redeem Codes", callback_data=f"license#{duration}#5")
+            ],[
+            InlineKeyboardButton("10 Redeem Codes", callback_data=f"license#{duration}#10")
+            ]]  
+        await query.message.edit(f"<b>How many redeem codes you want?</b>", 
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )    
+    elif query.data.startswith("license#"):
+        duration, count = query.data.split("#")[1:]
+        encoded_duration = base64.b64encode(str(duration).zfill(3).encode()).decode('utf-8').rstrip('=')
+
+        codes_generated = []
+        for _ in range(int(count)):
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"https://licensegen.onrender.com/?access_key={ACCESS_KEY}&action=generate&days=90") as resp:
+                    if resp.status == 200:
+                        json_response = await resp.json()
+                        license_code = f"{json_response.get('license_code')[:10]}{encoded_duration}{json_response.get('license_code')[10:]}"
+                        codes_generated.append(license_code)
+                    else:
+                        await query.answer(f"Error generating license code.{resp.status}", show_alert=True)
+                        return
+                
+        codes_str = "\n".join(f"`{code}`" for code in codes_generated)
+        await query.message.edit(f"<b>Redeem codes:</b>\n\n{codes_str}")
+
+
+     #maintainance
+    elif query.data == "maintenance":
+        config = await mdb.get_configuration_value("maintenance_mode")
+        print(f"Maintainance Mode: {config}")
+        if config is True:
+            await mdb.update_configuration("maintenance_mode", False)
+            await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("maintenance_mode", True)
+            await query.message.edit(f"<b>Maintenance mode enabled.</b>", reply_markup=None)
+
+    elif query.data == "1link1file":
+        config = await mdb.get_configuration_value("one_link")
+        print(f"One Link: {config}")
+        if config is True:
+            await mdb.update_configuration("one_link", False)
+            await query.message.edit(f"<b>One link One file disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("one_link", True)
+            await query.message.edit(f"<b>One link One file enabled.</b>", reply_markup=None)
+
+    elif query.data == "autoapprove":
+        config = await mdb.get_configuration_value("auto_accept")
+        print(f"Auto Approve: {config}")
+        if config is True:
+            await mdb.update_configuration("auto_accept", False)
+            await query.message.edit(f"<b>Auto approve disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("auto_accept", True)
+            await query.message.edit(f"<b>Auto approve enabled.</b>", reply_markup=None)
+
+    elif query.data == "private_filter":
+        config = await mdb.get_configuration_value("private_filter")
+        print(f"Private Filter: {config}")
+        if config is True:
+            await mdb.update_configuration("private_filter", False)
+            await query.message.edit(f"<b>Private filter disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("private_filter", True)
+            await query.message.edit(f"<b>Private filter enabled.</b>", reply_markup=None)              
+
+                
+    elif query.data.startswith("setgs"):
+        ident, set_type, status, grp_id = query.data.split("#")
+        grpid = await active_connection(str(query.from_user.id))
+
+        if str(grp_id) != str(grpid):
+            await query.message.edit("Your Active Connection Has Been Changed. Go To /settings.")
+            return await query.answer('Share & Support Us♥️')
+
+        if status == "True":
+            await save_group_settings(grpid, set_type, False)
+        else:
+            await save_group_settings(grpid, set_type, True)
+
+        settings = await get_settings(grpid)
+
+        if settings is not None:
+            buttons = [
+                [
+                    InlineKeyboardButton('File Secure',
+                                         callback_data=f'setgs#file_secure#{settings["file_secure"]}#{str(grp_id)}'),
+                    InlineKeyboardButton('✅ Yes' if settings["file_secure"] else '❌ No',
+                                         callback_data=f'setgs#file_secure#{settings["file_secure"]}#{str(grp_id)}')
+                ],
+                [
+                    InlineKeyboardButton('Spell Check',
+                                         callback_data=f'setgs#spell_check#{settings["spell_check"]}#{str(grp_id)}'),
+                    InlineKeyboardButton('✅ Yes' if settings["spell_check"] else '❌ No',
+                                         callback_data=f'setgs#spell_check#{settings["spell_check"]}#{str(grp_id)}')
+                ]
+            ]
+            reply_markup = InlineKeyboardMarkup(buttons)
+            await query.message.edit_reply_markup(reply_markup)
 
     await query.answer('Share & Support Us♥️')
 
@@ -919,36 +1011,6 @@ async def auto_filter(client, msg, spoll=False):
     # add timestamp to database for floodwait
     await db.update_timestamps(message.from_user.id, int(time.time()))
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
-
-# callback autofilter
-async def callback_auto_filter(msg, spoll=False):
-    search=msg
-    files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
-    # Construct a text message with hyperlinks
-    search_results_text = []
-    for file in files:
-        shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
-        search_results_text.append(file_link)
-
-    search_results_text = "\n\n".join(search_results_text)
-    cap = f"Here is what i found for your query {search}"
-    return f"<b>{cap}\n\n{search_results_text}</b>"
-
-# callback autofilter
-async def callback_paid_filter(msg, spoll=False):
-    search=msg
-    files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
-    # Construct a text message with hyperlinks
-    search_results_text = []
-    for file in files:
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
-        search_results_text.append(file_link)
-
-    search_results_text = "\n\n".join(search_results_text)
-    cap = f"Here is what i found for your query {search}"
-    return f"<b>{cap}\n\n{search_results_text}</b>"
 
 
 async def advantage_spell_chok(msg):
@@ -1054,3 +1116,51 @@ async def manual_filters(client, message, text=False):
                 break
     else:
         return False
+
+# callback autofilter
+async def callback_auto_filter(msg, spoll=False):
+    search=msg
+    files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
+    # Construct a text message with hyperlinks
+    search_results_text = []
+    for file in files:
+        shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        search_results_text.append(file_link)
+
+    search_results_text = "\n\n".join(search_results_text)
+    cap = f"Here is what i found for your query {search}"
+    return f"<b>{cap}\n\n{search_results_text}</b>"
+
+# callback autofilter
+async def callback_paid_filter(msg, spoll=False):
+    search=msg
+    files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
+    # Construct a text message with hyperlinks
+    search_results_text = []
+    for file in files:
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        search_results_text.append(file_link)
+
+    search_results_text = "\n\n".join(search_results_text)
+    cap = f"Here is what i found for your query {search}"
+    return f"<b>{cap}\n\n{search_results_text}</b>" 
+
+
+async def delete_files(query, limit, file_type):
+    k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
+    files, _, _ = await get_search_results(file_type.lower(), max_results=limit, offset=0)
+    deleted = 0
+
+    for file in files:
+        file_ids = file.file_id
+        result = await Media.collection.delete_one({'_id': file_ids})
+
+        if result.deleted_count:
+            logger.info(f'{file_type.capitalize()} File Found! Successfully deleted from database.')
+
+        deleted += 1
+
+    deleted = str(deleted)
+    await k.edit_text(text=f"<b>Successfully deleted {deleted} {file_type.upper()} files.</b>")        

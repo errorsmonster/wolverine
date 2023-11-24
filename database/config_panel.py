@@ -6,6 +6,7 @@ class Database:
         self.client = AsyncIOMotorClient(uri)
         self.db = self.client[db_name]
         self.col = self.db.user
+        self.config_col = self.db.configuration
 
     async def update_top_messages(self, user_id, message_text):
         user = await self.col.find_one({"user_id": user_id, "messages.text": message_text})
@@ -35,4 +36,27 @@ class Database:
     async def delete_all_messages(self):
         await self.col.delete_many({})
 
-mdb = Database(DB_URI, "top_msg")
+
+
+    def create_configuration_data(self, maintenance_mode=False, auto_accept=True, one_link=True, private_filter=True):
+        return {
+            'maintenance_mode': maintenance_mode,
+            'auto_accept': auto_accept,
+            'one_link': one_link,
+            'private_filter': private_filter
+        }
+
+    async def update_configuration(self, key, value):
+        try:
+            await self.config_col.update_one({}, {'$set': {key: value}}, upsert=True)
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    async def get_configuration_value(self, key):
+        configuration = await self.config_col.find_one({})
+        return configuration.get(key, False)
+
+
+
+mdb = Database(DB_URI, "admin_database")
