@@ -279,6 +279,15 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
         else:
             await mdb.update_configuration("auto_accept", True)
             await query.message.edit(f"<b>Auto approve enabled.</b>", reply_markup=None)
+
+    elif query.data == "private_filter":
+        config = await mdb.get_configuration_value("private_filter")
+        if config is True:
+            await mdb.update_configuration("private_filter", False)
+            await query.message.edit(f"<b>Private filter disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("private_filter", True)
+            await query.message.edit(f"<b>Private filter enabled.</b>", reply_markup=None)            
                 
                                
 # callback autofilter

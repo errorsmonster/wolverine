@@ -500,6 +500,7 @@ async def admin_controll(client, message):
         InlineKeyboardButton("One Link", callback_data="1link1file"),
         ],[
         InlineKeyboardButton("Auto Approve", callback_data="autoapprove"),
+        InlineKeyboardButton("Private Filter", callback_data="private_filter"),
         ]]
 
     reply_markup = InlineKeyboardMarkup(button)
