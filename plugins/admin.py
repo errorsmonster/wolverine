@@ -1,16 +1,15 @@
 from pyrogram import Client, filters
 from database.users_chats_db import db
-from info import ADMINS
 import asyncio
 from Script import script
-from info import LOG_CHANNEL, AUTH_GROUPS, APPROVE, BIN_CHANNEL, URL
+from info import LOG_CHANNEL, AUTH_GROUPS, BIN_CHANNEL, URL, ADMINS
 from utils import temp
 import re
 from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
-from database.top_msg import mdb 
+from database.config_panel import mdb
 
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
@@ -385,8 +384,9 @@ async def latests(_, message):
 async def autoapprove(client: Client, message: ChatJoinRequest):
     chat=message.chat
     user=message.from_user
+    APPROVE = await mdb.get_configuration_value("auto_accept")
     try:
-        if APPROVE == True:
+        if APPROVE is not None and APPROVE is True:
             await client.approve_chat_join_request(chat.id, user.id)
             await client.send_message(chat_id=chat.id, text=TEXT.format(user.mention, chat.title))
     except Exception as e:
@@ -488,3 +488,23 @@ async def send_message_to_user(client, message):
         await message.reply(f"Error: {str(ve)}")
     except Exception as e:
         await message.reply(f"An unexpected error occurred: {str(e)}")
+
+@Client.on_message(filters.command("admin") & filters.private & filters.user(ADMINS))
+async def admin_controll(client, message):
+    button = [[
+        InlineKeyboardButton("DeleteFiles", callback_data="delback"),
+        InlineKeyboardButton("Redeem Code", callback_data="redeem"),
+        ],[
+        InlineKeyboardButton("Maintainence", callback_data="maintenance"),
+        InlineKeyboardButton("One Link", callback_data="1link1file"),
+        ],[
+        InlineKeyboardButton("Auto Approve", callback_data="autoapprove"),
+        InlineKeyboardButton("Private Filter", callback_data="private_filter"),
+        ]]
+
+    reply_markup = InlineKeyboardMarkup(button)
+    await message.reply_text(
+        text="**Admin Panel**",
+        reply_markup=reply_markup,
+        disable_web_page_preview=True
+    )
