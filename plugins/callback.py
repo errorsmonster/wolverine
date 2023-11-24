@@ -263,7 +263,7 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
 
     elif query.data == "1link1file":
         config = await mdb.get_configuration_value("one_link")
-        print(f"{config}")
+        print(f"One Link: {config}")
         if config is True:
             await mdb.update_configuration("one_link", False)
             await query.message.edit(f"<b>One link One file disabled.</b>", reply_markup=None)
@@ -273,6 +273,7 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
 
     elif query.data == "autoapprove":
         config = await mdb.get_configuration_value("auto_accept")
+        print(f"Auto Approve: {config}")
         if config is True:
             await mdb.update_configuration("auto_accept", False)
             await query.message.edit(f"<b>Auto approve disabled.</b>", reply_markup=None)
@@ -282,6 +283,7 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
 
     elif query.data == "private_filter":
         config = await mdb.get_configuration_value("private_filter")
+        print(f"Private Filter: {config}")
         if config is True:
             await mdb.update_configuration("private_filter", False)
             await query.message.edit(f"<b>Private filter disabled.</b>", reply_markup=None)
