@@ -98,8 +98,8 @@ async def filters_private_handlers(client, message):
         await mdb.delete_all_messages()
         return 
     
-    if maintainance is not None and maintainance is True:
-        return await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later", disable_web_page_preview=True)
+    if maintainance is True:
+        return await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later</b>", disable_web_page_preview=True)
     
     if private_filter is not None and private_filter is False:
         return
