@@ -65,8 +65,8 @@ async def filters_private_handlers(client, message):
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
     time_difference = round(time_difference)
 
-    MAINTAINENCE_MODE = await mdb.get_configuration_value("maintenance_mode")
-    ONE_LINK_ONE_FILE = await mdb.get_configuration_value("one_link")
+    maintainance = await mdb.get_configuration_value("maintenance_mode")
+    one_file_one_link = await mdb.get_configuration_value("one_link")
 
     # Todays Date
     today = datetime.now().strftime("%Y-%m-%d")
@@ -85,8 +85,8 @@ async def filters_private_handlers(client, message):
         await mdb.delete_all_messages()
         return 
     
-    if MAINTAINENCE_MODE == True:
-        await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later, or Try This Bot Instead <a href=https://t.me/flimrobot>R O S I E</a></b>", disable_web_page_preview=True)
+    if maintainance is not None and maintainance is True:
+        await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later", disable_web_page_preview=True)
         return
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
@@ -152,7 +152,7 @@ async def filters_private_handlers(client, message):
         
             auto, keyboard = await auto_filter(client, message)
             free, button = await free_filter(client, message)
-            if ONE_LINK_ONE_FILE == True:
+            if one_file_one_link is not None and one_file_one_link is True:
                 if files_counts is not None and files_counts >= 1:
                     m = await msg.edit(text=free, reply_markup=button, disable_web_page_preview=True)
                 else:
