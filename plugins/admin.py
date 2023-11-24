@@ -387,7 +387,7 @@ async def autoapprove(client: Client, message: ChatJoinRequest):
     user=message.from_user
     APPROVE = await mdb.get_configuration_value("auto_accept")
     try:
-        if APPROVE == True:
+        if APPROVE is not None and APPROVE is True:
             await client.approve_chat_join_request(chat.id, user.id)
             await client.send_message(chat_id=chat.id, text=TEXT.format(user.mention, chat.title))
     except Exception as e:
