@@ -67,6 +67,7 @@ async def filters_private_handlers(client, message):
 
     maintainance = await mdb.get_configuration_value("maintenance_mode")
     one_file_one_link = await mdb.get_configuration_value("one_link")
+    private_filter = await mdb.get_configuration_value("private_filter")
 
     # Todays Date
     today = datetime.now().strftime("%Y-%m-%d")
@@ -86,7 +87,9 @@ async def filters_private_handlers(client, message):
         return 
     
     if maintainance is not None and maintainance is True:
-        await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later", disable_web_page_preview=True)
+        return await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later", disable_web_page_preview=True)
+    
+    if private_filter is not None and private_filter is False:
         return
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
