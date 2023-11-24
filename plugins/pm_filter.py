@@ -77,7 +77,7 @@ async def filters_private_handlers(client, message):
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
     time_difference = round(time_difference)
 
-    maintainance = await mdb.get_configuration_value("maintenance_mode")
+    maintenance_mode = await mdb.get_configuration_value("maintenance_mode")
     one_file_one_link = await mdb.get_configuration_value("one_link")
     private_filter = await mdb.get_configuration_value("private_filter")
 
@@ -98,8 +98,9 @@ async def filters_private_handlers(client, message):
         await mdb.delete_all_messages()
         return 
     
-    if maintainance is True:
-        return await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later</b>", disable_web_page_preview=True)
+    if maintenance_mode is True:
+        await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later</b>", disable_web_page_preview=True)
+        return
     
     if private_filter is not None and private_filter is False:
         return
@@ -879,13 +880,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
      #maintainance
     elif query.data == "maintenance":
-        config = await mdb.get_configuration_value("maintenance")
+        config = await mdb.get_configuration_value("maintenance_mode")
         print(f"Maintainance Mode: {config}")
         if config is True:
-            await mdb.update_configuration("maintenance", False)
+            await mdb.update_configuration("maintenance_mode", False)
             await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
         else:
-            await mdb.update_configuration("maintenance", True)
+            await mdb.update_configuration("maintenance_mode", True)
             await query.message.edit(f"<b>Maintenance mode enabled.</b>", reply_markup=None)
 
     elif query.data == "1link1file":
