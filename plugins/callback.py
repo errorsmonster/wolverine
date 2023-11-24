@@ -244,22 +244,14 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
 
      #maintainance
     elif query.data == "maintenance":
-        buttons = [[
-            InlineKeyboardButton("🟢 Enable", callback_data="enable_maintenance")
-            ],[
-            InlineKeyboardButton("🔴 Disable", callback_data="disable_maintenance")
-            ]]
-        await query.message.edit(f"<b>Choose the option</b>",
-            reply_markup=InlineKeyboardMarkup(buttons),
-            disable_web_page_preview=True,
-        )
-
-    elif query.data == "enable_maintenance":
-        await mdb.update_configuration("maintenance", True)
-        await query.message.edit(f"<b>Maintenance mode enabled.</b>", reply_markup=None)
-    elif query.data == "disable_maintenance":
-        await mdb.update_configuration("maintenance", False)
-        await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
+        config = await mdb.get_configuration_value("maintenance")
+        print(f"Maintainance Mode: {config}")
+        if config is True:
+            await mdb.update_configuration("maintenance", True)
+            await query.message.edit(f"<b>Maintenance mode enabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("maintenance", False)
+            await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
 
     elif query.data == "1link1file":
         config = await mdb.get_configuration_value("one_link")
