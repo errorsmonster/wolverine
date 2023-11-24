@@ -263,7 +263,7 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
 
     elif query.data == "1link1file":
         config = await mdb.get_configuration_value("one_link")
-        if config:
+        if config is True:
             await mdb.update_configuration("one_link", False)
             await query.message.edit(f"<b>One link One file disabled.</b>", reply_markup=None)
         else:
@@ -272,7 +272,7 @@ async def callbacks_handlers(client: Client, query: CallbackQuery):
 
     elif query.data == "autoapprove":
         config = await mdb.get_configuration_value("auto_accept")
-        if config == True:
+        if config is True:
             await mdb.update_configuration("auto_accept", False)
             await query.message.edit(f"<b>Auto approve disabled.</b>", reply_markup=None)
         else:
