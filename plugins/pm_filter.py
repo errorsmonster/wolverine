@@ -28,10 +28,6 @@ logger.setLevel(logging.ERROR)
 
 BUTTONS = {}
 SPELL_CHECK = {}
-blacklist = script.BLACKLIST
-slow_mode = SLOW_MODE_DELAY
-waitime = WAIT_TIME
-maintenance_mode = False
 
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
@@ -134,14 +130,14 @@ async def filters_private_handlers(client, message):
             if user_timestamps:
                 current_time = int(time.time())
                 time_diff = current_time - user_timestamps
-                if time_diff < slow_mode:
-                    remaining_time = slow_mode - time_diff
+                if time_diff < SLOW_MODE_DELAY:
+                    remaining_time = SLOW_MODE_DELAY - time_diff
                     while remaining_time > 0:
                         await msg.edit(f"<b>Please Wait For {remaining_time} Seconds Before Sending Another Request.</b>")
                         await asyncio.sleep(2)
                         current_time = int(time.time())
                         time_diff = current_time - user_timestamps
-                        remaining_time = max(0, slow_mode - time_diff)
+                        remaining_time = max(0, SLOW_MODE_DELAY - time_diff)
                     await message.delete()
                     await msg.delete()
                     return
@@ -166,8 +162,8 @@ async def filters_private_handlers(client, message):
         await msg.edit(f"<b>Opps! Something Went Wrong.</b>")
 
     finally:
-        if waitime is not None:
-            await asyncio.sleep(waitime)
+        if WAIT_TIME is not None:
+            await asyncio.sleep(WAIT_TIME)
             await m.delete()
 
 
@@ -208,8 +204,8 @@ async def public_group_filter(client, message):
         print(e)
 
     finally:
-        if waitime is not None:
-            await asyncio.sleep(waitime)
+        if WAIT_TIME is not None:
+            await asyncio.sleep(WAIT_TIME)
             await message.delete()
             await m.delete()
 
@@ -245,7 +241,7 @@ async def next_page(bot, query):
         search_results_text = []
         for file in files:
             shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
-            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
             search_results_text.append(file_link)
 
         search_results_text = "\n\n".join(search_results_text)
@@ -338,7 +334,7 @@ async def auto_filter(client, msg, spoll=False):
         search_results_text = []
         for file in files:
             shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
-            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
             search_results_text.append(file_link)
 
         search_results_text = "\n\n".join(search_results_text)
@@ -421,8 +417,8 @@ async def advantage_spell_chok(msg):
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
     m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
                     reply_markup=InlineKeyboardMarkup(btn))
-    if waitime is not None:
-        await asyncio.sleep(waitime)
+    if WAIT_TIME is not None:
+        await asyncio.sleep(WAIT_TIME)
         await m.delete()
     
 async def manual_filters(client, message, text=False):
@@ -481,7 +477,7 @@ async def callback_auto_filter(msg, spoll=False):
     search_results_text = []
     for file in files:
         shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
@@ -496,7 +492,7 @@ async def callback_paid_filter(msg, spoll=False):
     search_results_text = []
     for file in files:
         shortlink = f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
