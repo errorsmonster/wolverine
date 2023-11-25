@@ -483,7 +483,7 @@ async def manual_filters(client, message, text=False):
 # callback autofilter
 async def callback_auto_filter(msg, spoll=False):
     search=msg
-    files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
+    files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
@@ -498,7 +498,7 @@ async def callback_auto_filter(msg, spoll=False):
 # callback autofilter
 async def callback_paid_filter(msg, spoll=False):
     search=msg
-    files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
+    files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
