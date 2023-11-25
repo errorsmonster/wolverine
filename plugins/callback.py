@@ -553,7 +553,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             disable_web_page_preview=True,
         )
     elif query.data.startswith("Reedem#"):
-        duration = query.data.split("#")[1:]
+        duration = query.data.split("#")[1]
         buttons = [[
             InlineKeyboardButton("1 Redeem Code", callback_data=f"license#{duration}#1")
             ],[
