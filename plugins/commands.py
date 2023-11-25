@@ -37,8 +37,8 @@ async def start(client, message):
             await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
             await db.add_chat(message.chat.id, message.chat.title)
         return
-    
-    if not await db.is_user_exist(message.from_user.id) and len(message.command) != 2:
+    term = await mdb.get_configuration_value("terms")
+    if not await db.is_user_exist(message.from_user.id) and term and len(message.command) != 2:
         button = [
             [InlineKeyboardButton("📜 Read Terms", callback_data="terms")],
             [InlineKeyboardButton("✅ Accept", callback_data="home")]
