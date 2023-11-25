@@ -91,6 +91,8 @@ async def filters_private_handlers(client, message):
         await mdb.delete_all_messages()
         return 
     
+    if maintenance_mode is None:
+        await mdb.update_configuration("maintenance_mode", False)
     if maintenance_mode is True:
         await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later</b>", disable_web_page_preview=True)
         return
