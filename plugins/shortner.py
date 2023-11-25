@@ -17,6 +17,10 @@ async def atglib(link):
         return shortlink
     
 
+
+
+
+
 async def short_link(link):
     url = f'https://atglinks.com/api'
     api_key = "a2c025bc3bfbb0907f422350f4b920b15ee85e09"
@@ -37,8 +41,24 @@ async def get_shortlink(link):
     base_link = f"https://atglinks.com/"
     code = shortlink.split("/")[-1]
     output_link = f"{base_link}{code}"
-    return output_link
+    link_shorten = await link_shortner(output_link)
+    return link_shorten
+
+async def link_shortner(link):
+    shorner = f"https://linkpass.onrender.com/shorten?url={link}"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(shorner, raise_for_status=True) as response:
+                data = await response.json()
+                return data["short_url"]
+    except Exception as e:
+        print(e)
+        return f"{shorner}"
     
+
+
+
+
 
 async def adlinkfly(link, shortner=None, api_key=None):
     params = {'api': api_key, 'url': link, 'format': 'text'}
