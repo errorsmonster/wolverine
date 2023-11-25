@@ -1,7 +1,7 @@
 import aiohttp
 import json
 
-async def get_shortlink(link):
+async def atglib(link):
     url = f'https://api.shareus.io/easy_api'
     api_key = "UVZ5NmnAZkNdK6azyMoTP9Ij3n62"
 
@@ -18,8 +18,8 @@ async def get_shortlink(link):
     
 
 async def short_link(link):
-    url = f'https://atg.link/api/v1/shorten'
-    api_key = "d0f5b0d2-6f6a-4d6c-8d9f-0c6a9a7c4a1f"
+    url = f'https://atglinks.com/api'
+    api_key = "a2c025bc3bfbb0907f422350f4b920b15ee85e09"
 
     params = {'api': api_key, 'url': link, 'format': 'text'}
     
@@ -32,7 +32,7 @@ async def short_link(link):
         shortlink = f"{url}?api={api_key}&url={link}&format=text"
         return shortlink
     
-async def atglinks(link):
+async def get_shortlink(link):
     shortlink = await short_link(link)
     base_link = f"https://atglinks.com/"
     code = shortlink.split("/")[-1]
