@@ -17,7 +17,7 @@ from database.users_chats_db import db
 from database.config_panel import mdb
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, replace_blacklist, fetch_quote_content, save_group_settings
-from plugins.shortner import get_shortlink
+from plugins.shortner import gplinks
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
@@ -251,7 +251,7 @@ async def next_page(bot, query):
         # Construct a text message with hyperlinks
         search_results_text = []
         for file in files:
-            shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
             file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
             search_results_text.append(file_link)
 
@@ -344,7 +344,7 @@ async def auto_filter(client, msg, spoll=False):
         # Construct a text message with hyperlinks
         search_results_text = []
         for file in files:
-            shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
             file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
             search_results_text.append(file_link)
 
@@ -487,7 +487,7 @@ async def callback_auto_filter(msg, spoll=False):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
