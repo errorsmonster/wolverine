@@ -1063,6 +1063,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.message.edit(f"<b>Redeem codes:</b>\n\n{codes_str}")
 
 
+
+
      #maintainance
     elif query.data == "maintenance":
         config = await mdb.get_configuration_value("maintenance_mode")
@@ -1098,7 +1100,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.edit(f"<b>Private filter disabled.</b>", reply_markup=None)
         else:
             await mdb.update_configuration("private_filter", True)
-            await query.message.edit(f"<b>Private filter enabled.</b>", reply_markup=None)  
+            await query.message.edit(f"<b>Private filter enabled.</b>", reply_markup=None)
+
+    elif query.data == "group_filter":
+        config = await mdb.get_configuration_value("group_filter")
+        if config is True:
+            await mdb.update_configuration("group_filter", False)
+            await query.message.edit(f"<b>Group filter disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("group_filter", True)
+            await query.message.edit(f"<b>Group filter enabled.</b>", reply_markup=None)              
 
     elif query.data == "terms_and_condition":
         config = await mdb.get_configuration_value("terms")
@@ -1108,7 +1119,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.edit(f"<b>Terms&Condition disabled.</b>", reply_markup=None)
         else:
             await mdb.update_configuration("terms", True)
-            await query.message.edit(f"<b>Terms&Condition enabled.</b>", reply_markup=None)                    
+            await query.message.edit(f"<b>Terms&Condition enabled.</b>", reply_markup=None)     
+
+
+
                 
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
