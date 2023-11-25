@@ -541,11 +541,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
     # generate redeem code
     elif query.data.startswith("redeem"):
         buttons = [[
-            InlineKeyboardButton("1 Month", callback_data="Reedem#1")
+            InlineKeyboardButton("1 Month", callback_data="Reedem#30")
             ],[
-            InlineKeyboardButton("3 Months", callback_data="Reedem#3")
+            InlineKeyboardButton("6 Months", callback_data="Reedem#180")
             ],[
-            InlineKeyboardButton("6 Months", callback_data="Reedem#6")
+            InlineKeyboardButton("12 Months", callback_data="Reedem#365")
             ]]
         await query.message.edit(
             f"<b>Choose the duration</b>",
