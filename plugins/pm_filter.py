@@ -2,6 +2,7 @@ import asyncio
 import re
 import math
 import time
+import base64
 from datetime import datetime, timedelta
 from urllib.parse import quote
 from Script import script
