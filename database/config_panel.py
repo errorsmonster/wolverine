@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from info import DB_URI
+from info import DATABASE_URI
 
 class Database:
     def __init__(self, uri, db_name):
@@ -59,4 +59,4 @@ class Database:
 
 
 
-mdb = Database(DB_URI, "admin_database")
+mdb = Database(DATABASE_URI, "admin_database")
