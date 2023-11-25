@@ -507,7 +507,7 @@ async def admin_controll(client, message):
 
     reply_markup = InlineKeyboardMarkup(button)
     await message.reply_text(
-        text="**Admin Contoll Panel**",
+        text="**Admin Control Panel**",
         reply_markup=reply_markup,
         disable_web_page_preview=True
     )
