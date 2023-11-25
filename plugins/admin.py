@@ -498,8 +498,11 @@ async def admin_controll(client, message):
         InlineKeyboardButton("Maintainence", callback_data="maintenance"),
         InlineKeyboardButton("One Link", callback_data="1link1file"),
         ],[
-        InlineKeyboardButton("Auto Approve", callback_data="autoapprove"),
+        InlineKeyboardButton("Group Filter", callback_data="group_filter"),
         InlineKeyboardButton("Private Filter", callback_data="private_filter"),
+        ],[
+        InlineKeyboardButton("Terms", callback_data="terms_and_condition"),
+        InlineKeyboardButton("Auto Approve", callback_data="autoapprove"),
         ]]
 
     reply_markup = InlineKeyboardMarkup(button)

@@ -251,7 +251,7 @@ async def next_page(bot, query):
         # Construct a text message with hyperlinks
         search_results_text = []
         for file in files:
-            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
             file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
             search_results_text.append(file_link)
 
@@ -344,7 +344,7 @@ async def auto_filter(client, msg, spoll=False):
         # Construct a text message with hyperlinks
         search_results_text = []
         for file in files:
-            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
             file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
             search_results_text.append(file_link)
 
@@ -487,7 +487,7 @@ async def callback_auto_filter(msg, spoll=False):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}")
+        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{msg.from_user.id}_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -502,7 +502,7 @@ async def callback_paid_filter(msg, spoll=False):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=files_{file.file_id}"
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{msg.from_user.id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -1066,7 +1066,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
      #maintainance
     elif query.data == "maintenance":
         config = await mdb.get_configuration_value("maintenance_mode")
-        print(f"Maintainance Mode: {config}")
         if config is True:
             await mdb.update_configuration("maintenance_mode", False)
             await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
@@ -1076,7 +1075,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "1link1file":
         config = await mdb.get_configuration_value("one_link")
-        print(f"One Link: {config}")
         if config is True:
             await mdb.update_configuration("one_link", False)
             await query.message.edit(f"<b>One link One file disabled.</b>", reply_markup=None)
@@ -1086,7 +1084,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "autoapprove":
         config = await mdb.get_configuration_value("auto_accept")
-        print(f"Auto Approve: {config}")
         if config is True:
             await mdb.update_configuration("auto_accept", False)
             await query.message.edit(f"<b>Auto approve disabled.</b>", reply_markup=None)
@@ -1096,14 +1093,22 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "private_filter":
         config = await mdb.get_configuration_value("private_filter")
-        print(f"Private Filter: {config}")
         if config is True:
             await mdb.update_configuration("private_filter", False)
             await query.message.edit(f"<b>Private filter disabled.</b>", reply_markup=None)
         else:
             await mdb.update_configuration("private_filter", True)
-            await query.message.edit(f"<b>Private filter enabled.</b>", reply_markup=None)              
+            await query.message.edit(f"<b>Private filter enabled.</b>", reply_markup=None)  
 
+    elif query.data == "terms_and_condition":
+        config = await mdb.get_configuration_value("terms")
+        print(f"Terms: {config}")
+        if config is True:
+            await mdb.update_configuration("terms", False)
+            await query.message.edit(f"<b>Terms&Condition disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("terms", True)
+            await query.message.edit(f"<b>Terms&Condition enabled.</b>", reply_markup=None)                    
                 
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
