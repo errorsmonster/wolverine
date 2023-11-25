@@ -1069,7 +1069,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "maintenance":
         config = await mdb.get_configuration_value("maintenance_mode")
         if config is None:
-            await mdb.update_configuration("maintenance_mode", True)
+            await mdb.update_configuration("maintenance_mode", False)
         if config is True:
             await mdb.update_configuration("maintenance_mode", False)
             await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
