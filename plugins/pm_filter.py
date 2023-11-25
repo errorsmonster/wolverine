@@ -71,6 +71,11 @@ async def filters_private_handlers(client, message):
     # Todays Date
     today = datetime.now().strftime("%Y-%m-%d")
 
+    url_pattern = re.compile(r'https?://\S+')
+    if re.search(url_pattern, message.text):
+        await message.delete()
+        return
+
     if referral is None or referral <= 0:
         await db.update_refferal_count(user_id, 0)
 
