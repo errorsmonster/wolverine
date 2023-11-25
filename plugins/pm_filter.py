@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from urllib.parse import quote
 from Script import script
 from info import AUTH_GROUPS, SLOW_MODE_DELAY, ACCESS_GROUPS, WAIT_TIME
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from database.config_panel import mdb

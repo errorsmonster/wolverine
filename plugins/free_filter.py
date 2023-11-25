@@ -8,7 +8,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from database.users_chats_db import db
 from pyrogram.errors import MessageNotModified
-from utils import get_size, replace_blacklist, temp, encode_to_base64, decode_from_base64
+from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
 from plugins.shortner import linkgen
 
@@ -21,7 +21,7 @@ slow_mode = SLOW_MODE_DELAY
 
 @Client.on_callback_query(filters.regex(r"^free"))
 async def free_next_page(bot, query):
-    ident, req, key, offset = query.data.split("_")
+    _, req, key, offset = query.data.split("_")
     try:
         offset = int(offset)
     except:
