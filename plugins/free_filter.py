@@ -129,4 +129,4 @@ async def free_filter(client, msg, spoll=False):
         )
     cap = f"Here is what i found for your query {search}"
     await db.update_timestamps(message.from_user.id, int(time.time()))
-    return f"<b>{cap}</b>\n\n{search_results_text}", InlineKeyboardMarkup(btn)
+    return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
