@@ -1,6 +1,7 @@
 import os
 import logging
 import asyncio
+from datetime import datetime, timedelta
 from Script import script
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
@@ -37,8 +38,8 @@ async def start(client, message):
             await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
             await db.add_chat(message.chat.id, message.chat.title)
         return
-    
-    if not await db.is_user_exist(message.from_user.id) and len(message.command) != 2:
+    term = await mdb.get_configuration_value("terms")
+    if not await db.is_user_exist(message.from_user.id) and term and len(message.command) != 2:
         button = [
             [InlineKeyboardButton("📜 Read Terms", callback_data="terms")],
             [InlineKeyboardButton("✅ Accept", callback_data="home")]
@@ -150,6 +151,17 @@ async def start(client, message):
         return
     
 
+    # for counting each files for user
+    files_counts = await db.get_files_count(message.from_user.id)
+    lifetime_files = await db.get_lifetime_files(message.from_user.id)
+    # optinal function for checking time difference between currrent time and next 12'o clock
+    current_datetime = datetime.now()
+    next_day = current_datetime + timedelta(days=1)
+    next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
+    time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
+    time_difference = round(time_difference)
+
+
     data = message.command[1].strip()
     if data.startswith("encrypt-"):
         _, rest_of_data = data.split('-', 1)
@@ -170,24 +182,25 @@ async def start(client, message):
             ]]
         if premium_status is True:
             button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
-
+            
+        if premium_status is not True and files_counts is not None and files_counts >= 15:
+                return await message.reply(f"<b>You Have Exceeded Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>")
+            
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
             caption=f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
-    
-        # for counting each files for user
-        files_counts = await db.get_files_count(message.from_user.id)
-        lifetime_files = await db.get_lifetime_files(message.from_user.id)
+        
         await db.update_files_count(message.from_user.id, files_counts + 1)
         await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
-
+    
         del_msg = await client.send_message(
             text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",
             chat_id=message.from_user.id,
             reply_to_message_id=media_id.id)
+        
     
         await asyncio.sleep(waitime or 600)
         await media_id.delete()

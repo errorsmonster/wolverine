@@ -268,7 +268,6 @@ async def allcommands(client, message):
         f"<b>➲/resetdaily</b> - To reset daily files count\n"
         f"<b>➲/add_paid</b> - To add a user as premium\n"
         f"<b>➲/remove_paid</b> - To remove a user from premium\n"
-        f"<b>➲/deleteallfiles</b> - To delete all files from database\n"
         f"<b>➲/channel</b> - To get channel info\n"
         f"<b>➲/broadcast</b> - To broadcast a message to all users\n"
         f"<b>➲/id</b> - To get chat id\n"
@@ -491,20 +490,31 @@ async def send_message_to_user(client, message):
 
 @Client.on_message(filters.command("admin") & filters.private & filters.user(ADMINS))
 async def admin_controll(client, message):
-    button = [[
-        InlineKeyboardButton("DeleteFiles", callback_data="delback"),
-        InlineKeyboardButton("Redeem Code", callback_data="redeem"),
-        ],[
-        InlineKeyboardButton("Maintainence", callback_data="maintenance"),
-        InlineKeyboardButton("One Link", callback_data="1link1file"),
-        ],[
-        InlineKeyboardButton("Auto Approve", callback_data="autoapprove"),
-        InlineKeyboardButton("Private Filter", callback_data="private_filter"),
-        ]]
+    button = [
+        [
+            InlineKeyboardButton("DeleteFiles", callback_data="delback"),
+            InlineKeyboardButton("Redeem Code", callback_data="redeem"),
+        ],
+        [
+            InlineKeyboardButton("1 Time Ads GC 🔵" if await mdb.get_configuration_value("one_link_one_file_group") else "1 Ads Group", callback_data="1linkgroup"),
+            InlineKeyboardButton("1 Time Ads PM 🔵" if await mdb.get_configuration_value("one_link") else "1 Ads private", callback_data="1link1file"),
+        ],
+        [
+            InlineKeyboardButton("Group Filter 🔵" if await mdb.get_configuration_value("group_filter") else "Group Filter", callback_data="group_filter"),
+            InlineKeyboardButton("Private Filter 🔵" if await mdb.get_configuration_value("private_filter") else "Private Filter", callback_data="private_filter"),
+        ],
+        [
+            InlineKeyboardButton("Terms 🔵" if await mdb.get_configuration_value("terms") else "Terms", callback_data="terms_and_condition"),
+            InlineKeyboardButton("Auto Approve 🔵" if await mdb.get_configuration_value("auto_accept") else "Auto Approve", callback_data="autoapprove"),
+        ],
+        [
+            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance")
+        ]
+    ]
 
     reply_markup = InlineKeyboardMarkup(button)
     await message.reply_text(
-        text="**Admin Panel**",
+        text="**Admin Control Panel**",
         reply_markup=reply_markup,
         disable_web_page_preview=True
     )
