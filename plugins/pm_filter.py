@@ -91,9 +91,7 @@ async def filters_private_handlers(client, message):
         await mdb.delete_all_messages()
         return 
     
-    if maintenance_mode is None:
-        await mdb.update_configuration("maintenance_mode", False)
-    if maintenance_mode is True:
+    if maintenance_mode is not None and maintenance_mode is True:
         await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later</b>", disable_web_page_preview=True)
         return
     
@@ -1070,8 +1068,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
      #maintainance
     elif query.data == "maintenance":
         config = await mdb.get_configuration_value("maintenance_mode")
-        if config is None:
-            await mdb.update_configuration("maintenance_mode", False)
         if config is True:
             await mdb.update_configuration("maintenance_mode", False)
             await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)

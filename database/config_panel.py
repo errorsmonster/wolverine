@@ -57,6 +57,9 @@ class Database:
 
     async def get_configuration_value(self, key):
         configuration = await self.config_col.find_one({})
+        if not configuration:
+            await self.config_col.insert_one(self.create_configuration_data())
+            configuration = await self.config_col.find_one({})
         return configuration.get(key, False)
 
 
