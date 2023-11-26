@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from info import DB_URI
+from info import DATABASE_URI
 
 class Database:
     def __init__(self, uri, db_name):
@@ -38,12 +38,23 @@ class Database:
 
 
 
-    def create_configuration_data(self, maintenance_mode=False, auto_accept=True, one_link=True, private_filter=True):
+    def create_configuration_data(
+            self, maintenance_mode=False,
+            auto_accept=True,
+            one_link=True,
+            one_link_one_file_group=False,
+            private_filter=True,
+            group_filter=True,
+            terms=True):
+        
         return {
             'maintenance_mode': maintenance_mode,
             'auto_accept': auto_accept,
             'one_link': one_link,
-            'private_filter': private_filter
+            'one_link_one_file_group': one_link_one_file_group,
+            'private_filter': private_filter,
+            'group_filter': group_filter,
+            'terms': terms
         }
 
     async def update_configuration(self, key, value):
@@ -55,8 +66,11 @@ class Database:
 
     async def get_configuration_value(self, key):
         configuration = await self.config_col.find_one({})
+        if not configuration:
+            await self.config_col.insert_one(self.create_configuration_data())
+            configuration = await self.config_col.find_one({})
         return configuration.get(key, False)
 
 
 
-mdb = Database(DB_URI, "admin_database")
+mdb = Database(DATABASE_URI, "admin_database")

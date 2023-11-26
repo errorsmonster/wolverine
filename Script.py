@@ -59,7 +59,7 @@ By using our bot, you acknowledge that you have read, understood, and agreed the
     # removing blacklisted words
     BLACKLIST = ['tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'flix',
-                '4u', 'hub', 'movies', 'otthd', 'telegram', 'hoichoihok',
+                '4u', 'hub', 'movies', 'otthd', 'telegram', 'hoichoihok', '@', ']', '[',
                 'filmy', 'films', 'cinema', 'join', 'club', 'apd', 'F-Press', 'GDTOT', 'GD',
                 'backup', 'primeroom', 'theprofffesorr', 'premium', 'vip', '4wap', 'toonworld4all', 'mlwbd',
                 'Telegram@alpacinodump', 'bollywood', "AllNewEnglishMovie", "7MovieRulz", "1TamilMV",
