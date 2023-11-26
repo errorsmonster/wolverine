@@ -188,6 +188,10 @@ async def public_group_filter(client, message):
     chat_exists = await db.get_chat(group_id)
     user_exists = await db.is_user_exist(message.from_user.id)
     group_filter = await mdb.get_configuration_value("group_filter")
+    user_id = message.from_user.id
+    user = await db.get_user(user_id)
+    files_counts = user.get("files_count")
+    one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
 
     # Add chat or user if they don't exist in the database
     if not chat_exists:
@@ -197,21 +201,31 @@ async def public_group_filter(client, message):
 
     # Ignore commands starting with "/"
     if message.text.startswith("/"):
-        return        
+        return
+    
+    if group_filter is not True:
+        return       
     
     await mdb.update_top_messages(message.from_user.id, message.text) 
     
     text, markup = await auto_filter(client, message)
+    free, button = await free_filter(client, message)
     try:
-        if group_filter:
-            # Filtering logic
-            if group_id in AUTH_GROUPS:
-                k = await manual_filters(client, message)
-                if not k:
+        # Filtering logic
+        if group_id in AUTH_GROUPS:
+            k = await manual_filters(client, message)
+            if not k:
+                if one_link_one_file_group is not None and one_link_one_file_group is True:
+                    # Auto filter
+                    if files_counts is not None and files_counts >= 1:
+                        m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)
+                    else:
+                        m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
+                else:        
                     m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
 
-            elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
-                m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
+        elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
+            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
         
     except Exception as e:
         print(e)
@@ -1079,10 +1093,20 @@ async def cb_handler(client: Client, query: CallbackQuery):
         config = await mdb.get_configuration_value("one_link")
         if config is True:
             await mdb.update_configuration("one_link", False)
-            await query.message.edit(f"<b>One link One file disabled.</b>", reply_markup=None)
+            await query.message.edit(f"<b>1 time Ads in private disabled.</b>", reply_markup=None)
         else:
             await mdb.update_configuration("one_link", True)
-            await query.message.edit(f"<b>One link One file enabled.</b>", reply_markup=None)
+            await query.message.edit(f"<b>1 time Ads in private enabled.</b>", reply_markup=None)
+
+    elif query.data == "1linkgroup":
+        config = await mdb.get_configuration_value("one_link_one_file_group")
+        if config is True:
+            await mdb.update_configuration("one_link_one_file_group", False)
+            await query.message.edit(f"<b>1 time Ads in group disabled.</b>", reply_markup=None)
+        else:
+            await mdb.update_configuration("one_link_one_file_group", True)
+            await query.message.edit(f"<b>1 time Ads in group enabled.</b>", reply_markup=None)
+
 
     elif query.data == "autoapprove":
         config = await mdb.get_configuration_value("auto_accept")

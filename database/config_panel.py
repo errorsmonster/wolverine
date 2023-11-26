@@ -38,11 +38,20 @@ class Database:
 
 
 
-    def create_configuration_data(self, maintenance_mode=False, auto_accept=True, one_link=True, private_filter=True, group_filter=True, terms=True):
+    def create_configuration_data(
+            self, maintenance_mode=False,
+            auto_accept=True,
+            one_link=True,
+            one_link_one_file_group=False,
+            private_filter=True,
+            group_filter=True,
+            terms=True):
+        
         return {
             'maintenance_mode': maintenance_mode,
             'auto_accept': auto_accept,
             'one_link': one_link,
+            'one_link_one_file_group': one_link_one_file_group,
             'private_filter': private_filter,
             'group_filter': group_filter,
             'terms': terms

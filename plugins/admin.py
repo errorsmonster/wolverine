@@ -496,8 +496,8 @@ async def admin_controll(client, message):
             InlineKeyboardButton("Redeem Code", callback_data="redeem"),
         ],
         [
-            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance"),
-            InlineKeyboardButton("One Link 🔵" if await mdb.get_configuration_value("one_link") else "One Link", callback_data="1link1file"),
+            InlineKeyboardButton("1 Ads Group 🔵" if await mdb.get_configuration_value("one_link_one_file_group") else "1 Ads Group", callback_data="1linkgroup"),
+            InlineKeyboardButton("1 Ads Private 🔵" if await mdb.get_configuration_value("one_link") else "1 Ads private", callback_data="1link1file"),
         ],
         [
             InlineKeyboardButton("Group Filter 🔵" if await mdb.get_configuration_value("group_filter") else "Group Filter", callback_data="group_filter"),
@@ -506,6 +506,9 @@ async def admin_controll(client, message):
         [
             InlineKeyboardButton("Terms 🔵" if await mdb.get_configuration_value("terms") else "Terms", callback_data="terms_and_condition"),
             InlineKeyboardButton("Auto Approve 🔵" if await mdb.get_configuration_value("auto_accept") else "Auto Approve", callback_data="autoapprove"),
+        ],
+        [
+            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance")
         ]
     ]
 
