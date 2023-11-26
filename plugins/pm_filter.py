@@ -481,12 +481,12 @@ async def manual_filters(client, message, text=False):
         return False
 
 # callback autofilter
-async def callback_auto_filter(msg):
+async def callback_auto_filter(msg, query):
     search=msg
     files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
     search_results_text = []
     for file in files:
-        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{search.from_user.id}_{file.file_id}")
+        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -495,12 +495,12 @@ async def callback_auto_filter(msg):
     return f"<b>{cap}\n\n{search_results_text}</b>"
 
 # callback paidfilter
-async def callback_paid_filter(msg):
+async def callback_paid_filter(msg, query):
     search=msg
     files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
     search_results_text = []
     for file in files:
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{search.from_user.id}_{file.file_id}"
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -984,10 +984,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(text=f"Searching for your request :)")
         premium_status = await db.is_premium_status(query.from_user.id)
         if premium_status is True:
-            text = await callback_paid_filter(search)
+            text = await callback_paid_filter(search, query)
             await query.message.edit(text=f"<b>{text}</b>", reply_markup=None, disable_web_page_preview=True)
         else:    
-            text = await callback_auto_filter(search)
+            text = await callback_auto_filter(search, query)
             await query.message.edit(text=f"<b>{text}</b>", reply_markup=None, disable_web_page_preview=True)
  
     # get download button
