@@ -2,16 +2,15 @@ import re
 import base64
 import aiohttp
 from pyrogram import Client, filters
-from info import ADMINS, LOG_CHANNEL
+from info import ADMINS, LOG_CHANNEL, ACCESS_KEY
 from database.users_chats_db import db
 import asyncio
 import binascii
 from datetime import datetime
 
-ACCESS_KEY = "PZUNTLGIZFE67MR0I0H0"
 
 @Client.on_message(filters.command("license") & filters.user(ADMINS))
-async def generate(client, message):
+async def redeem_generate(client, message):
     num_codes = 1  # default value
     duration = 28  # default duration
 

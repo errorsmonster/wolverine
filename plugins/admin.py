@@ -1,16 +1,15 @@
 from pyrogram import Client, filters
 from database.users_chats_db import db
-from info import ADMINS
 import asyncio
 from Script import script
-from info import LOG_CHANNEL, AUTH_GROUPS, APPROVE, BIN_CHANNEL, URL
+from info import LOG_CHANNEL, AUTH_GROUPS, BIN_CHANNEL, URL, ADMINS
 from utils import temp
 import re
 from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
-from database.top_msg import mdb 
+from database.config_panel import mdb
 
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
@@ -32,14 +31,14 @@ async def echo(_, message):
     response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>Please Provide The Name Of The Movie Or Series You're Looking For, and I'll Help You To Find It..</b>, "
     await message.reply_text(response_text, reply_to_message_id=message.id, disable_web_page_preview=True)
 
-@Client.on_message(filters.media & filters.private & ~filters.user(ADMINS))
+@Client.on_message(filters.video & filters.document & filters.private & ~filters.user(ADMINS) & ~filters.bot)
 async def mediasv_filter(client, message):
     m=await message.reply_text("<b>Please Don't Send Any Files In My PM. It Will Be Deleted Within 1 Minute.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(60)
     await message.delete()
     await m.delete()
     
-@Client.on_edited_message(filters.private & ~filters.user(ADMINS))
+@Client.on_edited_message(filters.private & ~filters.user(ADMINS) & ~filters.bot)
 async def editmsg_filter(client, message):
     m = await message.reply_text(text="<b>Please Send a New Message Rather Than Editing The Existing One.</b>", reply_to_message_id=message.id)
     await asyncio.sleep(10)
@@ -269,7 +268,6 @@ async def allcommands(client, message):
         f"<b>➲/resetdaily</b> - To reset daily files count\n"
         f"<b>➲/add_paid</b> - To add a user as premium\n"
         f"<b>➲/remove_paid</b> - To remove a user from premium\n"
-        f"<b>➲/deleteallfiles</b> - To delete all files from database\n"
         f"<b>➲/channel</b> - To get channel info\n"
         f"<b>➲/broadcast</b> - To broadcast a message to all users\n"
         f"<b>➲/id</b> - To get chat id\n"
@@ -385,8 +383,9 @@ async def latests(_, message):
 async def autoapprove(client: Client, message: ChatJoinRequest):
     chat=message.chat
     user=message.from_user
+    APPROVE = await mdb.get_configuration_value("auto_accept")
     try:
-        if APPROVE == True:
+        if APPROVE is not None and APPROVE is True:
             await client.approve_chat_join_request(chat.id, user.id)
             await client.send_message(chat_id=chat.id, text=TEXT.format(user.mention, chat.title))
     except Exception as e:
@@ -488,3 +487,34 @@ async def send_message_to_user(client, message):
         await message.reply(f"Error: {str(ve)}")
     except Exception as e:
         await message.reply(f"An unexpected error occurred: {str(e)}")
+
+@Client.on_message(filters.command("admin") & filters.private & filters.user(ADMINS))
+async def admin_controll(client, message):
+    button = [
+        [
+            InlineKeyboardButton("DeleteFiles", callback_data="delback"),
+            InlineKeyboardButton("Redeem Code", callback_data="redeem"),
+        ],
+        [
+            InlineKeyboardButton("1 Time Ads GC 🔵" if await mdb.get_configuration_value("one_link_one_file_group") else "1 Ads Group", callback_data="1linkgroup"),
+            InlineKeyboardButton("1 Time Ads PM 🔵" if await mdb.get_configuration_value("one_link") else "1 Ads private", callback_data="1link1file"),
+        ],
+        [
+            InlineKeyboardButton("Group Filter 🔵" if await mdb.get_configuration_value("group_filter") else "Group Filter", callback_data="group_filter"),
+            InlineKeyboardButton("Private Filter 🔵" if await mdb.get_configuration_value("private_filter") else "Private Filter", callback_data="private_filter"),
+        ],
+        [
+            InlineKeyboardButton("Terms 🔵" if await mdb.get_configuration_value("terms") else "Terms", callback_data="terms_and_condition"),
+            InlineKeyboardButton("Auto Approve 🔵" if await mdb.get_configuration_value("auto_accept") else "Auto Approve", callback_data="autoapprove"),
+        ],
+        [
+            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance")
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(button)
+    await message.reply_text(
+        text="**Admin Control Panel**",
+        reply_markup=reply_markup,
+        disable_web_page_preview=True
+    )

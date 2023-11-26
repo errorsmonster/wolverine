@@ -52,20 +52,17 @@ FILE_STORE_CHANNEL = [int(ch) for ch in (environ.get('FILE_STORE_CHANNEL', '')).
 MELCOW_NEW_USERS = is_enabled((environ.get('MELCOW_NEW_USERS', "False")), True)
 PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
 PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "False")), True)
-APPROVE = is_enabled(environ.get("AUTO_APPROVE", "True"), True)
-MAINTAINENCE_MODE = is_enabled(environ.get("MAINTAINENCE_MODE", "False"), True)
 FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001773614166"))
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 60))
 RESPONCE_LIMIT = int(environ.get('RESPONCE_LIMIT', 10))
-ONE_LINK_ONE_FILE = is_enabled((environ.get('ONE_LINK_ONE_FILE', "True")), False)
 accss_grp = environ.get('ACCESS_GROUP', "-1001786962803")
 ACCESS_GROUPS = [int(ch) for ch in accss_grp.split()] if auth_grp else None
 WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
 APPROVE = is_enabled(environ.get("APPROVE", "True"), True)
 DB_URI = environ.get('DATABASE_URI', "mongodb+srv://msg:msg@msg.dkqp9lz.mongodb.net/?retryWrites=true&w=majority")
-PROFANITY_FILTER = is_enabled(environ.get("PROFANITY_FILTER", "False"), False)
 # for copying all files into db
 FORWARD_CHANNEL = int(environ.get('FORWARD_CHANNEL', "-1002039632804"))
+ACCESS_KEY = environ.get("ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0")
 
 # For stream purposes
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")

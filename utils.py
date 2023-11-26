@@ -13,6 +13,7 @@ from database.users_chats_db import db
 from bs4 import BeautifulSoup
 import aiohttp
 from urllib.parse import quote_plus
+import base64
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -415,15 +416,21 @@ def humanbytes(size):
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
 
-async def replace_blacklist(file_name, blacklist, remove_emojis=True, remove_special_chars=True, remove_links=True):
+
+async def replace_blacklist(file_name, blacklist, remove_emojis=True, remove_special_chars=False, remove_links=True):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
+
     if remove_emojis:
-        file_name = re.sub(r'[\U00010000-\U0010ffff]', '', file_name)
+        emoticon_pattern = re.compile(u'[\U0001F600-\U0001F64F]|\U0001F923|\U0001F602|\U0001F603|\U0001F604|\U0001F605|\U0001F606|\U0001F609|\U0001F60A|\U0001F60B|\U0001F60E|\U0001F60D|\U0001F618|\U0001F617|\U0001F619|\U0001F61A|\U0001F61C|\U0001F61D|\U0001F61B|\U0001F911|\U0001F917|\U0001F913|\U0001F60F|\U0001F612|\U0001F61E|\U0001F614|\U0001F61F|\U0001F615|\U0001F641|\U0001F642|\U0001F9D0-\U0001F9D2|\U0001F970|\U0001F60C|\U0001F61C|\U0001F92A|\U0001F92D]+')
+        file_name = emoticon_pattern.sub('', file_name)
+
     if remove_special_chars:
         file_name = re.sub(r'[^a-zA-Z0-9\s]', '', file_name)
+        
     if remove_links:
         file_name = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', file_name)
+
     return file_name
 
 
@@ -446,3 +453,11 @@ async def fetch_quote_content():
             else:
                 print(f"Error: Unable to fetch quote. Status code: {response.status}")
                 return None
+
+def encode_to_base64(text):
+    encoded_data = base64.urlsafe_b64encode(text.encode('utf-8')).rstrip(b'=').decode('utf-8')
+    return encoded_data
+
+def decode_from_base64(text):
+    decoded_data = base64.urlsafe_b64decode(text.encode('utf-8'))
+    return decoded_data
