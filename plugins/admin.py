@@ -268,7 +268,6 @@ async def allcommands(client, message):
         f"<b>➲/resetdaily</b> - To reset daily files count\n"
         f"<b>➲/add_paid</b> - To add a user as premium\n"
         f"<b>➲/remove_paid</b> - To remove a user from premium\n"
-        f"<b>➲/deleteallfiles</b> - To delete all files from database\n"
         f"<b>➲/channel</b> - To get channel info\n"
         f"<b>➲/broadcast</b> - To broadcast a message to all users\n"
         f"<b>➲/id</b> - To get chat id\n"
