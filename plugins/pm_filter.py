@@ -135,7 +135,8 @@ async def filters_private_handlers(client, message):
                 
             # call auto filter
             text, markup = await paid_filter(client, message)
-            m = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
+            if text or markup:
+                m = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         else:
             if user_timestamps:
