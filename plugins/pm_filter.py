@@ -215,6 +215,7 @@ async def public_group_filter(client, message):
         if group_id in AUTH_GROUPS:
             k = await manual_filters(client, message)
             if not k:
+                # 1 Ads 
                 if one_link_one_file_group is not None and one_link_one_file_group is True:
                     # Auto filter
                     if files_counts is not None and files_counts >= 1:
