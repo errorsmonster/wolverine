@@ -182,9 +182,10 @@ async def start(client, message):
             ]]
         if premium_status is True:
             button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
-
-        if files_counts is not None and files_counts >= 15:
-            return await message.reply(f"<b>You Have Exceeded Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>")
+            
+        if premium_status is not True and files_counts is not None and files_counts >= 15:
+                return await message.reply(f"<b>You Have Exceeded Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>")
+            
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
