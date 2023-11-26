@@ -485,7 +485,7 @@ async def manual_filters(client, message, text=False):
 # callback autofilter
 async def callback_auto_filter(msg, query):
     search=msg
-    files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
+    files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     search_results_text = []
     for file in files:
         shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
@@ -499,7 +499,7 @@ async def callback_auto_filter(msg, query):
 # callback paidfilter
 async def callback_paid_filter(msg, query):
     search=msg
-    files, _, _ = await get_search_results(search.lower(), offset=0, filter=True)
+    files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     search_results_text = []
     for file in files:
         shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}"
