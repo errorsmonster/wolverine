@@ -496,8 +496,8 @@ async def admin_controll(client, message):
             InlineKeyboardButton("Redeem Code", callback_data="redeem"),
         ],
         [
-            InlineKeyboardButton("1 Ads Group 🔵" if await mdb.get_configuration_value("one_link_one_file_group") else "1 Ads Group", callback_data="1linkgroup"),
-            InlineKeyboardButton("1 Ads Private 🔵" if await mdb.get_configuration_value("one_link") else "1 Ads private", callback_data="1link1file"),
+            InlineKeyboardButton("1 Time Ads GC 🔵" if await mdb.get_configuration_value("one_link_one_file_group") else "1 Ads Group", callback_data="1linkgroup"),
+            InlineKeyboardButton("1 Time Ads PM 🔵" if await mdb.get_configuration_value("one_link") else "1 Ads private", callback_data="1link1file"),
         ],
         [
             InlineKeyboardButton("Group Filter 🔵" if await mdb.get_configuration_value("group_filter") else "Group Filter", callback_data="group_filter"),

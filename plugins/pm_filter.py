@@ -184,7 +184,6 @@ async def public_group_filter(client, message):
     title = message.chat.title
     member_count = message.chat.members_count
 
-    # Check if the chat and user exist in the database
     chat_exists = await db.get_chat(group_id)
     user_exists = await db.is_user_exist(message.from_user.id)
     group_filter = await mdb.get_configuration_value("group_filter")
@@ -193,13 +192,11 @@ async def public_group_filter(client, message):
     files_counts = user.get("files_count")
     one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
 
-    # Add chat or user if they don't exist in the database
     if not chat_exists:
         await db.add_chat(group_id, title)
     if not user_exists:
         await db.add_user(message.from_user.id, message.from_user.first_name)
 
-    # Ignore commands starting with "/"
     if message.text.startswith("/"):
         return
     
@@ -219,11 +216,20 @@ async def public_group_filter(client, message):
                 if one_link_one_file_group is not None and one_link_one_file_group is True:
                     # Auto filter
                     if files_counts is not None and files_counts >= 1:
-                        m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)
+                        if free or button:
+                            m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)
+                        else:
+                            return    
                     else:
+                        if text or markup:
+                            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
+                        else:
+                            return    
+                else:
+                    if text or markup:
                         m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
-                else:        
-                    m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
+                    else:
+                        return        
 
         elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
             m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
@@ -236,6 +242,7 @@ async def public_group_filter(client, message):
             await asyncio.sleep(WAIT_TIME)
             await message.delete()
             await m.delete()
+
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
