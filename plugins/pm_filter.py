@@ -187,6 +187,7 @@ async def public_group_filter(client, message):
     # Check if the chat and user exist in the database
     chat_exists = await db.get_chat(group_id)
     user_exists = await db.is_user_exist(message.from_user.id)
+    group_filter = await mdb.get_configuration_value("group_filter")
 
     # Add chat or user if they don't exist in the database
     if not chat_exists:
@@ -202,14 +203,15 @@ async def public_group_filter(client, message):
     
     text, markup = await auto_filter(client, message)
     try:
-        # Filtering logic
-        if group_id in AUTH_GROUPS:
-            k = await manual_filters(client, message)
-            if not k:
-                m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
+        if group_filter:
+            # Filtering logic
+            if group_id in AUTH_GROUPS:
+                k = await manual_filters(client, message)
+                if not k:
+                    m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
 
-        elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
-            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
+            elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
+                m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
         
     except Exception as e:
         print(e)
