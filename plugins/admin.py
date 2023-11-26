@@ -490,19 +490,24 @@ async def send_message_to_user(client, message):
 
 @Client.on_message(filters.command("admin") & filters.private & filters.user(ADMINS))
 async def admin_controll(client, message):
-    button = [[
-        InlineKeyboardButton("DeleteFiles", callback_data="delback"),
-        InlineKeyboardButton("Redeem Code", callback_data="redeem"),
-        ],[
-        InlineKeyboardButton("Maintainence", callback_data="maintenance"),
-        InlineKeyboardButton("One Link", callback_data="1link1file"),
-        ],[
-        InlineKeyboardButton("Group Filter", callback_data="group_filter"),
-        InlineKeyboardButton("Private Filter", callback_data="private_filter"),
-        ],[
-        InlineKeyboardButton("Terms", callback_data="terms_and_condition"),
-        InlineKeyboardButton("Auto Approve", callback_data="autoapprove"),
-        ]]
+    button = [
+        [
+            InlineKeyboardButton("DeleteFiles", callback_data="delback"),
+            InlineKeyboardButton("Redeem Code", callback_data="redeem"),
+        ],
+        [
+            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance"),
+            InlineKeyboardButton("One Link 🔵" if await mdb.get_configuration_value("one_link") else "One Link", callback_data="1link1file"),
+        ],
+        [
+            InlineKeyboardButton("Group Filter 🔵" if await mdb.get_configuration_value("group_filter") else "Group Filter", callback_data="group_filter"),
+            InlineKeyboardButton("Private Filter 🔵" if await mdb.get_configuration_value("private_filter") else "Private Filter", callback_data="private_filter"),
+        ],
+        [
+            InlineKeyboardButton("Terms 🔵" if await mdb.get_configuration_value("terms") else "Terms", callback_data="terms_and_condition"),
+            InlineKeyboardButton("Auto Approve 🔵" if await mdb.get_configuration_value("auto_accept") else "Auto Approve", callback_data="autoapprove"),
+        ]
+    ]
 
     reply_markup = InlineKeyboardMarkup(button)
     await message.reply_text(
