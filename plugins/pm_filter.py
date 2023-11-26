@@ -197,11 +197,8 @@ async def public_group_filter(client, message):
     if not user_exists:
         await db.add_user(message.from_user.id, message.from_user.first_name)
 
-    if message.text.startswith("/"):
+    if message.text.startswith("/") or group_filter is False:
         return
-    
-    if group_filter is not True:
-        return       
     
     await mdb.update_top_messages(message.from_user.id, message.text) 
     
@@ -216,20 +213,12 @@ async def public_group_filter(client, message):
                 if one_link_one_file_group is not None and one_link_one_file_group is True:
                     # Auto filter
                     if files_counts is not None and files_counts >= 1:
-                        if free or button:
-                            m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)
-                        else:
-                            return    
+                        m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)    
                     else:
-                        if text or markup:
-                            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
-                        else:
-                            return    
+                        m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)   
                 else:
-                    if text or markup:
-                        m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
-                    else:
-                        return        
+                    m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
+
 
         elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
             m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
