@@ -125,7 +125,7 @@ async def filters_private_handlers(client, message):
                 return
             
             if files_counts is not None and files_counts >= 50:
-                await msg.edit(f"<b>Your Account Has Been Terminated Due To Misuse, And It'll Be Unlocked After {time_difference} Hours.</b>")
+                await msg.edit(f"<b>Your Account Has Been Locked Due To Spamming, And It'll Be Unlocked After {time_difference} Hours.</b>")
                 return
             
             if duration == 29:
