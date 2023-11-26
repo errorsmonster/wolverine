@@ -156,7 +156,7 @@ async def filters_private_handlers(client, message):
                 
             if files_counts is not None and files_counts >= 10:
                 await message.reply(
-                    f"<b>You Have Reached Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request or Request in Group</b>",
+                    f"<b>You Have Reached Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>",
                     disable_web_page_preview=True)
                 return
         
