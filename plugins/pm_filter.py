@@ -189,7 +189,6 @@ async def public_group_filter(client, message):
     files_counts = await db.get_files_count(message.from_user.id)
     one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
 
-
     await mdb.update_top_messages(message.from_user.id, message.text) 
 
     group_id = message.chat.id
