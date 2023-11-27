@@ -16,7 +16,7 @@ from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from database.config_panel import mdb
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, replace_blacklist, fetch_quote_content, save_group_settings
+from utils import get_size, is_subscribed, search_gagala, temp, get_settings, replace_blacklist, fetch_quote_content, save_group_settings
 from plugins.shortner import gplinks
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
@@ -181,27 +181,18 @@ async def filters_private_handlers(client, message):
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
-    group_id = message.chat.id
-    title = message.chat.title
-    member_count = message.chat.members_count
-
-    chat_exists = await db.get_chat(group_id)
-    user_exists = await db.is_user_exist(message.from_user.id)
+    
     group_filter = await mdb.get_configuration_value("group_filter")
-    user_id = message.from_user.id
-    user = await db.get_user(user_id)
-    files_counts = user.get("files_count")
-    one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
-
-    if not chat_exists:
-        await db.add_chat(group_id, title)
-    if not user_exists:
-        await db.add_user(message.from_user.id, message.from_user.first_name)
-
     if message.text.startswith("/") or group_filter is False:
         return
     
+    files_counts = await db.get_files_count(message.from_user.id)
+    one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
+
     await mdb.update_top_messages(message.from_user.id, message.text) 
+
+    group_id = message.chat.id
+    member_count = message.chat.members_count
     
     text, markup = await auto_filter(client, message)
     free, button = await free_filter(client, message)
@@ -213,7 +204,7 @@ async def public_group_filter(client, message):
                 # 1 Ads 
                 if one_link_one_file_group is not None and one_link_one_file_group is True:
                     # Auto filter
-                    if files_counts is not None and files_counts >= 1:
+                    if files_counts and files_counts is not None and files_counts >= 1:
                         m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)    
                     else:
                         m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)   
@@ -420,11 +411,6 @@ async def advantage_spell_chok(msg):
     gs_parsed = list(dict.fromkeys(gs_parsed))  # removing duplicates https://stackoverflow.com/a/7961425
     if len(gs_parsed) > 3:
         gs_parsed = gs_parsed[:3]
-    if gs_parsed:
-        for mov in gs_parsed:
-            imdb_s = await get_poster(mov.strip(), bulk=True)  # searching each keyword in imdb
-            if imdb_s:
-                movielist += [movie.get('title') for movie in imdb_s]
     movielist += [(re.sub(r'(\-|\(|\)|_)', '', i, flags=re.IGNORECASE)).strip() for i in gs_parsed]
     movielist = list(dict.fromkeys(movielist))  # removing duplicates
     if not movielist:
