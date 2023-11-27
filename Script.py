@@ -57,7 +57,7 @@ By using our bot, you acknowledge that you have read, understood, and agreed the
 """
 
     # removing blacklisted words
-    BLACKLIST = ['tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine',
+    BLACKLIST = ['tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'www', 'http', 'https',
                 'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'flix',
                 '4u', 'hub', 'movies', 'otthd', 'telegram', 'hoichoihok', '@', ']', '[',
                 'filmy', 'films', 'cinema', 'join', 'club', 'apd', 'F-Press', 'GDTOT', 'GD',
