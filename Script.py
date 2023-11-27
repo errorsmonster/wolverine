@@ -37,11 +37,11 @@ Name - {}
 
     #remove ads
     REMADS_TEXT = """
-<b>Free</b>\nAds & no direct links\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, no waiting time, web download and web stream\n\n<b>Plan Cost - ₹20/month & ₹100/6Month </b>\nPrices may increase in the future.
+<b>Free</b>\nAds & no direct links.\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, no waiting time, web download and web streaming.\n\n<b>Plan Cost - ₹20/month & ₹100/6Month </b>\nPrices may increase in the future.
 """
     #confirm text
     CNFRM_TEXT = """
-**UPI** -\n     <code>iPrimeHub@axl</code>  (tap2copy) \n\n**To Confirm Payment Process, Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/lemx4>L E M O N</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
+**UPI** -\n     <code>iPrimeHub@axl</code>\n          (tap2copy) \n\n**To Confirm Payment Process, Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/lemx4>L E M O N</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
 """
     # Terms & Conditions
     TERMS = """
