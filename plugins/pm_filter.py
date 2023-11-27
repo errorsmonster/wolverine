@@ -182,18 +182,6 @@ async def filters_private_handlers(client, message):
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
 
-    group_id = message.chat.id
-    title = message.chat.title
-    member_count = message.chat.members_count
-    chat_exists = await db.get_chat(group_id)
-
-    if not chat_exists:
-        await db.add_chat(group_id, title)
-        
-    user_exists = await db.is_user_exist(message.from_user.id)
-    if not user_exists:
-        await db.add_user(message.from_user.id, message.from_user.first_name)
-
     group_filter = await mdb.get_configuration_value("group_filter")
     if message.text.startswith("/") or group_filter is False:
         return
@@ -204,6 +192,9 @@ async def public_group_filter(client, message):
 
 
     await mdb.update_top_messages(message.from_user.id, message.text) 
+    
+    group_id = message.chat.id
+    member_count = message.chat.members_count
     
     text, markup = await auto_filter(client, message)
     free, button = await free_filter(client, message)
