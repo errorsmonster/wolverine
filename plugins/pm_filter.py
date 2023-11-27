@@ -205,7 +205,7 @@ async def public_group_filter(client, message):
                 # 1 Ads 
                 if one_link_one_file_group is not None and one_link_one_file_group is True:
                     # Auto filter
-                    if files_counts is not None and files_counts >= 1:
+                    if files_counts and files_counts is not None and files_counts >= 1:
                         m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)    
                     else:
                         m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)   
