@@ -41,7 +41,7 @@ Name - {}
 """
     #confirm text
     CNFRM_TEXT = """
-**UPI** -\n     <code>iPrimeHub@axl</code>  (tap2copy) \n\n**To Confirm Payment Process, Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/lemx4>L E M O N</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
+**UPI** -\n     <code>iPrimeHub@axl</code>\n          (tap2copy) \n\n**To Confirm Payment Process, Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/lemx4>L E M O N</a>\n\n**Admin delays may occur, request refund if plan activation fails.**
 """
     # Terms & Conditions
     TERMS = """
