@@ -181,27 +181,18 @@ async def filters_private_handlers(client, message):
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
-    group_id = message.chat.id
-    title = message.chat.title
-    member_count = message.chat.members_count
-
-    chat_exists = await db.get_chat(group_id)
-    user_exists = await db.is_user_exist(message.from_user.id)
+    
     group_filter = await mdb.get_configuration_value("group_filter")
-    user_id = message.from_user.id
-    user = await db.get_user(user_id)
-    files_counts = user.get("files_count")
-    one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
-
-    if not chat_exists:
-        await db.add_chat(group_id, title)
-    if not user_exists:
-        await db.add_user(message.from_user.id, message.from_user.first_name)
-
     if message.text.startswith("/") or group_filter is False:
         return
     
+    files_counts = await db.get_files_count(message.from_user.id)
+    one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
+
     await mdb.update_top_messages(message.from_user.id, message.text) 
+
+    group_id = message.chat.id
+    member_count = message.chat.members_count
     
     text, markup = await auto_filter(client, message)
     free, button = await free_filter(client, message)
@@ -213,7 +204,7 @@ async def public_group_filter(client, message):
                 # 1 Ads 
                 if one_link_one_file_group is not None and one_link_one_file_group is True:
                     # Auto filter
-                    if files_counts is not None and files_counts >= 1:
+                    if files_counts and files_counts is not None and files_counts >= 1:
                         m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)    
                     else:
                         m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)   
@@ -770,14 +761,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
         title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.caption
-        if CUSTOM_FILE_CAPTION:
-            try:
-                f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
-                                                       file_size='' if size is None else size,
-                                                       file_caption='' if f_caption is None else f_caption)
-            except Exception as e:
-                logger.exception(e)
-                f_caption = f_caption
         if f_caption is None:
             f_caption = f"{title}"
         await query.answer()
@@ -835,7 +818,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )                    
     elif query.data == "remads":
         buttons = [[
-                    InlineKeyboardButton('💫 Confirm', callback_data="confirm"),
+                    InlineKeyboardButton('💫 Pay', callback_data="confirm"),
                     InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
         await query.message.edit(

@@ -152,7 +152,7 @@ async def start(client, message):
     
 
     # for counting each files for user
-    files_counts = await db.get_files_count(message.from_user.id)
+    files_counts = await db.get_files_count(message.from_user.id) or 0
     lifetime_files = await db.get_lifetime_files(message.from_user.id)
     # optinal function for checking time difference between currrent time and next 12'o clock
     current_datetime = datetime.now()
@@ -292,7 +292,7 @@ async def start(client, message):
             )
     
         # for counting each files for user
-        files_counts = await db.get_files_count(message.from_user.id)
+        files_counts = await db.get_files_count(message.from_user.id) or 0
         lifetime_files = await db.get_lifetime_files(message.from_user.id)
         await db.update_files_count(message.from_user.id, files_counts + 1)
         await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
