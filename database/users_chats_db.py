@@ -45,7 +45,9 @@ class Database:
     # get files count of user
     async def get_files_count(self, user_id):
         user = await self.col.find_one({"id": user_id})
-        return user.get("files_count", 0)
+        if user is None:
+            return
+        return user.get("files_count")
     
     # update total files count of user
     async def update_lifetime_files(self, user_id, count):

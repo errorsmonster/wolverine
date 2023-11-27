@@ -186,8 +186,7 @@ async def public_group_filter(client, message):
     if message.text.startswith("/") or group_filter is False:
         return
     
-    user = await db.get_user(message.from_user.id)
-    files_counts = user.get("files_count")
+    files_counts = await db.get_files_count(message.from_user.id)
     one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
 
 
