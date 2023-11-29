@@ -8,10 +8,9 @@ from urllib.parse import quote
 from Script import script
 import aiohttp
 import ast
-from database.connections_mdb import active_connection
-from info import SLOW_MODE_DELAY, ADMINS, AUTH_CHANNEL, AUTH_GROUPS, FORCESUB_CHANNEL, ACCESS_GROUPS, WAIT_TIME, BIN_CHANNEL, URL, ACCESS_KEY
+from info import SLOW_MODE_DELAY, ADMINS, AUTH_GROUPS, FORCESUB_CHANNEL, WAIT_TIME, BIN_CHANNEL, URL, ACCESS_KEY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters
 from database.users_chats_db import db
 from database.config_panel import mdb
 from pyrogram.errors import MessageNotModified
@@ -20,11 +19,7 @@ from plugins.shortner import gplinks
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
-from database.filters_mdb import (
-    del_all,
-    find_filter,
-    get_filters,
-)
+from database.filters_mdb import find_filter
 import logging
 
 logger = logging.getLogger(__name__)

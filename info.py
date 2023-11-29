@@ -37,7 +37,6 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'ryu')
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
-SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'iPrimeHub')
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)
 SPELL_CHECK_REPLY = is_enabled(environ.get("SPELL_CHECK_REPLY", "False"), True)
 MAX_LIST_ELM = environ.get("MAX_LIST_ELM", None)
@@ -45,13 +44,9 @@ INDEX_REQ_CHANNEL = int(environ.get('INDEX_REQ_CHANNEL', LOG_CHANNEL))
 FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001773614166"))
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 60))
 RESPONCE_LIMIT = int(environ.get('RESPONCE_LIMIT', 10))
-accss_grp = environ.get('ACCESS_GROUP', "-1001786962803")
-ACCESS_GROUPS = [int(ch) for ch in accss_grp.split()] if auth_grp else None
 WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
 DB_URI = environ.get('DATABASE_URI', "mongodb+srv://msg:msg@msg.dkqp9lz.mongodb.net/?retryWrites=true&w=majority")
-# for copying all files into db
 FORWARD_CHANNEL = int(environ.get('FORWARD_CHANNEL', "-1002039632804"))
 ACCESS_KEY = environ.get("ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0")
-# For stream purposes
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")
 URL = environ.get("URL", "https://linkrobot.onrender.com")

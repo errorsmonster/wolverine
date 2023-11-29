@@ -1,7 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
-from info import ADMINS, SUPPORT_CHAT
 from database.users_chats_db import db
 from database.ia_filterdb import Media
 from utils import temp
@@ -15,7 +14,7 @@ async def save_group(bot, message):
     if temp.ME in r_j_check:
         if message.chat.id in temp.BANNED_CHATS:
             buttons = [[
-                InlineKeyboardButton('Support', url=f'https://t.me/{SUPPORT_CHAT}')
+                InlineKeyboardButton('Support', url=f'https://t.me/iPrimeHub')
             ]]
             reply_markup=InlineKeyboardMarkup(buttons)
             k = await message.reply(
