@@ -820,83 +820,34 @@ async def cb_handler(client: Client, query: CallbackQuery):
         codes_str = "\n".join(f"`{code}`" for code in codes_generated)
         await query.message.edit(f"<b>Redeem codes:</b>\n\n{codes_str}")
 
-     #maintainance
+    #maintainance
     elif query.data == "maintenance":
-        config = await mdb.get_configuration_value("maintenance_mode")
-        if config is True:
-            await mdb.update_configuration("maintenance_mode", False)
-            await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("maintenance_mode", True)
-            await query.message.edit(f"<b>Maintenance mode enabled.</b>", reply_markup=None)
-
+        await toggle_config(query, "maintenance_mode", "Maintenance mode")
     elif query.data == "1link1file":
-        config = await mdb.get_configuration_value("one_link")
-        if config is True:
-            await mdb.update_configuration("one_link", False)
-            await query.message.edit(f"<b>1 time Ads in private disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("one_link", True)
-            await query.message.edit(f"<b>1 time Ads in private enabled.</b>", reply_markup=None)
-
+        await toggle_config(query, "one_link", "1 time Ads in private")
     elif query.data == "1linkgroup":
-        config = await mdb.get_configuration_value("one_link_one_file_group")
-        if config is True:
-            await mdb.update_configuration("one_link_one_file_group", False)
-            await query.message.edit(f"<b>1 time Ads in group disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("one_link_one_file_group", True)
-            await query.message.edit(f"<b>1 time Ads in group enabled.</b>", reply_markup=None)
-
-
+        await toggle_config(query, "one_link_one_file_group", "1 time Ads in group")
     elif query.data == "autoapprove":
-        config = await mdb.get_configuration_value("auto_accept")
-        if config is True:
-            await mdb.update_configuration("auto_accept", False)
-            await query.message.edit(f"<b>Auto approve disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("auto_accept", True)
-            await query.message.edit(f"<b>Auto approve enabled.</b>", reply_markup=None)
-
+        await toggle_config(query, "auto_accept", "Auto approve")
     elif query.data == "private_filter":
-        config = await mdb.get_configuration_value("private_filter")
-        if config is True:
-            await mdb.update_configuration("private_filter", False)
-            await query.message.edit(f"<b>Private filter disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("private_filter", True)
-            await query.message.edit(f"<b>Private filter enabled.</b>", reply_markup=None)
-
+        await toggle_config(query, "private_filter", "Private filter")
     elif query.data == "group_filter":
-        config = await mdb.get_configuration_value("group_filter")
-        if config is True:
-            await mdb.update_configuration("group_filter", False)
-            await query.message.edit(f"<b>Group filter disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("group_filter", True)
-            await query.message.edit(f"<b>Group filter enabled.</b>", reply_markup=None)              
-
+        await toggle_config(query, "group_filter", "Group filter")
     elif query.data == "terms_and_condition":
-        config = await mdb.get_configuration_value("terms")
-        print(f"Terms: {config}")
-        if config is True:
-            await mdb.update_configuration("terms", False)
-            await query.message.edit(f"<b>Terms&Condition disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("terms", True)
-            await query.message.edit(f"<b>Terms&Condition enabled.</b>", reply_markup=None)
-
+        await toggle_config(query, "terms", "Terms&Condition")
     elif query.data == "spoll_check":
-        config = await mdb.get_configuration_value("spoll_check")
-        if config is True:
-            await mdb.update_configuration("spoll_check", False)
-            await query.message.edit(f"<b>Spell Check disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("spoll_check", True)
-            await query.message.edit(f"<b>Spell Check enabled.</b>", reply_markup=None)    
+        await toggle_config(query, "spoll_check", "Spell Check")
 
     await query.answer('Share & Support Us♥️')
 
+async def toggle_config(query, config_key, message):
+    config = await mdb.get_configuration_value(config_key)
+    if config is True:
+        await mdb.update_configuration(config_key, False)
+        await query.message.edit(f"<b>{message} disabled.</b>", reply_markup=None)
+    else:
+        await mdb.update_configuration(config_key, True)
+        await query.message.edit(f"<b>{message} enabled.</b>", reply_markup=None)
 
 async def delete_files(query, limit, file_type):
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
