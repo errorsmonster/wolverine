@@ -16,10 +16,6 @@ API_ID = environ.get('API_ID', "11948995")
 API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
 BOT_TOKEN = environ.get('BOT_TOKEN', "6496586495:AAFZXdcbC7XANI3lwtmeDTPVs43EHp0HG3I")
 
-# Bot settings
-CACHE_TIME = int(environ.get('CACHE_TIME', 300))
-USE_CAPTION_FILTER = bool(environ.get('USE_CAPTION_FILTER', False))
-
 # Admins, Channels & Users
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1247742004 2141736280').split()]
 CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '0').split()]
