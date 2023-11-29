@@ -257,17 +257,6 @@ class Database:
         )
         await self.grp.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
         
-    async def update_settings(self, id, settings):
-        await self.grp.update_one({'id': int(id)}, {'$set': {'settings': settings}})
-        
-    async def get_settings(self, id):
-        default = {
-            'spell_check': SPELL_CHECK_REPLY
-        }
-        chat = await self.grp.find_one({'id': int(id)})
-        if chat:
-            return chat.get('settings', default)
-        return default
     
     async def disable_chat(self, chat, reason="No Reason"):
         chat_status=dict(
