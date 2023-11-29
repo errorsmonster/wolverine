@@ -8,7 +8,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyb
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from database.config_panel import mdb
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, FORCESUB_CHANNEL, WAIT_TIME
+from info import CHANNELS, ADMINS, FORCESUB_CHANNEL, WAIT_TIME
 from utils import is_subscribed, temp, replace_blacklist
 from database.ia_filterdb import get_search_results
 import re
@@ -32,11 +32,6 @@ async def start(client, message):
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply(script.START_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.U_NAME, temp.B_NAME), reply_markup=reply_markup, disable_web_page_preview=True)
         await asyncio.sleep(2)
-        if not await db.get_chat(message.chat.id):
-            total=await client.get_chat_members_count(message.chat.id)
-            await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
-            await db.add_chat(message.chat.id, message.chat.title)
-        return
     term = await mdb.get_configuration_value("terms")
     if not await db.is_user_exist(message.from_user.id) and term and len(message.command) != 2:
         button = [
