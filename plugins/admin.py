@@ -508,7 +508,8 @@ async def admin_controll(client, message):
             InlineKeyboardButton("Auto Approve 🔵" if await mdb.get_configuration_value("auto_accept") else "Auto Approve", callback_data="autoapprove"),
         ],
         [
-            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance")
+            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance"),
+            InlineKeyboardButton("Spell Check 🔵" if await mdb.get_configuration_value("spoll_check") else "Spell Check", callback_data="spoll_check"),
         ]
     ]
 

@@ -9,8 +9,7 @@ from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from database.config_panel import mdb
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, FORCESUB_CHANNEL, WAIT_TIME
-from utils import get_settings, is_subscribed, temp, replace_blacklist
-from database.connections_mdb import active_connection
+from utils import is_subscribed, temp, replace_blacklist
 from database.ia_filterdb import get_search_results
 import re
 import base64
@@ -286,7 +285,7 @@ async def start(client, message):
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
-            protect_content=True if pre == 'filep' else False,
+
             caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
@@ -343,7 +342,6 @@ async def channel_info(bot, message):
 
 @Client.on_message(filters.command('logs') & filters.user(ADMINS))
 async def log_file(bot, message):
-    """Send log file"""
     try:
         await message.reply_document('TelegramBot.log')
     except Exception as e:
@@ -367,7 +365,7 @@ async def delete(bot, message):
         await msg.edit('This is not supported file format')
         return
     
-    file_id, file_ref = unpack_new_file_id(media.file_id)
+    file_id, _ = unpack_new_file_id(media.file_id)
 
     result = await Media.collection.delete_one({
         '_id': file_id,
@@ -451,77 +449,3 @@ async def delete_all_index_confirm(bot, message):
     await Media.collection.drop()
     await message.answer('Share & Support Us♥️')
     await message.message.edit('Succesfully Deleted All The Indexed Files.')
-
-
-@Client.on_message(filters.command('settings') & filters.user(ADMINS))
-async def settings(client, message):
-    userid = message.from_user.id if message.from_user else None
-    if not userid:
-        return await message.reply(f"You are anonymous admin. Use /connect {message.chat.id} in PM")
-    chat_type = message.chat.type
-
-    if chat_type == enums.ChatType.PRIVATE:
-        grpid = await active_connection(str(userid))
-        if grpid is not None:
-            grp_id = grpid
-            try:
-                chat = await client.get_chat(grpid)
-                title = chat.title
-            except:
-                await message.reply_text("Make sure I'm present in your group!!", quote=True)
-                return
-        else:
-            await message.reply_text("I'm not connected to any groups!", quote=True)
-            return
-
-    elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        grp_id = message.chat.id
-        title = message.chat.title
-
-    else:
-        return
-
-    st = await client.get_chat_member(grp_id, userid)
-    if (
-            st.status != enums.ChatMemberStatus.ADMINISTRATOR
-            and st.status != enums.ChatMemberStatus.OWNER
-            and str(userid) not in ADMINS
-    ):
-        return
-
-    settings = await get_settings(grp_id)
-
-    if settings is not None:
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    'File Secure',
-                    callback_data=f'setgs#file_secure#{settings["file_secure"]}#{grp_id}',
-                ),
-                InlineKeyboardButton(
-                    '✅ Yes' if settings["file_secure"] else '❌ No',
-                    callback_data=f'setgs#file_secure#{settings["file_secure"]}#{grp_id}',
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'Spell Check',
-                    callback_data=f'setgs#spell_check#{settings["spell_check"]}#{grp_id}',
-                ),
-                InlineKeyboardButton(
-                    '✅ Yes' if settings["spell_check"] else '❌ No',
-                    callback_data=f'setgs#spell_check#{settings["spell_check"]}#{grp_id}',
-                ),
-            ],
-        ]
-
-        reply_markup = InlineKeyboardMarkup(buttons)
-
-        await message.reply_text(
-            text=f"<b>Change Your Settings for {title} As Your Wish ⚙</b>",
-            reply_markup=reply_markup,
-            disable_web_page_preview=True,
-            parse_mode=enums.ParseMode.HTML,
-            reply_to_message_id=message.id
-        )
-

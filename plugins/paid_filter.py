@@ -7,7 +7,7 @@ from info import SLOW_MODE_DELAY, WAIT_TIME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from pyrogram.errors import MessageNotModified
-from utils import get_size, get_settings, replace_blacklist, temp, encode_to_base64, decode_from_base64
+from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
 
 
@@ -20,7 +20,7 @@ waitime = WAIT_TIME
 
 @Client.on_callback_query(filters.regex(r"^forward"))
 async def paid_next_page(bot, query):
-    ident, req, key, offset = query.data.split("_")
+    _, req, key, offset = query.data.split("_")
     try:
         offset = int(offset)
     except:
@@ -38,16 +38,13 @@ async def paid_next_page(bot, query):
 
     if not files:
         return
-    settings = await get_settings(query.message.chat.id)
-    if settings['button']:
-        # Construct a text message with hyperlinks
-        search_results_text = []
-        for file in files:
-            shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}"
-            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
-            search_results_text.append(file_link)
+    search_results_text = []
+    for file in files:
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        search_results_text.append(file_link)
 
-        search_results_text = "\n\n".join(search_results_text)
+    search_results_text = "\n\n".join(search_results_text)
 
     btn = []
     

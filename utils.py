@@ -1,6 +1,6 @@
 import logging
 from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, FORCESUB_CHANNEL, ADMINS
+from info import MAX_LIST_ELM, FORCESUB_CHANNEL, ADMINS
 from imdb import Cinemagoer
 import asyncio
 from pyrogram.types import Message, InlineKeyboardButton
@@ -175,8 +175,6 @@ def get_file_id(msg: Message):
                 return obj
 
 def extract_user(message: Message) -> Union[int, str]:
-    """extracts the user from a message"""
-    # https://github.com/SpEcHiDe/PyroGramBot/blob/f30e2cca12002121bad1982f68cd0ff9814ce027/pyrobot/helper_functions/extract_user.py#L7
     user_id = None
     user_first_name = None
     if message.reply_to_message:

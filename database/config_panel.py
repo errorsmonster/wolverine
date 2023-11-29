@@ -45,7 +45,8 @@ class Database:
             one_link_one_file_group=False,
             private_filter=True,
             group_filter=True,
-            terms=True):
+            terms=True,
+            spoll_check=True):
         
         return {
             'maintenance_mode': maintenance_mode,
@@ -54,7 +55,8 @@ class Database:
             'one_link_one_file_group': one_link_one_file_group,
             'private_filter': private_filter,
             'group_filter': group_filter,
-            'terms': terms
+            'terms': terms,
+            'spoll_check': spoll_check
         }
 
     async def update_configuration(self, key, value):

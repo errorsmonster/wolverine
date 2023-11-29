@@ -8,15 +8,14 @@ from urllib.parse import quote
 from Script import script
 import aiohttp
 import ast
-from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
-    make_inactive
-from info import SLOW_MODE_DELAY, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, FORCESUB_CHANNEL, ACCESS_GROUPS, WAIT_TIME, BIN_CHANNEL, URL, ACCESS_KEY
+from database.connections_mdb import active_connection
+from info import SLOW_MODE_DELAY, ADMINS, AUTH_CHANNEL, AUTH_GROUPS, FORCESUB_CHANNEL, ACCESS_GROUPS, WAIT_TIME, BIN_CHANNEL, URL, ACCESS_KEY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from database.users_chats_db import db
 from database.config_panel import mdb
-from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, search_gagala, temp, get_settings, replace_blacklist, fetch_quote_content, save_group_settings
+from pyrogram.errors import MessageNotModified
+from utils import get_size, is_subscribed, search_gagala, temp, replace_blacklist, fetch_quote_content
 from plugins.shortner import gplinks
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
@@ -251,16 +250,14 @@ async def next_page(bot, query):
 
     if not files:
         return
-    settings = await get_settings(query.message.chat.id)
-    if settings['button']:
-        # Construct a text message with hyperlinks
-        search_results_text = []
-        for file in files:
-            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
-            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
-            search_results_text.append(file_link)
+    # Construct a text message with hyperlinks
+    search_results_text = []
+    for file in files:
+        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
+        search_results_text.append(file_link)
 
-        search_results_text = "\n\n".join(search_results_text)
+    search_results_text = "\n\n".join(search_results_text)
 
     btn = []
     btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
@@ -327,7 +324,6 @@ async def advantage_spoll_choker(bot, query):
 async def auto_filter(client, msg, spoll=False):
     if not spoll:
         message = msg
-        settings = await get_settings(message.chat.id)
         if message.text.startswith("/"): return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
             return
@@ -335,25 +331,22 @@ async def auto_filter(client, msg, spoll=False):
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
-                if settings["spell_check"]:
+                if await mdb.get_configuration_value("spoll_check"):
                     return await advantage_spell_chok(msg)
                 else:
                     return
         else:
             return
     else:
-        settings = await get_settings(msg.message.chat.id)
         message = msg.message.reply_to_message
         search, files, offset, total_results = spoll
-    if settings["button"]:
-        # Construct a text message with hyperlinks
-        search_results_text = []
-        for file in files:
-            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
-            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
-            search_results_text.append(file_link)
+    search_results_text = []
+    for file in files:
+        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
+        search_results_text.append(file_link)
 
-        search_results_text = "\n\n".join(search_results_text)
+    search_results_text = "\n\n".join(search_results_text)
 
     btn = []   
     btn.append([
@@ -565,129 +558,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     pass
             else:
                 await query.answer("That's not for you!!", show_alert=True)
-    elif "groupcb" in query.data:
-        await query.answer()
-
-        group_id = query.data.split(":")[1]
-
-        act = query.data.split(":")[2]
-        hr = await client.get_chat(int(group_id))
-        title = hr.title
-        user_id = query.from_user.id
-
-        if act == "":
-            stat = "CONNECT"
-            cb = "connectcb"
-        else:
-            stat = "DISCONNECT"
-            cb = "disconnect"
-
-        keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton(f"{stat}", callback_data=f"{cb}:{group_id}"),
-             InlineKeyboardButton("DELETE", callback_data=f"deletecb:{group_id}")],
-            [InlineKeyboardButton("BACK", callback_data="backcb")]
-        ])
-
-        await query.message.edit_text(
-            f"Group Name : **{title}**\nGroup ID : `{group_id}`",
-            reply_markup=keyboard,
-            parse_mode=enums.ParseMode.MARKDOWN
-        )
-        return await query.answer('Share & Support Us♥️')
-    elif "connectcb" in query.data:
-        await query.answer()
-
-        group_id = query.data.split(":")[1]
-
-        hr = await client.get_chat(int(group_id))
-
-        title = hr.title
-
-        user_id = query.from_user.id
-
-        mkact = await make_active(str(user_id), str(group_id))
-
-        if mkact:
-            await query.message.edit_text(
-                f"Connected to **{title}**",
-                parse_mode=enums.ParseMode.MARKDOWN
-            )
-        else:
-            await query.message.edit_text('Some error occurred!!', parse_mode=enums.ParseMode.MARKDOWN)
-        return await query.answer('Share & Support Us♥️')
-    elif "disconnect" in query.data:
-        await query.answer()
-
-        group_id = query.data.split(":")[1]
-
-        hr = await client.get_chat(int(group_id))
-
-        title = hr.title
-        user_id = query.from_user.id
-
-        mkinact = await make_inactive(str(user_id))
-
-        if mkinact:
-            await query.message.edit_text(
-                f"Disconnected from **{title}**",
-                parse_mode=enums.ParseMode.MARKDOWN
-            )
-        else:
-            await query.message.edit_text(
-                f"Some error occurred!!",
-                parse_mode=enums.ParseMode.MARKDOWN
-            )
-        return await query.answer('Share & Support Us♥️')
-    elif "deletecb" in query.data:
-        await query.answer()
-
-        user_id = query.from_user.id
-        group_id = query.data.split(":")[1]
-
-        delcon = await delete_connection(str(user_id), str(group_id))
-
-        if delcon:
-            await query.message.edit_text(
-                "Successfully deleted connection"
-            )
-        else:
-            await query.message.edit_text(
-                f"Some error occurred!!",
-                parse_mode=enums.ParseMode.MARKDOWN
-            )
-        return await query.answer('Share & Support Us♥️')
-    elif query.data == "backcb":
-        await query.answer()
-
-        userid = query.from_user.id
-
-        groupids = await all_connections(str(userid))
-        if groupids is None:
-            await query.message.edit_text(
-                "There are no active connections!! Connect to some groups first.",
-            )
-            return await query.answer('Share & Support Us♥️')
-        buttons = []
-        for groupid in groupids:
-            try:
-                ttl = await client.get_chat(int(groupid))
-                title = ttl.title
-                active = await if_active(str(userid), str(groupid))
-                act = " - ACTIVE" if active else ""
-                buttons.append(
-                    [
-                        InlineKeyboardButton(
-                            text=f"{title}{act}", callback_data=f"groupcb:{groupid}:{act}"
-                        )
-                    ]
-                )
-            except:
-                pass
-        if buttons:
-            await query.message.edit_text(
-                "Your connected group details ;\n\n",
-                reply_markup=InlineKeyboardMarkup(buttons)
-            )
     elif "alertmessage" in query.data:
         grp_id = query.message.chat.id
         i = query.data.split(":")[1]
@@ -698,58 +568,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             alert = alerts[int(i)]
             alert = alert.replace("\\n", "\n").replace("\\t", "\t")
             await query.answer(alert, show_alert=True)
-    if query.data.startswith("file"):
-        ident, file_id = query.data.split("#")
-        files_ = await get_file_details(file_id)
-        if not files_:
-            return await query.answer('No such file exist.')
-        files = files_[0]
-        title = files.file_name
-        size = get_size(files.file_size)
-        f_caption = files.caption
-        settings = await get_settings(query.message.chat.id)
-        if CUSTOM_FILE_CAPTION:
-            try:
-                f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
-                                                       file_size='' if size is None else size,
-                                                       file_caption='' if f_caption is None else f_caption)
-            except Exception as e:
-                logger.exception(e)
-            f_caption = f_caption
-        if f_caption is None:
-            f_caption = f"{files.file_name}"
 
-        try:
-            if AUTH_CHANNEL and not await is_subscribed(client, query):
-                await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-                return
-            elif settings['botpm']:
-                await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-                return
-            else:
-                media_id=await client.send_cached_media(
-                    chat_id=query.from_user.id,
-                    file_id=file_id,
-                    caption=f"<code>{await replace_blacklist(f_caption, script.BLACKLIST)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
-                    protect_content=True if ident == "filep" else False 
-                )
-                await query.answer('Check PM, I have sent files in pm', show_alert=True)
-                del_msg = await client.send_message(
-                    text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
-                    chat_id=query.from_user.id,
-                    reply_to_message_id=media_id.id
-                    )
-                await asyncio.sleep(WAIT_TIME or 600)
-                await media_id.delete()
-                await del_msg.edit("__⊘ This message was deleted__")
-
-        except UserIsBlocked:
-            await query.answer('Unblock the bot mahn !', show_alert=True)
-        except PeerIdInvalid:
-            await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-        except Exception as e:
-            await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-    elif query.data.startswith("checksub"):
+    if query.data.startswith("checksub"):
         if FORCESUB_CHANNEL and not await is_subscribed(client, query):
             await query.answer("Please Join My Channel Then Click Try Again 😒", show_alert=True)
             return
@@ -768,7 +588,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             chat_id=query.from_user.id,
             file_id=file_id,
             caption=f"<code>{await replace_blacklist(f_caption, script.BLACKLIST)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
-            protect_content=True if ident == 'checksubp' else False
         )
         del_msg = await client.send_message(
             text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
@@ -1119,37 +938,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.edit(f"<b>Terms&Condition disabled.</b>", reply_markup=None)
         else:
             await mdb.update_configuration("terms", True)
-            await query.message.edit(f"<b>Terms&Condition enabled.</b>", reply_markup=None)     
+            await query.message.edit(f"<b>Terms&Condition enabled.</b>", reply_markup=None)
 
-
-
-                
-    elif query.data.startswith("setgs"):
-        ident, set_type, status, grp_id = query.data.split("#")
-        grpid = await active_connection(str(query.from_user.id))
-
-        if str(grp_id) != str(grpid):
-            await query.message.edit("Your Active Connection Has Been Changed. Go To /settings.")
-            return await query.answer('Share & Support Us♥️')
-
-        if status == "True":
-            await save_group_settings(grpid, set_type, False)
+    elif query.data == "spoll_check":
+        config = await mdb.get_configuration_value("spoll_check")
+        if config is True:
+            await mdb.update_configuration("spoll_check", False)
+            await query.message.edit(f"<b>Spell Check disabled.</b>", reply_markup=None)
         else:
-            await save_group_settings(grpid, set_type, True)
-
-        settings = await get_settings(grpid)
-
-        if settings is not None:
-            buttons = [
-                [
-                    InlineKeyboardButton('Spell Check',
-                                         callback_data=f'setgs#spell_check#{settings["spell_check"]}#{str(grp_id)}'),
-                    InlineKeyboardButton('✅ Yes' if settings["spell_check"] else '❌ No',
-                                         callback_data=f'setgs#spell_check#{settings["spell_check"]}#{str(grp_id)}')
-                ]
-            ]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            await query.message.edit_reply_markup(reply_markup)
+            await mdb.update_configuration("spoll_check", True)
+            await query.message.edit(f"<b>Spell Check enabled.</b>", reply_markup=None)    
 
     await query.answer('Share & Support Us♥️')
 
