@@ -180,37 +180,25 @@ async def filters_private_handlers(client, message):
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
-    
-    group_filter = await mdb.get_configuration_value("group_filter")
-    if message.text.startswith("/") or group_filter is False:
+    if message.text.startswith("/") or not await mdb.get_configuration_value("group_filter"):
         return
-    
+
     files_counts = await db.get_files_count(message.from_user.id)
     one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
 
     await mdb.update_top_messages(message.from_user.id, message.text) 
 
     group_id = message.chat.id
-    member_count = message.chat.members_count
     
     text, markup = await auto_filter(client, message)
     free, button = await free_filter(client, message)
+
     try:
-        # Filtering logic
-        if group_id in AUTH_GROUPS:
-            if one_link_one_file_group is not None and one_link_one_file_group is True:
-                # Auto filter
-                if files_counts and files_counts is not None and files_counts >= 1:
-                    m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)    
-                else:
-                    m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)   
-            else:
-                m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
+        if group_id in AUTH_GROUPS and one_link_one_file_group and files_counts >= 1:
+            m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)    
+        else:
+            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)   
 
-
-        elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
-            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
-        
     except Exception as e:
         print(e)
 
