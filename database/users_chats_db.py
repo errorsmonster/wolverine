@@ -257,7 +257,6 @@ class Database:
         )
         await self.grp.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
         
-    
     async def disable_chat(self, chat, reason="No Reason"):
         chat_status=dict(
             is_disabled=True,
