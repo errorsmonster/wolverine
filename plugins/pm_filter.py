@@ -820,9 +820,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
         codes_str = "\n".join(f"`{code}`" for code in codes_generated)
         await query.message.edit(f"<b>Redeem codes:</b>\n\n{codes_str}")
 
-
-
-
      #maintainance
     elif query.data == "maintenance":
         config = await mdb.get_configuration_value("maintenance_mode")
