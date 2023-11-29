@@ -10,7 +10,6 @@ async def private_fsub(client: Client, message: ChatJoinRequest):
     try:
         await db.update_user_joined(user.id, True)
     except Exception as e:
-        print(e)
         pass    
 
 @Client.on_message(filters.private & filters.command("resetforcesub") & filters.user(ADMINS))
