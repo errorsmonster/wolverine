@@ -797,9 +797,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data.startswith("sugg#"):
         language, year, genre = query.data.split("#")[1:]
-        movies = get_movies(genre, language, year)
+        movies = await get_movies(genre, language, year)
         if movies:
-            suggestion = format_movie_suggestion(movies)
+            suggestion = await format_movie_suggestion(movies)
             await query.edit(suggestion, reply_markup=None)
         else:
             query.edit("No movies found for the given query.", reply_markup=None)

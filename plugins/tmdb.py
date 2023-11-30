@@ -9,7 +9,7 @@ TMDB_API_HEADERS = {
 }
 
 @Client.on_message(filters.command("suggest"))
-def suggest_movie(_, message):
+async def suggest_movie(_, message):
     try:
         _, *args = message.text.split(" ", 3)
         if len(args) < 1:
@@ -30,7 +30,7 @@ def suggest_movie(_, message):
     except ValueError as e:
         message.reply_text(str(e))
 
-def get_movies(genre, language=None, year=None):
+async def get_movies(genre, language=None, year=None):
     params = {
         "language": language or "en",
         "page": "1",
@@ -48,7 +48,7 @@ def get_movies(genre, language=None, year=None):
         print(f"Error: {e}")
         return None
 
-def format_movie_suggestion(movies):
+async def format_movie_suggestion(movies):
     suggestion = "<b>Movie suggestions:</b>\n\n"
     number = 1
     for movie in movies:
