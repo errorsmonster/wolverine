@@ -32,8 +32,8 @@ def suggest_movie(_, message):
 
 def get_movies(genre, language, year):
     params = {
-        "language": language or "en-US",
-        "page": "5",
+        "language": language or "en",
+        "page": "1",
         "sort_by": "popularity.desc",
         "with_genres": genre or None,
         "year": year or None
