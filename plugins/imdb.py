@@ -46,12 +46,9 @@ def get_top250_movies():
         return None
 
 def format_movie_suggestion(movies):
-    suggestion = "Movie suggestions:\n"
+    suggestion = "**Movie suggestions:**\n"
     for movie in movies:
-        title = movie["title"]
-        year = movie["year"]
-        rating = movie.get("rating", "N/A")
-        director = movie.get("director", "N/A")
-        actors = ", ".join(movie.get("actors", ["N/A"]))
-        suggestion += f"- {title} ({year}), Rating: {rating}, Director: {director}, Actors: {actors}\n"
+        title = movie.get("title", "N/A")
+        year = movie.get("year", "N/A")
+        suggestion += f"- {title} ({year})\n"
     return suggestion
