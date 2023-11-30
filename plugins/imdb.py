@@ -7,17 +7,19 @@ TMDB_API_HEADERS = {
     "accept": "application/json",
     "Authorization": f"Bearer {TMDB_API_KEY}"
 }
+
 @Client.on_message(filters.command("suggest"))
 def suggest_movie(_, message):
     try:
-        _, *args = message.text.split(" ", 2)
+        _, *args = message.text.split(" ", 3)
         if len(args) < 1:
             raise ValueError("Please provide at least a genre. Example: /suggest action")
         
         genre = args[0]
         language = args[1] if len(args) > 1 else None
+        year = args[2] if len(args) > 2 else None
 
-        movies = get_movies(genre, language)
+        movies = get_movies(genre, language, year)
         
         if movies:
             suggestion = format_movie_suggestion(movies)
@@ -28,14 +30,13 @@ def suggest_movie(_, message):
     except ValueError as e:
         message.reply_text(str(e))
 
-def get_movies(genre, language):
+def get_movies(genre, language, year):
     params = {
-        "include_adult": "true",
-        "include_video": "false",
         "language": language or "en-US",
-        "page": "1",
+        "page": "5",
         "sort_by": "popularity.desc",
-        "with_genres": genre
+        "with_genres": genre or None,
+        "year": year or None
     }
 
     try:
@@ -49,8 +50,10 @@ def get_movies(genre, language):
 
 def format_movie_suggestion(movies):
     suggestion = "Movie suggestions:\n"
+    number = 1
     for movie in movies:
         title = movie.get("title", "N/A")
         year = movie.get("release_date", "N/A")[:4]  # Get only the year from the release date
-        suggestion += f"- {title} ({year})\n"
+        suggestion += f"{number}. {title} ({year})\n"
+        number += 1
     return suggestion
