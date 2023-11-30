@@ -20,6 +20,7 @@ from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import find_filter
+from plugins.tmdb import get_movies, format_movie_suggestion
 import logging
 
 logger = logging.getLogger(__name__)
@@ -95,7 +96,7 @@ async def filters_private_handlers(client, message):
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
     """
-    if 1 < len(message.text) < 100:
+    if 2 < len(message.text) < 100:
         search = message.text.lower()
         encoded_search = quote(search)
     
@@ -308,7 +309,7 @@ async def auto_filter(client, msg, spoll=False):
             return
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
             return
-        if 1 < len(message.text) < 100:
+        if 2 < len(message.text) < 100:
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
@@ -487,7 +488,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
                     InlineKeyboardButton('📎 Refer', callback_data="refer"),
-                    InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
+                    InlineKeyboardButton('🔥 Top Search', callback_data="extramod")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🗣️ Request', callback_data="request")
@@ -752,6 +753,59 @@ async def cb_handler(client: Client, query: CallbackQuery):
         codes_str = "\n".join(f"`{code}`" for code in codes_generated)
         await query.message.edit(f"<b>Redeem codes:</b>\n\n{codes_str}")
 
+        
+    elif query.dta == "extramod":
+        buttons = [[
+            InlineKeyboardButton("Top Searches of the day", callback_data="topsearch"),
+            ],[
+            InlineKeyboardButton("Movie suggestions", callback_data="movie_suggest")
+        ]]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await query.message.edit(
+            f"Choose an option",
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+        )
+
+    elif query.data == "movie_suggest":
+        languages = ["Bengali", "English", "Hindi", "Tamil", "Telegu", "Malayalam", "Punjabi", "Gujrati"]
+        button = create_buttons(languages, "lang")
+        await query.message.edit(
+            text=f"<b>Choose language</b>",
+            reply_markup=InlineKeyboardMarkup(button),
+            disable_web_page_preview=True,
+        )
+
+    elif query.data.startswith("lang#"):
+        lang = query.data.split("#")[1]
+        years = [str(year) for year in range(2023, 2013, -1)]
+        button = create_buttons(years, f"yr#{lang}")
+        await query.message.edit(
+            text=f"<b>Choose year</b>",
+            reply_markup=InlineKeyboardMarkup(button),
+            disable_web_page_preview=True,
+        )        
+
+    elif query.data.startswith("yr#"):
+        langu, yr = query.data.split("#")[1:]
+        genres = ["Action", "Drama", "Horror", "Sci-fi", "Romance", "Thriller", "Mystery", "Fantasy", "Fiction", "Historical"]
+        button = create_buttons(genres, f"sugg#{langu}#{yr}")
+        await query.message.edit(
+            text=f"<b>Choose genre</b>",
+            reply_markup=InlineKeyboardMarkup(button),
+            disable_web_page_preview=True,
+        )
+
+    elif query.data.startswith("sugg#"):
+        language, year, genre = query.data.split("#")[1:]
+        movies = get_movies(genre, language, year)
+        if movies:
+            suggestion = format_movie_suggestion(movies)
+            await query.edit(suggestion, reply_markup=None)
+        else:
+            query.edit("No movies found for the given query.", reply_markup=None)
+
+
     #maintainance
     elif query.data == "maintenance":
         await toggle_config(query, "maintenance_mode", "Maintenance mode")
@@ -780,6 +834,14 @@ async def toggle_config(query, config_key, message):
     else:
         await mdb.update_configuration(config_key, True)
         await query.message.edit(f"<b>{message} enabled.</b>", reply_markup=None)
+
+
+async def create_buttons(names, callback_prefix):
+    return [[
+        InlineKeyboardButton(name, callback_data=f"{callback_prefix}#{name.lower()}")
+        for name in names[i:i+2]
+    ] for i in range(0, len(names), 2)]
+     
 
 async def delete_files(query, limit, file_type):
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)

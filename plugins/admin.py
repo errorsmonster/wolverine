@@ -488,7 +488,20 @@ async def send_message_to_user(client, message):
     except Exception as e:
         await message.reply(f"An unexpected error occurred: {str(e)}")
 
-@Client.on_message(filters.command("admin") & filters.private & filters.user(ADMINS))
+@Client.on_message(filters.command("suggestions"))
+async def movie_suggest(_, Message):
+    button = [
+        [InlineKeyboardButton("Movie Sugeesions", callback_data="movie_suggestions")],
+        [InlineKeyboardButton("Close", callback_data="close_data")]
+    ]
+    reply_markup = InlineKeyboardMarkup(button)
+    await Message.reply_text(
+        text="**Movie Suggestions**",
+        reply_markup=reply_markup,
+        disable_web_page_preview=True
+    )
+
+@Client.on_message(filters.command("admin") & filters.user(ADMINS))
 async def admin_controll(client, message):
     button = [
         [
