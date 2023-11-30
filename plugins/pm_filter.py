@@ -488,7 +488,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
                     ],[
                     InlineKeyboardButton('📎 Refer', callback_data="refer"),
-                    InlineKeyboardButton('🔥 Top Search', callback_data="extramod")
+                    InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🗣️ Request', callback_data="request")
@@ -753,7 +753,26 @@ async def cb_handler(client: Client, query: CallbackQuery):
         codes_str = "\n".join(f"`{code}`" for code in codes_generated)
         await query.message.edit(f"<b>Redeem codes:</b>\n\n{codes_str}")
 
-        
+    #maintainance
+    elif query.data == "maintenance":
+        await toggle_config(query, "maintenance_mode", "Maintenance mode")
+    elif query.data == "1link1file":
+        await toggle_config(query, "one_link", "1 time Ads in private")
+    elif query.data == "1linkgroup":
+        await toggle_config(query, "one_link_one_file_group", "1 time Ads in group")
+    elif query.data == "autoapprove":
+        await toggle_config(query, "auto_accept", "Auto approve")
+    elif query.data == "private_filter":
+        await toggle_config(query, "private_filter", "Private filter")
+    elif query.data == "group_filter":
+        await toggle_config(query, "group_filter", "Group filter")
+    elif query.data == "terms_and_condition":
+        await toggle_config(query, "terms", "Terms&Condition")
+    elif query.data == "spoll_check":
+        await toggle_config(query, "spoll_check", "Spell Check")
+
+    '''
+    
     elif query.data == "extramod":
         buttons = [
             [InlineKeyboardButton("Top Searches of the day", callback_data="topsearch")],
@@ -805,23 +824,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         else:
             await query.edit("No movies found for the given query.", reply_markup=None)
 
-    #maintainance
-    elif query.data == "maintenance":
-        await toggle_config(query, "maintenance_mode", "Maintenance mode")
-    elif query.data == "1link1file":
-        await toggle_config(query, "one_link", "1 time Ads in private")
-    elif query.data == "1linkgroup":
-        await toggle_config(query, "one_link_one_file_group", "1 time Ads in group")
-    elif query.data == "autoapprove":
-        await toggle_config(query, "auto_accept", "Auto approve")
-    elif query.data == "private_filter":
-        await toggle_config(query, "private_filter", "Private filter")
-    elif query.data == "group_filter":
-        await toggle_config(query, "group_filter", "Group filter")
-    elif query.data == "terms_and_condition":
-        await toggle_config(query, "terms", "Terms&Condition")
-    elif query.data == "spoll_check":
-        await toggle_config(query, "spoll_check", "Spell Check")
+    '''        
 
     await query.answer('Share & Support Us♥️')
 
