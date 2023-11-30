@@ -1,8 +1,12 @@
 from pyrogram import Client, filters
-from imdb import Cinemagoer
+import requests
+from info import TMDB_API_KEY
 
-ia = Cinemagoer()
-
+TMDB_API_URL = "https://api.themoviedb.org/3/discover/movie"
+TMDB_API_HEADERS = {
+    "accept": "application/json",
+    "Authorization": f"Bearer {TMDB_API_KEY}"
+}
 @Client.on_message(filters.command("suggest"))
 def suggest_movie(_, message):
     try:
@@ -13,10 +17,7 @@ def suggest_movie(_, message):
         genre = args[0]
         language = args[1] if len(args) > 1 else None
 
-        if genre.lower() == "top250":
-            movies = get_top250_movies()
-        else:
-            movies = get_movies(genre, language)
+        movies = get_movies(genre, language)
         
         if movies:
             suggestion = format_movie_suggestion(movies)
@@ -28,27 +29,28 @@ def suggest_movie(_, message):
         message.reply_text(str(e))
 
 def get_movies(genre, language):
-    try:
-        movies = ia.search_movie(genre)
-        if language:
-            movies = [movie for movie in movies if language.lower() in movie.get('languages', [])]
-        return movies[:10]  # Return top 10 movies for simplicity
-    
-    except Exception as e:
-        return None
+    params = {
+        "include_adult": "true",
+        "include_video": "false",
+        "language": language or "en-US",
+        "page": "1",
+        "sort_by": "popularity.desc",
+        "with_genres": genre
+    }
 
-def get_top250_movies():
     try:
-        top = ia.get_top250_movies()
-        return top
-    
-    except Exception as e:
+        response = requests.get(TMDB_API_URL, headers=TMDB_API_HEADERS, params=params)
+        response.raise_for_status()
+        data = response.json()
+        return data['results'][:10]  # Return top 10 movies for simplicity
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
         return None
 
 def format_movie_suggestion(movies):
-    suggestion = "**Movie suggestions:**\n"
+    suggestion = "Movie suggestions:\n"
     for movie in movies:
         title = movie.get("title", "N/A")
-        year = movie.get("year", "N/A")
+        year = movie.get("release_date", "N/A")[:4]  # Get only the year from the release date
         suggestion += f"- {title} ({year})\n"
     return suggestion
