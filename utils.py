@@ -1,5 +1,5 @@
 import logging
-from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
+from pyrogram.errors import InputUserDeactivated, FloodWait, UserIsBlocked, PeerIdInvalid
 from info import MAX_LIST_ELM, FORCESUB_CHANNEL, ADMINS
 from imdb import Cinemagoer
 import asyncio
@@ -348,7 +348,6 @@ async def fetch_quote_content():
                 # If not a list, assume it's a single quote
                 return quote_data.get("content", None)
             else:
-                print(f"Error: Unable to fetch quote. Status code: {response.status}")
                 return None
 
 def encode_to_base64(text):
