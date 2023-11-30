@@ -777,28 +777,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data.startswith("lang#"):
         lang = query.data.split("#")[1]
-        buttons = await create_year_buttons(0, lang)
-        await query.message.edit(
-            text=f"<b>Choose year</b>",
-            reply_markup=InlineKeyboardMarkup(buttons),
-            disable_web_page_preview=True,
-        )
+        await create_year_buttons(query, 0, lang)
     elif query.data.startswith("nextyr#"):
         page = int(query.data.split("#")[1])
-        buttons = await create_year_buttons(page, lang)
-        await query.message.edit(
-            text=f"<b>Choose year</b>",
-            reply_markup=InlineKeyboardMarkup(buttons),
-            disable_web_page_preview=True,
-        )
+        await create_year_buttons(query, page, lang)
     elif query.data.startswith("prevyr#"):
         page = int(query.data.split("#")[1])
-        buttons = await create_year_buttons(page, lang)
-        await query.message.edit(
-            text=f"<b>Choose year</b>",
-            reply_markup=InlineKeyboardMarkup(buttons),
-            disable_web_page_preview=True,
-        )
+        await create_year_buttons(query, page, lang)
 
     elif query.data.startswith("yr#"):
         langu, yr = query.data.split("#")[1:]
@@ -858,7 +843,7 @@ async def create_buttons(names, callback_prefix):
         for i in range(0, len(names), 2)
     ]
 
-async def create_year_buttons(page, lang):
+async def create_year_buttons(query, page, lang):
     start_year = 2023 - (page * 10)
     end_year = start_year - 9
     years = [str(year) for year in range(start_year, end_year - 1, -1)]
@@ -872,7 +857,12 @@ async def create_year_buttons(page, lang):
     if page > 0:
         buttons.append(InlineKeyboardButton("<<<", callback_data=f"prevyr#{page - 1}"))
     
-    return buttons
+    await query.message.edit(
+        text=f"<b>Choose year</b>",
+        reply_markup=InlineKeyboardMarkup(buttons),
+        disable_web_page_preview=True,
+    )
+
 
 async def delete_files(query, limit, file_type):
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
