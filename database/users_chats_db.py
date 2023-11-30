@@ -1,5 +1,5 @@
 import motor.motor_asyncio
-from info import DATABASE_NAME, DATABASE_URI, SPELL_CHECK_REPLY
+from info import DATABASE_NAME, DATABASE_URI
 from datetime import datetime, timedelta
 
 class Database:
