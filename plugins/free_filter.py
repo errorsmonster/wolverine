@@ -11,7 +11,6 @@ from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
 from plugins.shortner import urlshare
 from database.config_panel import mdb
-from plugins.pm_filter import advantage_spell_chok
 
 
 BUTTONS = {}
