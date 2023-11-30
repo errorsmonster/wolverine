@@ -124,15 +124,6 @@ class Database:
                 
                 if expiry_date <= now:
                     await self.remove_user_premium(user_id)
-
-
-    # count refferal of user
-    async def get_refferal_count(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        if user is None:
-            return 0
-        return user.get("referral", 0)
-
          
     async def add_user(self, id, name):
         user = self.new_user(id, name)

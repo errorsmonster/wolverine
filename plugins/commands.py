@@ -135,7 +135,7 @@ async def start(client, message):
     if message.command[1] == "refer":
         m = await message.reply_text(f"<b>Generating Your Refferal Link...</b>")
         user_id = message.from_user.id
-        referral_points = await db.get_refferal_count(user_id)
+        referral_points = await db.referral(user_id, "referral")
         refferal_link = f"https://t.me/{temp.U_NAME}?start=ReferID-{user_id}"
         keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔗 Invite Your Friends", url=f"https://telegram.me/share/url?url={refferal_link}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83")]])
         await m.edit(f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will be rewarded 10 refferal points and after 50 points you will get 1 month premium subscription.\n\n Referral Points: {referral_points}</b>",
@@ -223,10 +223,10 @@ async def start(client, message):
             try:
                 await db.add_user(message.from_user.id, message.from_user.first_name)
                 await asyncio.sleep(1)
-                referral = await db.get_refferal_count(invite_id) 
+                referral = await db.fetch_value(invite_id, "referral") 
                 await db.update_value(invite_id, "referral", referral + 10) 
                 await asyncio.sleep(1)
-                referral_count = await db.get_refferal_count(message.from_user.id)
+                referral_count = await db.fetch_value(message.from_user.id, "referral")
                 await db.update_value(message.from_user.id, "referral", referral_count + 10)
                 await client.send_message(text=f"You have successfully Invited {message.from_user.mention}", chat_id=invite_id)
                 await message.reply_text(f"You have been successfully invited by {invited_user.first_name}", disable_web_page_preview=True)

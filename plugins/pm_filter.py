@@ -48,7 +48,7 @@ async def filters_private_handlers(client, message):
     files_counts = user.get("files_count")
     premium_status = await db.is_premium_status(user_id)
     last_reset = user.get("last_reset")
-    referral = await db.get_refferal_count(user_id)
+    referral = await db.fetch_value(user_id, "referral")
     duration = user.get("premium_expiry")
 
     # optinal function for checking time difference between currrent time and next 12'o clock
@@ -538,7 +538,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "refer":
         user_id = query.from_user.id
-        referral_points = await db.get_refferal_count(user_id)
+        referral_points = await db.fetch_value(user_id, "referral")
         refferal_link = f"https://t.me/{temp.U_NAME}?start=ReferID-{user_id}"
         buttons = [[
                     InlineKeyboardButton('🎐 Invite', url=f"https://telegram.me/share/url?url={refferal_link}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83"),
@@ -553,7 +553,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "refer_point":
         user_id = query.from_user.id
-        referral_points = await db.get_refferal_count(user_id)
+        referral_points = await db.fetch_value(user_id, "referral")
         await query.answer(f"You have {referral_points} refferal points.", show_alert=True
         )
 
