@@ -95,7 +95,6 @@ async def ban_a_user(bot, message):
         await message.reply(f"Successfully banned {k.mention}")
 
 
-    
 @Client.on_message(filters.command('unban') & filters.user(ADMINS))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
