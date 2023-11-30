@@ -2,7 +2,6 @@ import re
 import math
 import time
 from Script import script
-from info import SLOW_MODE_DELAY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from database.users_chats_db import db
@@ -14,9 +13,6 @@ from plugins.shortner import urlshare
 
 BUTTONS = {}
 SPELL_CHECK = {}
-blacklist = script.BLACKLIST
-slow_mode = SLOW_MODE_DELAY
-
 
 @Client.on_callback_query(filters.regex(r"^free"))
 async def free_next_page(bot, query):
@@ -43,7 +39,7 @@ async def free_next_page(bot, query):
     search_results_text = []
     for file in files:
         shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
@@ -107,7 +103,7 @@ async def free_filter(client, msg, spoll=False):
     search_results_text = []
     for file in files:
         shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
