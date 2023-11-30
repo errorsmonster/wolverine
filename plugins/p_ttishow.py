@@ -6,6 +6,7 @@ from database.ia_filterdb import Media
 from utils import temp
 from Script import script
 from pyrogram.errors import ChatAdminRequired
+from info import ADMINS
 
 
 @Client.on_message(filters.new_chat_members & filters.group)
