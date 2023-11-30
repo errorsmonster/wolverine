@@ -30,7 +30,7 @@ async def suggest_movie(_, message):
     except ValueError as e:
         message.reply_text(str(e))
 
-async def get_movies(genre, language=None, year=None):
+async def get_movies(genre, language, year):
     params = {
         "language": language or "en",
         "page": "1",
