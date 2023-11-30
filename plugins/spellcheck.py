@@ -3,7 +3,6 @@ import re
 from info import WAIT_TIME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import search_gagala
-from pyrogram import Client, filters
 import logging
 
 logger = logging.getLogger(__name__)
