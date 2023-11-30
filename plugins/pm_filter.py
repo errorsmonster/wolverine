@@ -836,11 +836,13 @@ async def toggle_config(query, config_key, message):
 
 
 async def create_buttons(names, callback_prefix):
-    return [[
-        InlineKeyboardButton(name, callback_data=f"{callback_prefix}#{name.lower()}")
-        for name in names[i:i+2]
-    ] for i in range(0, len(names), 2)]
-     
+    return [
+        [
+            InlineKeyboardButton(name, callback_data=f"{callback_prefix}#{name.lower()}")
+            for name in names[i:i+2]
+        ]
+        for i in range(0, len(names), 2)
+    ]
 
 async def delete_files(query, limit, file_type):
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
