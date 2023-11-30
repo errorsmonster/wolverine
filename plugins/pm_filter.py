@@ -777,11 +777,26 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data.startswith("lang#"):
         lang = query.data.split("#")[1]
-        years = [str(year) for year in range(2023, 2013, -1)]
-        button = await create_buttons(years, f"yr#{lang}")
+        buttons = await create_year_buttons(0, lang)
         await query.message.edit(
             text=f"<b>Choose year</b>",
-            reply_markup=InlineKeyboardMarkup(button),
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
+    elif query.data.startswith("nextyr#"):
+        page = int(query.data.split("#")[1])
+        buttons = await create_year_buttons(page, lang)
+        await query.message.edit(
+            text=f"<b>Choose year</b>",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
+    elif query.data.startswith("prevyr#"):
+        page = int(query.data.split("#")[1])
+        buttons = await create_year_buttons(page, lang)
+        await query.message.edit(
+            text=f"<b>Choose year</b>",
+            reply_markup=InlineKeyboardMarkup(buttons),
             disable_web_page_preview=True,
         )
 
@@ -842,6 +857,22 @@ async def create_buttons(names, callback_prefix):
         ]
         for i in range(0, len(names), 2)
     ]
+
+async def create_year_buttons(page, lang):
+    start_year = 2023 - (page * 10)
+    end_year = start_year - 9
+    years = [str(year) for year in range(start_year, end_year - 1, -1)]
+    
+    buttons = [
+        InlineKeyboardButton(year, callback_data=f"yr#{lang}#{year}")
+        for year in years
+    ]
+    if page < 1:
+        buttons.append(InlineKeyboardButton(">>>", callback_data=f"nextyr#{page + 1}"))
+    if page > 0:
+        buttons.append(InlineKeyboardButton("<<<", callback_data=f"prevyr#{page - 1}"))
+    
+    return buttons
 
 async def delete_files(query, limit, file_type):
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)
