@@ -800,7 +800,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         movies = await get_movies(genre, language, year)
         if movies:
             suggestion = await format_movie_suggestion(movies)
-            await query.edit(suggestion, reply_markup=None)
+            await query.message.edit(suggestion, reply_markup=None)
         else:
             await query.edit("No movies found for the given query.", reply_markup=None)
 
