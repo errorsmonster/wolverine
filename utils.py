@@ -76,6 +76,8 @@ async def broadcast_messages(user_id, message):
     except Exception as e:
         return False, "Error"
 
+
+# search engine
 async def search_gagala(text):
     usr_agent = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -83,51 +85,38 @@ async def search_gagala(text):
     }
     text = quote_plus(text)
 
+    async def fetch(url, session, params=None):
+        async with session.get(url, params=params) as response:
+            return await response.text()
+
     async with aiohttp.ClientSession(headers=usr_agent) as session:
-        # First, try searching with Google
-        url = f'https://www.google.com/search?q={text}'
-        async with session.get(url) as response:
-            html_content = await response.text()
-            soup = BeautifulSoup(html_content, 'html.parser')
-            google_results = [title.getText() for title in soup.find_all('h3')]
+        # Try searching with Google
+        html_content = await fetch(f'https://www.google.com/search?q={text}', session)
+        soup = BeautifulSoup(html_content, 'html.parser')
+        results = [title.getText() for title in soup.find_all('h3')]
 
-        # Check if any results were found with Google
-        if google_results:
-            return google_results
-
-        # Try searching with Yahoo
-        url = f'https://search.yahoo.com/search?q={text}'
-        async with session.get(url) as response:
-            html_content = await response.text()
+        # If no results, try searching with Yahoo
+        if not results:
+            html_content = await fetch(f'https://search.yahoo.com/search?q={text}', session)
             soup = BeautifulSoup(html_content, 'html.parser')
             titles = soup.find_all('a', class_='d-ib fz-20 lh-26 td-hu tc va-bot mxw-100p')
-            ntitle = [kit.contents[1] for kit in titles]
+            results = [kit.contents[1] for kit in titles]
 
-        if ntitle:
-            return ntitle
-
-        # If no results, try searching with Brave
-        brave_results = []
-        params = {
-            'q': text,
-            'source': 'web',
-            'tf': 'at',
-            'offset': 0
-        }
-
-        while True:
-            async with session.get('https://search.brave.com/search', params=params) as response:
-                html_content = await response.text()
+        # If still no results, try searching with Brave
+        if not results:
+            params = {'q': text, 'source': 'web', 'tf': 'at', 'offset': 0}
+            while True:
+                html_content = await fetch('https://search.brave.com/search', session, params)
                 soup = BeautifulSoup(html_content, 'lxml')
 
-            if soup.select_one('.ml-15'):
-                params['offset'] += 1
-            else:
-                break
+                if soup.select_one('.ml-15'):
+                    params['offset'] += 1
+                else:
+                    break
 
-            brave_results.extend([result.select_one('.snippet-title').get_text().strip() for result in soup.select('.snippet')])
+                results.extend([result.select_one('.snippet-title').get_text().strip() for result in soup.select('.snippet')])
 
-        return brave_results
+        return results
 
 
 def get_size(size):
