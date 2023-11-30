@@ -30,13 +30,13 @@ def suggest_movie(_, message):
     except ValueError as e:
         message.reply_text(str(e))
 
-def get_movies(genre, language, year):
+def get_movies(genre, language=None, year=None):
     params = {
         "language": language or "en",
         "page": "1",
         "sort_by": "popularity.desc",
-        "with_genres": genre or None,
-        "year": year or None
+        "with_genres": genre,
+        "year": year
     }
 
     try:
