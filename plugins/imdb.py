@@ -49,7 +49,7 @@ def get_movies(genre, language, year):
         return None
 
 def format_movie_suggestion(movies):
-    suggestion = "<b>Movie suggestions:</b>\n"
+    suggestion = "<b>Movie suggestions:</b>\n\n"
     number = 1
     for movie in movies:
         title = movie.get("title", "N/A")
