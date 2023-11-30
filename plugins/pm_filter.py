@@ -21,7 +21,7 @@ from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import find_filter
 from plugins.tmdb import get_movies, format_movie_suggestion
-from spellcheck import advantage_spell_chok
+from plugins.spellcheck import advantage_spell_chok
 import logging
 
 logger = logging.getLogger(__name__)
@@ -114,7 +114,7 @@ async def filters_private_handlers(client, message):
             )
             return
     '''
-    
+
     try:
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
