@@ -10,6 +10,8 @@ from pyrogram.errors import MessageNotModified
 from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
 from plugins.shortner import urlshare
+from database.config_panel import mdb
+from plugins.pm_filter import advantage_spell_chok
 
 
 BUTTONS = {}
@@ -97,7 +99,10 @@ async def free_filter(client, msg, spoll=False):
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
-                return
+                if await mdb.get_configuration_value("spoll_check"):
+                    return await advantage_spell_chok(msg)
+                else:
+                    return
         else:
             return
     else:

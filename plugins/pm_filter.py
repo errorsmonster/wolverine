@@ -94,6 +94,7 @@ async def filters_private_handlers(client, message):
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
+    """
     if 1 < len(message.text) < 100:
         search = message.text.lower()
         encoded_search = quote(search)
@@ -110,6 +111,7 @@ async def filters_private_handlers(client, message):
                 reply_markup=reply_markup,
             )
             return
+    """
     try:
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
@@ -306,7 +308,7 @@ async def auto_filter(client, msg, spoll=False):
             return
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
             return
-        if 2 < len(message.text) < 100:
+        if 1 < len(message.text) < 100:
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
