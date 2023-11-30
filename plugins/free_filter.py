@@ -87,7 +87,6 @@ async def free_next_page(bot, query):
     await query.answer()
 
 
-
 async def free_filter(client, msg, spoll=False):
     if not spoll:
         message = msg
@@ -98,17 +97,13 @@ async def free_filter(client, msg, spoll=False):
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
-                if await mdb.get_configuration_value("spoll_check"):
-                    return await advantage_spell_chok(msg)
-                else:
-                    return
+                return
         else:
             return
     else:
         message = msg.message.reply_to_message
         search, files, offset, total_results = spoll
        
-    # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
         shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
