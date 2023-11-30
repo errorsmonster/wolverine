@@ -754,12 +754,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.message.edit(f"<b>Redeem codes:</b>\n\n{codes_str}")
 
         
-    elif query.dta == "extramod":
-        buttons = [[
-            InlineKeyboardButton("Top Searches of the day", callback_data="topsearch"),
-            ],[
-            InlineKeyboardButton("Movie suggestions", callback_data="movie_suggest")
-        ]]
+    elif query.data == "extramod":
+        buttons = [
+            [InlineKeyboardButton("Top Searches of the day", callback_data="topsearch")],
+            [InlineKeyboardButton("Movie suggestions", callback_data="movie_suggest")]
+            ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit(
             f"Choose an option",
