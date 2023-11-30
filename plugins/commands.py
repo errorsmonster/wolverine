@@ -195,7 +195,6 @@ async def start(client, message):
             chat_id=message.from_user.id,
             reply_to_message_id=media_id.id)
         
-    
         await asyncio.sleep(waitime or 600)
         await media_id.delete()
         await del_msg.edit("__⊘ This message was deleted__")
