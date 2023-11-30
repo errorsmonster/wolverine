@@ -33,40 +33,7 @@ class Database:
         user = await self.col.find_one({'id': int(id)})
         return False if not user else user
     
-    # update files count of user
-    async def update_files_count(self, user_id, count):
-        await self.col.update_one(
-        {"id": user_id}, 
-        {"$set": {"files_count": count}}
-    )
-
-    # get files count of user
-    async def get_files_count(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        if user is None:
-            return
-        return user.get("files_count")
-    
-    # update total files count of user
-    async def update_lifetime_files(self, user_id, count):
-        await self.col.update_one(
-        {"id": user_id}, 
-        {"$set": {"lifetime_files": count}}
-    )
-
-    # get total files count of user
-    async def get_lifetime_files(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        return user.get("lifetime_files", 0)
-
-
-    # check last reset date of user
-    async def get_last_reset(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        if user is None:
-            return None
-        return user.get("last_reset")
-    
+ 
     # reset fiiles count of user
     async def reset_daily_files_count(self, user_id):
         user = await self.col.find_one({"id": user_id})
@@ -79,23 +46,11 @@ class Database:
     async def reset_all_files_count(self):
         await self.col.update_many({}, {"$set": {"files_count": 0, "last_reset": datetime.now().strftime("%Y-%m-%d")}})
 
-    async def get_timestamps(self, id):
-        user = await self.col.find_one({"id": id})
-        if user is None:
-            return None
-        return user.get("timestamps")
-
-    async def update_timestamps(self, id, time):
-        await self.col.update_one({"id": id}, {"$set": {"timestamps": time}})
-
     async def is_user_joined(self, id):
         user = await self.col.find_one({"id": id})
         if user is None:
             return False
         return user.get("user_joined")
-
-    async def update_user_joined(self, id, status):
-        await self.col.update_one({"id": id}, {"$set": {"user_joined": status}}) 
 
     async def reset_all_users_joined(self):
         await self.col.update_many({}, {"$set": {"user_joined": False}})
@@ -170,9 +125,6 @@ class Database:
                 if expiry_date <= now:
                     await self.remove_user_premium(user_id)
 
-    # update refferal count of user
-    async def update_refferal_count(self, user_id, count):
-        await self.col.update_one({"id": user_id}, {"$set": {"referral": count}})   
 
     # count refferal of user
     async def get_refferal_count(self, user_id):
@@ -231,5 +183,17 @@ class Database:
     
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
+    
+
+    async def fetch_value(self, user_id, key):
+        user = await self.col.find_one({"id": user_id})
+        if user is None:
+            await self.add_user(user_id, "None")
+            return None
+        return user.get(key)
+
+    async def update_value(self, user_id, key, value):
+        await self.col.update_one({"id": user_id}, {"$set": {key: value}})
+
 
 db = Database(DATABASE_URI, DATABASE_NAME)

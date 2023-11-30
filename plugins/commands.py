@@ -146,8 +146,8 @@ async def start(client, message):
     
 
     # for counting each files for user
-    files_counts = await db.get_files_count(message.from_user.id) or 0
-    lifetime_files = await db.get_lifetime_files(message.from_user.id)
+    files_counts = await db.fetch_value(message.from_user.id, "files_count") or 0
+    lifetime_files = await db.fetch_value(message.from_user.id, "lifetime_files")
     # optinal function for checking time difference between currrent time and next 12'o clock
     current_datetime = datetime.now()
     next_day = current_datetime + timedelta(days=1)
@@ -187,8 +187,8 @@ async def start(client, message):
             reply_markup=InlineKeyboardMarkup(button)
             )
         
-        await db.update_files_count(message.from_user.id, files_counts + 1)
-        await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
+        await db.update_value(message.from_user.id, "files_count", files_counts + 1)
+        await db.update_value(message.from_user.id, "lifetime_files", lifetime_files + 1)
     
         del_msg = await client.send_message(
             text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",
@@ -223,11 +223,11 @@ async def start(client, message):
             try:
                 await db.add_user(message.from_user.id, message.from_user.first_name)
                 await asyncio.sleep(1)
-                referral = await db.get_refferal_count(invite_id)  # Fetch the current referral count
-                await db.update_refferal_count(invite_id, referral + 10)  # Update the referral count
+                referral = await db.get_refferal_count(invite_id) 
+                await db.update_value(invite_id, "referral", referral + 10) 
                 await asyncio.sleep(1)
                 referral_count = await db.get_refferal_count(message.from_user.id)
-                await db.update_refferal_count(message.from_user.id, referral_count + 10) # Update the referral count to invted user
+                await db.update_value(message.from_user.id, "referral", referral_count + 10)
                 await client.send_message(text=f"You have successfully Invited {message.from_user.mention}", chat_id=invite_id)
                 await message.reply_text(f"You have been successfully invited by {invited_user.first_name}", disable_web_page_preview=True)
             except Exception as e:
@@ -286,10 +286,10 @@ async def start(client, message):
             )
     
         # for counting each files for user
-        files_counts = await db.get_files_count(message.from_user.id) or 0
-        lifetime_files = await db.get_lifetime_files(message.from_user.id)
+        files_counts = await db.fetch_value(message.from_user.id, "files_count") or 0
+        lifetime_files = await db.fetch_value(message.from_user.id, "lifetime_files")
         await db.update_files_count(message.from_user.id, files_counts + 1)
-        await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
+        await db.update_value(message.from_user.id, "lifetime_files", lifetime_files + 1)
 
         del_msg = await client.send_message(
             text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",

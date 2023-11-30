@@ -72,10 +72,10 @@ async def filters_private_handlers(client, message):
             return
 
     if referral is None or referral <= 0:
-        await db.update_refferal_count(user_id, 0)
+        await db.update_value(user_id, "referral", 0)
 
     if referral is not None and referral >= 50:
-        await db.update_refferal_count(user_id, referral - 50)
+        await db.update_value(user_id, "referral", referral - 50)
         await db.add_user_as_premium(user_id, 28, tody)
         await message.reply_text(f"**Congratulations! {message.from_user.mention},\nYou Have Received 1 Month Premium Subscription For Inviting 5 Users.**", disable_web_page_preview=True)
         return
@@ -178,7 +178,7 @@ async def public_group_filter(client, message):
     if message.text.startswith("/") or not await mdb.get_configuration_value("group_filter"):
         return
 
-    files_counts = await db.get_files_count(message.from_user.id)
+    files_counts = await db.fetch_value(message.from_user.id, "files_count")
     one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
 
     await mdb.update_top_messages(message.from_user.id, message.text) 
@@ -349,7 +349,7 @@ async def auto_filter(client, msg, spoll=False):
         )
     cap = f"Here is what i found for your query {search}"
     # add timestamp to database for floodwait
-    await db.update_timestamps(message.from_user.id, int(time.time()))
+    await db.update_value(message.from_user.id, "timestamps", int(time.time()))
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
 
 
