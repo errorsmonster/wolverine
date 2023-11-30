@@ -758,7 +758,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [
             [InlineKeyboardButton("Top Searches of the day", callback_data="topsearch")],
             [InlineKeyboardButton("Movie suggestions", callback_data="movie_suggest")]
-            ]
+        ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit(
             f"Choose an option",
@@ -768,7 +768,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "movie_suggest":
         languages = ["Bengali", "English", "Hindi", "Tamil", "Telegu", "Malayalam", "Punjabi", "Gujrati"]
-        button = create_buttons(languages, "lang")
+        button = await create_buttons(languages, "lang")
         await query.message.edit(
             text=f"<b>Choose language</b>",
             reply_markup=InlineKeyboardMarkup(button),
@@ -778,17 +778,17 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data.startswith("lang#"):
         lang = query.data.split("#")[1]
         years = [str(year) for year in range(2023, 2013, -1)]
-        button = create_buttons(years, f"yr#{lang}")
+        button = await create_buttons(years, f"yr#{lang}")
         await query.message.edit(
             text=f"<b>Choose year</b>",
             reply_markup=InlineKeyboardMarkup(button),
             disable_web_page_preview=True,
-        )        
+        )
 
     elif query.data.startswith("yr#"):
         langu, yr = query.data.split("#")[1:]
         genres = ["Action", "Drama", "Horror", "Sci-fi", "Romance", "Thriller", "Mystery", "Fantasy", "Fiction", "Historical"]
-        button = create_buttons(genres, f"sugg#{langu}#{yr}")
+        button = await create_buttons(genres, f"sugg#{langu}#{yr}")
         await query.message.edit(
             text=f"<b>Choose genre</b>",
             reply_markup=InlineKeyboardMarkup(button),
@@ -802,8 +802,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             suggestion = await format_movie_suggestion(movies)
             await query.edit(suggestion, reply_markup=None)
         else:
-            query.edit("No movies found for the given query.", reply_markup=None)
-
+            await query.edit("No movies found for the given query.", reply_markup=None)
 
     #maintainance
     elif query.data == "maintenance":
