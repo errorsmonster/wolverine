@@ -54,6 +54,6 @@ def format_movie_suggestion(movies):
     for movie in movies:
         title = movie.get("title", "N/A")
         year = movie.get("release_date", "N/A")[:4]  # Get only the year from the release date
-        suggestion += f"{number}. {title} ({year})\n"
+        suggestion += f"{number}. <code>{title} {year}</code>\n"
         number += 1
     return suggestion
