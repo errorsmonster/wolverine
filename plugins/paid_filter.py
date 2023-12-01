@@ -2,7 +2,6 @@ import base64
 import re
 import math
 from Script import script
-from info import SLOW_MODE_DELAY, WAIT_TIME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from pyrogram.errors import MessageNotModified
@@ -13,9 +12,6 @@ from database.ia_filterdb import get_search_results
 BUTTONS = {}
 SPELL_CHECK = {}
 blacklist = script.BLACKLIST
-slow_mode = SLOW_MODE_DELAY
-waitime = WAIT_TIME
-
 
 @Client.on_callback_query(filters.regex(r"^forward"))
 async def paid_next_page(bot, query):
