@@ -208,7 +208,7 @@ async def public_group_filter(client, message):
             await message.delete()
             if filter:
                 await filter.delete()
-                
+
 
 @Client.on_callback_query(filters.regex(r"^spolling"))
 async def advantage_spoll_choker(bot, query):
@@ -219,7 +219,7 @@ async def advantage_spoll_choker(bot, query):
         return await query.message.delete()
     movies = SPELL_CHECK.get(query.message.reply_to_message.id)
     if not movies:
-        return await query.answer("You are clicking on an old button which is expired.", show_alert=True)
+        return await query.answer()
     movie = movies[(int(movie_))]
     await query.answer('Checking for Movie in database...')
     files, offset, total_results = await get_search_results(movie, offset=0, filter=True)
