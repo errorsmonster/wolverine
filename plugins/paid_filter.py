@@ -7,7 +7,6 @@ from pyrogram import Client, filters
 from pyrogram.errors import MessageNotModified
 from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
-from database.config_db import mdb
 
 
 BUTTONS = {}

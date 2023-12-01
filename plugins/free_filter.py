@@ -6,7 +6,6 @@ from Script import script
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from database.users_chats_db import db
-from database.config_db import mdb
 from pyrogram.errors import MessageNotModified
 from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
