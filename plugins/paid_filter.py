@@ -1,13 +1,12 @@
 import asyncio
 import re
 import math
-import time
 from Script import script
 from info import SLOW_MODE_DELAY, WAIT_TIME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from pyrogram.errors import MessageNotModified
-from utils import get_size, replace_blacklist, temp
+from utils import get_size, replace_blacklist, temp, encode_to_base64
 from database.ia_filterdb import get_search_results
 
 
@@ -40,7 +39,8 @@ async def paid_next_page(bot, query):
         return
     search_results_text = []
     for file in files:
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}"
+        encoded_user_id = await encode_to_base64(query.from_user.id)
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{encoded_user_id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -103,7 +103,8 @@ async def paid_filter(client, msg, spoll=False):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}"
+        encoded_user_id = await encode_to_base64(message.from_user.id)
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{encoded_user_id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 

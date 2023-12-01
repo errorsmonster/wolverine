@@ -350,10 +350,10 @@ async def fetch_quote_content():
             else:
                 return None
 
-def encode_to_base64(text):
+async def encode_to_base64(text):
     encoded_data = base64.urlsafe_b64encode(text.encode('utf-8')).rstrip(b'=').decode('utf-8')
     return encoded_data
 
-def decode_from_base64(text):
+async def decode_from_base64(text):
     decoded_data = base64.urlsafe_b64decode(text.encode('utf-8'))
     return decoded_data
