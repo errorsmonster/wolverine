@@ -168,6 +168,7 @@ async def filters_private_handlers(client, message):
  
     except Exception as e:
         await msg.edit(f"<b>Opps! Something Went Wrong.</b>")
+        logger.error(e)
 
     finally:
         if WAIT_TIME is not None:
