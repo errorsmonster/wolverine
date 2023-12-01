@@ -95,6 +95,7 @@ async def paid_filter(_, msg):
         files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
         if not files:
             if await mdb.get_configuration_value("spoll_check"):
+                from plugins.pm_filter import advantage_spell_chok # Im not crazy, but i did to prevent circular import
                 return await advantage_spell_chok(msg)
             else:
                 return
@@ -127,5 +128,3 @@ async def paid_filter(_, msg):
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
 
 
-# imports to avoide circuler import
-from plugins.pm_filter import advantage_spell_chok
