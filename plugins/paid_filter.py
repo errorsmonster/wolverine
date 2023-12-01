@@ -1,4 +1,4 @@
-import asyncio
+import base64
 import re
 import math
 from Script import script
@@ -36,13 +36,16 @@ async def paid_next_page(bot, query):
         n_offset = 0
 
     if not files:
-        return
+        return 
     search_results_text = []
     for file in files:
-        encoded_user_id = await encode_to_base64(query.from_user.id)
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{encoded_user_id}_{file.file_id}"
+        user_id = query.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{urlsafe_encoded_user_id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
+
 
     search_results_text = "\n\n".join(search_results_text)
 
@@ -103,8 +106,10 @@ async def paid_filter(client, msg, spoll=False):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        encoded_user_id = await encode_to_base64(message.from_user.id)
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{encoded_user_id}_{file.file_id}"
+        user_id = message.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{urlsafe_encoded_user_id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 

@@ -160,9 +160,10 @@ async def start(client, message):
     if data.startswith("encrypt-"):
         _, rest_of_data = data.split('-', 1)
         encypted_user_id, file_id = rest_of_data.split('_', 1)
-        userid = await decode_from_base64(encypted_user_id)
+        user_id_bytes = base64.urlsafe_b64decode(encypted_user_id)  # Decode from URL-safe base64
+        userid = user_id_bytes.decode('utf-8')  # Convert bytes back to string
         print(userid)
-
+        
         files_ = await get_file_details(file_id)
 
         if not files_:
