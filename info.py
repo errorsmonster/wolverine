@@ -16,10 +16,6 @@ API_ID = environ.get('API_ID', "11948995")
 API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
 BOT_TOKEN = environ.get('BOT_TOKEN', "5207489037:AAEtZTr6Ni-dUsmIC5Eh6ZqA_X46kqUYhvA")
 
-# Bot settings
-CACHE_TIME = int(environ.get('CACHE_TIME', 300))
-USE_CAPTION_FILTER = bool(environ.get('USE_CAPTION_FILTER', False))
-
 # Admins, Channels & Users
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1247742004 2141736280').split()]
 CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '0').split()]
@@ -37,33 +33,18 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'netflimsbot')
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
-SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'iPrimeHub')
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)
-IMDB = is_enabled((environ.get('IMDB', "False")), True)
-SINGLE_BUTTON = is_enabled((environ.get('SINGLE_BUTTON', "True")), False)
-CUSTOM_FILE_CAPTION = environ.get("CUSTOM_FILE_CAPTION", None)
-BATCH_FILE_CAPTION = environ.get("BATCH_FILE_CAPTION", CUSTOM_FILE_CAPTION)
-IMDB_TEMPLATE = environ.get("IMDB_TEMPLATE", "<b>Query: {query}</b> \n‌‌‌‌IMDb Data:\n\n🏷 Title: <a href={url}>{title}</a>\n🎭 Genres: {genres}\n📆 Year: <a href={url}/releaseinfo>{year}</a>\n🌟 Rating: <a href={url}/ratings>{rating}</a> / 10")
-LONG_IMDB_DESCRIPTION = is_enabled(environ.get("LONG_IMDB_DESCRIPTION", "False"), False)
 SPELL_CHECK_REPLY = is_enabled(environ.get("SPELL_CHECK_REPLY", "False"), True)
 MAX_LIST_ELM = environ.get("MAX_LIST_ELM", None)
-INDEX_REQ_CHANNEL = int(environ.get('INDEX_REQ_CHANNEL', LOG_CHANNEL))
-FILE_STORE_CHANNEL = [int(ch) for ch in (environ.get('FILE_STORE_CHANNEL', '')).split()]
-MELCOW_NEW_USERS = is_enabled((environ.get('MELCOW_NEW_USERS', "False")), True)
-PROTECT_CONTENT = is_enabled((environ.get('PROTECT_CONTENT', "False")), False)
-PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "False")), True)
+TMDB_API_KEY = environ.get("TMDB_API_KEY", "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2Y2JiNjZjM2QwODc5YTZkMWM0YmZjNzBlZDg3YjA2MyIsInN1YiI6IjY1Njg2ZTgxZmI1Mjk5MDEwMjYxNTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PhnAFz5jGTdwuUNpX7ETB9hHnAPtVSTKiVL2VsUI998")
+
 FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001773614166"))
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 60))
 RESPONCE_LIMIT = int(environ.get('RESPONCE_LIMIT', 10))
-accss_grp = environ.get('ACCESS_GROUP', "-1001786962803")
-ACCESS_GROUPS = [int(ch) for ch in accss_grp.split()] if auth_grp else None
 WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
-APPROVE = is_enabled(environ.get("APPROVE", "True"), True)
-DB_URI = environ.get('DATABASE_URI', "mongodb+srv://msg:msg@msg.dkqp9lz.mongodb.net/?retryWrites=true&w=majority")
-# for copying all files into db
 FORWARD_CHANNEL = int(environ.get('FORWARD_CHANNEL', "-1002039632804"))
-ACCESS_KEY = environ.get("ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0")
 
-# For stream purposes
+# other
+ACCESS_KEY = environ.get("ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0")
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")
-URL = environ.get("URL", "https://linkrobot.onrender.com")
+URL = environ.get("STREAM_URL", "https://linkrobot.onrender.com")

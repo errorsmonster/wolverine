@@ -8,24 +8,19 @@ from urllib.parse import quote
 from Script import script
 import aiohttp
 import ast
-from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
-    make_inactive
-from info import SLOW_MODE_DELAY, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, AUTH_GROUPS, FORCESUB_CHANNEL, ACCESS_GROUPS, WAIT_TIME, BIN_CHANNEL, URL, ACCESS_KEY
+from info import SLOW_MODE_DELAY, ADMINS, AUTH_GROUPS, FORCESUB_CHANNEL, WAIT_TIME, BIN_CHANNEL, URL, ACCESS_KEY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from pyrogram import Client, filters, enums
+from pyrogram import Client, filters
 from database.users_chats_db import db
-from database.config_panel import mdb
-from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, search_gagala, temp, get_settings, replace_blacklist, fetch_quote_content, save_group_settings
-from plugins.shortner import gplinks
+from database.config_db import mdb
+from pyrogram.errors import MessageNotModified
+from utils import get_size, is_subscribed, search_gagala, temp, replace_blacklist, fetch_quote_content
+from plugins.shortner import shareus as link_shortner
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
-from database.filters_mdb import (
-    del_all,
-    find_filter,
-    get_filters,
-)
+from database.filters_mdb import find_filter
+from plugins.tmdb import get_movies, format_movie_suggestion
 import logging
 
 logger = logging.getLogger(__name__)
@@ -54,7 +49,7 @@ async def filters_private_handlers(client, message):
     files_counts = user.get("files_count")
     premium_status = await db.is_premium_status(user_id)
     last_reset = user.get("last_reset")
-    referral = await db.get_refferal_count(user_id)
+    referral = await db.fetch_value(user_id, "referral")
     duration = user.get("premium_expiry")
 
     # optinal function for checking time difference between currrent time and next 12'o clock
@@ -78,10 +73,10 @@ async def filters_private_handlers(client, message):
             return
 
     if referral is None or referral <= 0:
-        await db.update_refferal_count(user_id, 0)
+        await db.update_value(user_id, "referral", 0)
 
     if referral is not None and referral >= 50:
-        await db.update_refferal_count(user_id, referral - 50)
+        await db.update_value(user_id, "referral", referral - 50)
         await db.add_user_as_premium(user_id, 28, tody)
         await message.reply_text(f"**Congratulations! {message.from_user.mention},\nYou Have Received 1 Month Premium Subscription For Inviting 5 Users.**", disable_web_page_preview=True)
         return
@@ -100,22 +95,19 @@ async def filters_private_handlers(client, message):
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
-    if 1 < len(message.text) < 100:
-        search = message.text.lower()
-        encoded_search = quote(search)
-    
-        files, _, _ = await get_search_results(search, offset=0, filter=True)
-        if not files:
-            google = "https://google.com/search?q="
-            reply_markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔍 Check Your Spelling", url=f"{google}{encoded_search}%20movie")],
-                [InlineKeyboardButton("🗓 Check Release Date", url=f"{google}{encoded_search}%20release%20date")]
-            ])
-            await msg.edit(
-                text="<b>I couldn't find a movie in my database. Please check the spelling or the release date and try again.</b>",
-                reply_markup=reply_markup,
-            )
-            return
+    files, _, _ = await get_search_results(message.text.lower(), offset=0, filter=True)
+    if not files:
+        google = "https://google.com/search?q="
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🔍 Check Your Spelling", url=f"{google}{quote(message.text.lower())}%20movie")],
+            [InlineKeyboardButton("🗓 Check Release Date", url=f"{google}{quote(message.text.lower())}%20release%20date")]
+        ])
+        await msg.edit(
+            text="<b>I couldn't find a movie in my database. Please check the spelling or the release date and try again.</b>",
+            reply_markup=reply_markup,
+        )
+        return      
+
     try:
         if premium_status is True:
             is_expired = await db.check_expired_users(user_id)
@@ -155,7 +147,7 @@ async def filters_private_handlers(client, message):
                     return
                 
             if files_counts is not None and files_counts >= 10:
-                await message.reply(
+                await msg.edit(
                     f"<b>You Have Reached Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>",
                     disable_web_page_preview=True)
                 return
@@ -172,6 +164,7 @@ async def filters_private_handlers(client, message):
  
     except Exception as e:
         await msg.edit(f"<b>Opps! Something Went Wrong.</b>")
+        logger.error(e)
 
     finally:
         if WAIT_TIME is not None:
@@ -181,40 +174,31 @@ async def filters_private_handlers(client, message):
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
-    
-    group_filter = await mdb.get_configuration_value("group_filter")
-    if message.text.startswith("/") or group_filter is False:
+
+    if message.text.startswith("/") or not await mdb.get_configuration_value("group_filter"):
         return
     
-    files_counts = await db.get_files_count(message.from_user.id)
-    one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
+    files, _, _ = await get_search_results(message.text.lower(), offset=0, filter=True)
+    if not files:
+        if await mdb.get_configuration_value("spoll_check"):
+            return await advantage_spell_chok(message)
 
+    files_counts = await db.fetch_value(message.from_user.id, "files_count")
+    one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
+    premium = await db.is_premium_status(message.from_user.id)
     await mdb.update_top_messages(message.from_user.id, message.text) 
 
-    group_id = message.chat.id
-    member_count = message.chat.members_count
-    
-    text, markup = await auto_filter(client, message)
-    free, button = await free_filter(client, message)
+    filter = None
     try:
-        # Filtering logic
-        if group_id in AUTH_GROUPS:
-            k = await manual_filters(client, message)
-            if not k:
-                # 1 Ads 
-                if one_link_one_file_group is not None and one_link_one_file_group is True:
-                    # Auto filter
-                    if files_counts and files_counts is not None and files_counts >= 1:
-                        m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)    
-                    else:
-                        m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)   
-                else:
-                    m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
+        if premium:
+            text, button = await paid_filter(client, message)
+        elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
+            text, button = await free_filter(client, message)
+        else:
+            text, button = await auto_filter(client, message)
 
+        filter = await message.reply(text=text, reply_markup=button, disable_web_page_preview=True)
 
-        elif group_id in ACCESS_GROUPS or (member_count and member_count > 500):
-            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)
-        
     except Exception as e:
         print(e)
 
@@ -222,7 +206,81 @@ async def public_group_filter(client, message):
         if WAIT_TIME is not None:
             await asyncio.sleep(WAIT_TIME)
             await message.delete()
-            await m.delete()
+            if filter:
+                await filter.delete()
+                
+
+@Client.on_callback_query(filters.regex(r"^spolling"))
+async def advantage_spoll_choker(bot, query):
+    _, user, movie_ = query.data.split('#')
+    if int(user) != 0 and query.from_user.id != int(user):
+        return await query.answer("Not for you!")
+    if movie_ == "close_spellcheck":
+        return await query.message.delete()
+    movies = SPELL_CHECK.get(query.message.reply_to_message.id)
+    if not movies:
+        return await query.answer("You are clicking on an old button which is expired.", show_alert=True)
+    movie = movies[(int(movie_))]
+    await query.answer('Checking for Movie in database...')
+    files, offset, total_results = await get_search_results(movie, offset=0, filter=True)
+    if files:
+        k = (movie, files, offset, total_results)
+        await auto_filter(bot, query, k)
+    else:
+        k = await query.message.edit('This Movie Not Found In My DataBase')
+        await asyncio.sleep(10)
+        await k.delete()
+
+async def advantage_spell_chok(msg):
+    query = re.sub(
+        r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?)",
+        "", msg.text, flags=re.IGNORECASE)  # plis contribute some common words
+    query = query.strip() + " movie"
+    g_s = await search_gagala(query)
+    g_s += await search_gagala(msg.text)
+    gs_parsed = []
+    if not g_s:
+        k = await msg.reply("I couldn't find any movie in that name.")
+        await asyncio.sleep(8)
+        await k.delete()
+        return
+    regex = re.compile(r".*(imdb|wikipedia).*", re.IGNORECASE)  # look for imdb / wiki results
+    gs = list(filter(regex.match, g_s))
+    gs_parsed = [re.sub(
+        r'\b(\-([a-zA-Z-\s])\-\simdb|(\-\s)?imdb|(\-\s)?wikipedia|\(|\)|\-|reviews|full|all|episode(s)?|film|movie|series)',
+        '', i, flags=re.IGNORECASE) for i in gs]
+    if not gs_parsed:
+        reg = re.compile(r"watch(\s[a-zA-Z0-9_\s\-\(\)]*)*\|.*",
+                         re.IGNORECASE)  # match something like Watch Niram | Amazon Prime
+        for mv in g_s:
+            match = reg.match(mv)
+            if match:
+                gs_parsed.append(match.group(1))
+    user = msg.from_user.id if msg.from_user else 0
+    movielist = []
+    gs_parsed = list(dict.fromkeys(gs_parsed))
+    if len(gs_parsed) > 3:
+        gs_parsed = gs_parsed[:3]
+    movielist += [(re.sub(r'(\-|\(|\)|_)', '', i, flags=re.IGNORECASE)).strip() for i in gs_parsed]
+    movielist = list(dict.fromkeys(movielist))  # removing duplicates
+    if not movielist:
+        k = await msg.reply("**I couldn't find anything related to that. Check your spelling**")
+        await asyncio.sleep(15)
+        await k.delete()
+        return
+    SPELL_CHECK[msg.id] = movielist
+    btn = [[
+        InlineKeyboardButton(
+            text=movie.strip(),
+            callback_data=f"spolling#{user}#{k}",
+        )
+    ] for k, movie in enumerate(movielist)]
+    btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
+    m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
+                    reply_markup=InlineKeyboardMarkup(btn))
+    if WAIT_TIME is not None:
+        await asyncio.sleep(WAIT_TIME)
+        await m.delete()
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
@@ -251,16 +309,14 @@ async def next_page(bot, query):
 
     if not files:
         return
-    settings = await get_settings(query.message.chat.id)
-    if settings['button']:
-        # Construct a text message with hyperlinks
-        search_results_text = []
-        for file in files:
-            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
-            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
-            search_results_text.append(file_link)
+    # Construct a text message with hyperlinks
+    search_results_text = []
+    for file in files:
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
+        search_results_text.append(file_link)
 
-        search_results_text = "\n\n".join(search_results_text)
+    search_results_text = "\n\n".join(search_results_text)
 
     btn = []
     btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
@@ -299,61 +355,34 @@ async def next_page(bot, query):
         pass
     await query.answer()
     
-
-@Client.on_callback_query(filters.regex(r"^spolling"))
-async def advantage_spoll_choker(bot, query):
-    _, user, movie_ = query.data.split('#')
-    if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer("Not for you!")
-    if movie_ == "close_spellcheck":
-        return await query.message.delete()
-    movies = SPELL_CHECK.get(query.message.reply_to_message.id)
-    if not movies:
-        return await query.answer("You are clicking on an old button which is expired.", show_alert=True)
-    movie = movies[(int(movie_))]
-    await query.answer('Checking for Movie in database...')
-    k = await manual_filters(bot, query.message, text=movie)
-    if k == False:
-        files, offset, total_results = await get_search_results(movie, offset=0, filter=True)
-        if files:
-            k = (movie, files, offset, total_results)
-            await auto_filter(bot, query, k)
-        else:
-            k = await query.message.edit('This Movie Not Found In DataBase')
-            await asyncio.sleep(10)
-            await k.delete()
-
     
 async def auto_filter(client, msg, spoll=False):
     if not spoll:
         message = msg
-        settings = await get_settings(message.chat.id)
-        if message.text.startswith("/"): return  # ignore commands
+        if message.text.startswith("/"):
+            return
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
             return
         if 2 < len(message.text) < 100:
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
-                if settings["spell_check"]:
+                if await mdb.get_configuration_value("spoll_check"):
                     return await advantage_spell_chok(msg)
                 else:
                     return
         else:
             return
     else:
-        settings = await get_settings(msg.message.chat.id)
         message = msg.message.reply_to_message
         search, files, offset, total_results = spoll
-    if settings["button"]:
-        # Construct a text message with hyperlinks
-        search_results_text = []
-        for file in files:
-            shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
-            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
-            search_results_text.append(file_link)
+    search_results_text = []
+    for file in files:
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
+        search_results_text.append(file_link)
 
-        search_results_text = "\n\n".join(search_results_text)
+    search_results_text = "\n\n".join(search_results_text)
 
     btn = []   
     btn.append([
@@ -377,108 +406,8 @@ async def auto_filter(client, msg, spoll=False):
         )
     cap = f"Here is what i found for your query {search}"
     # add timestamp to database for floodwait
-    await db.update_timestamps(message.from_user.id, int(time.time()))
+    await db.update_value(message.from_user.id, "timestamps", int(time.time()))
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
-
-
-async def advantage_spell_chok(msg):
-    query = re.sub(
-        r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?)",
-        "", msg.text, flags=re.IGNORECASE)  # plis contribute some common words
-    query = query.strip() + " movie"
-    g_s = await search_gagala(query)
-    g_s += await search_gagala(msg.text)
-    gs_parsed = []
-    if not g_s:
-        k = await msg.reply("I couldn't find any movie in that name.")
-        await asyncio.sleep(8)
-        await k.delete()
-        return
-    regex = re.compile(r".*(imdb|wikipedia).*", re.IGNORECASE)  # look for imdb / wiki results
-    gs = list(filter(regex.match, g_s))
-    gs_parsed = [re.sub(
-        r'\b(\-([a-zA-Z-\s])\-\simdb|(\-\s)?imdb|(\-\s)?wikipedia|\(|\)|\-|reviews|full|all|episode(s)?|film|movie|series)',
-        '', i, flags=re.IGNORECASE) for i in gs]
-    if not gs_parsed:
-        reg = re.compile(r"watch(\s[a-zA-Z0-9_\s\-\(\)]*)*\|.*",
-                         re.IGNORECASE)  # match something like Watch Niram | Amazon Prime
-        for mv in g_s:
-            match = reg.match(mv)
-            if match:
-                gs_parsed.append(match.group(1))
-    user = msg.from_user.id if msg.from_user else 0
-    movielist = []
-    gs_parsed = list(dict.fromkeys(gs_parsed))  # removing duplicates https://stackoverflow.com/a/7961425
-    if len(gs_parsed) > 3:
-        gs_parsed = gs_parsed[:3]
-    movielist += [(re.sub(r'(\-|\(|\)|_)', '', i, flags=re.IGNORECASE)).strip() for i in gs_parsed]
-    movielist = list(dict.fromkeys(movielist))  # removing duplicates
-    if not movielist:
-        k = await msg.reply("**I couldn't find anything related to that. Check your spelling**")
-        await asyncio.sleep(15)
-        await k.delete()
-        return
-    SPELL_CHECK[msg.id] = movielist
-    btn = [[
-        InlineKeyboardButton(
-            text=movie.strip(),
-            callback_data=f"spolling#{user}#{k}",
-        )
-    ] for k, movie in enumerate(movielist)]
-    btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
-                    reply_markup=InlineKeyboardMarkup(btn))
-    if WAIT_TIME is not None:
-        await asyncio.sleep(WAIT_TIME)
-        await m.delete()
-    
-async def manual_filters(client, message, text=False):
-    group_id = message.chat.id
-    name = text or message.text
-    reply_id = message.reply_to_message.id if message.reply_to_message else message.id
-    keywords = await get_filters(group_id)
-    for keyword in reversed(sorted(keywords, key=len)):
-        pattern = r"( |^|[^\w])" + re.escape(keyword) + r"( |$|[^\w])"
-        if re.search(pattern, name, flags=re.IGNORECASE):
-            reply_text, btn, alert, fileid = await find_filter(group_id, keyword)
-
-            if reply_text:
-                reply_text = reply_text.replace("\\n", "\n").replace("\\t", "\t")
-
-            if btn is not None:
-                try:
-                    if fileid == "None":
-                        if btn == "[]":
-                            await client.send_message(group_id, reply_text, disable_web_page_preview=True)
-                        else:
-                            button = eval(btn)
-                            await client.send_message(
-                                group_id,
-                                reply_text,
-                                disable_web_page_preview=True,
-                                reply_markup=InlineKeyboardMarkup(button),
-                                reply_to_message_id=reply_id
-                            )
-                    elif btn == "[]":
-                        await client.send_cached_media(
-                            group_id,
-                            fileid,
-                            caption=reply_text or "",
-                            reply_to_message_id=reply_id
-                        )
-                    else:
-                        button = eval(btn)
-                        await message.reply_cached_media(
-                            fileid,
-                            caption=reply_text or "",
-                            reply_markup=InlineKeyboardMarkup(button),
-                            reply_to_message_id=reply_id
-                        )
-                except Exception as e:
-                    logger.exception(e)
-                break
-    else:
-        return False
 
 # callback autofilter
 async def callback_auto_filter(msg, query):
@@ -486,7 +415,7 @@ async def callback_auto_filter(msg, query):
     files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     search_results_text = []
     for file in files:
-        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -513,243 +442,18 @@ async def callback_paid_filter(msg, query):
 async def cb_handler(client: Client, query: CallbackQuery):
     if query.data == "close_data":
         await query.message.delete()
-    elif query.data == "delallconfirm":
-        userid = query.from_user.id
-        chat_type = query.message.chat.type
-
-        if chat_type == enums.ChatType.PRIVATE:
-            grpid = await active_connection(str(userid))
-            if grpid is not None:
-                grp_id = grpid
-                try:
-                    chat = await client.get_chat(grpid)
-                    title = chat.title
-                except:
-                    await query.message.edit_text("Make sure I'm present in your group!!", quote=True)
-                    return await query.answer('Share & Support Us♥️')
-            else:
-                await query.message.edit_text(
-                    "I'm not connected to any groups!\nCheck /connections or connect to any groups",
-                    quote=True
-                )
-                return await query.answer('Share & Support Us♥️')
-
-        elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-            grp_id = query.message.chat.id
-            title = query.message.chat.title
-
-        else:
-            return await query.answer('Share & Support Us♥️')
-
-        st = await client.get_chat_member(grp_id, userid)
-        if (st.status == enums.ChatMemberStatus.OWNER) or (str(userid) in ADMINS):
-            await del_all(query.message, grp_id, title)
-        else:
-            await query.answer("You need to be Group Owner or an Auth User to do that!", show_alert=True)
-    elif query.data == "delallcancel":
-        userid = query.from_user.id
-        chat_type = query.message.chat.type
-
-        if chat_type == enums.ChatType.PRIVATE:
-            await query.message.reply_to_message.delete()
-            await query.message.delete()
-
-        elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-            grp_id = query.message.chat.id
-            st = await client.get_chat_member(grp_id, userid)
-            if (st.status == enums.ChatMemberStatus.OWNER) or (str(userid) in ADMINS):
-                await query.message.delete()
-                try:
-                    await query.message.reply_to_message.delete()
-                except:
-                    pass
-            else:
-                await query.answer("That's not for you!!", show_alert=True)
-    elif "groupcb" in query.data:
-        await query.answer()
-
-        group_id = query.data.split(":")[1]
-
-        act = query.data.split(":")[2]
-        hr = await client.get_chat(int(group_id))
-        title = hr.title
-        user_id = query.from_user.id
-
-        if act == "":
-            stat = "CONNECT"
-            cb = "connectcb"
-        else:
-            stat = "DISCONNECT"
-            cb = "disconnect"
-
-        keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton(f"{stat}", callback_data=f"{cb}:{group_id}"),
-             InlineKeyboardButton("DELETE", callback_data=f"deletecb:{group_id}")],
-            [InlineKeyboardButton("BACK", callback_data="backcb")]
-        ])
-
-        await query.message.edit_text(
-            f"Group Name : **{title}**\nGroup ID : `{group_id}`",
-            reply_markup=keyboard,
-            parse_mode=enums.ParseMode.MARKDOWN
-        )
-        return await query.answer('Share & Support Us♥️')
-    elif "connectcb" in query.data:
-        await query.answer()
-
-        group_id = query.data.split(":")[1]
-
-        hr = await client.get_chat(int(group_id))
-
-        title = hr.title
-
-        user_id = query.from_user.id
-
-        mkact = await make_active(str(user_id), str(group_id))
-
-        if mkact:
-            await query.message.edit_text(
-                f"Connected to **{title}**",
-                parse_mode=enums.ParseMode.MARKDOWN
-            )
-        else:
-            await query.message.edit_text('Some error occurred!!', parse_mode=enums.ParseMode.MARKDOWN)
-        return await query.answer('Share & Support Us♥️')
-    elif "disconnect" in query.data:
-        await query.answer()
-
-        group_id = query.data.split(":")[1]
-
-        hr = await client.get_chat(int(group_id))
-
-        title = hr.title
-        user_id = query.from_user.id
-
-        mkinact = await make_inactive(str(user_id))
-
-        if mkinact:
-            await query.message.edit_text(
-                f"Disconnected from **{title}**",
-                parse_mode=enums.ParseMode.MARKDOWN
-            )
-        else:
-            await query.message.edit_text(
-                f"Some error occurred!!",
-                parse_mode=enums.ParseMode.MARKDOWN
-            )
-        return await query.answer('Share & Support Us♥️')
-    elif "deletecb" in query.data:
-        await query.answer()
-
-        user_id = query.from_user.id
-        group_id = query.data.split(":")[1]
-
-        delcon = await delete_connection(str(user_id), str(group_id))
-
-        if delcon:
-            await query.message.edit_text(
-                "Successfully deleted connection"
-            )
-        else:
-            await query.message.edit_text(
-                f"Some error occurred!!",
-                parse_mode=enums.ParseMode.MARKDOWN
-            )
-        return await query.answer('Share & Support Us♥️')
-    elif query.data == "backcb":
-        await query.answer()
-
-        userid = query.from_user.id
-
-        groupids = await all_connections(str(userid))
-        if groupids is None:
-            await query.message.edit_text(
-                "There are no active connections!! Connect to some groups first.",
-            )
-            return await query.answer('Share & Support Us♥️')
-        buttons = []
-        for groupid in groupids:
-            try:
-                ttl = await client.get_chat(int(groupid))
-                title = ttl.title
-                active = await if_active(str(userid), str(groupid))
-                act = " - ACTIVE" if active else ""
-                buttons.append(
-                    [
-                        InlineKeyboardButton(
-                            text=f"{title}{act}", callback_data=f"groupcb:{groupid}:{act}"
-                        )
-                    ]
-                )
-            except:
-                pass
-        if buttons:
-            await query.message.edit_text(
-                "Your connected group details ;\n\n",
-                reply_markup=InlineKeyboardMarkup(buttons)
-            )
     elif "alertmessage" in query.data:
         grp_id = query.message.chat.id
         i = query.data.split(":")[1]
         keyword = query.data.split(":")[2]
-        reply_text, btn, alerts, fileid = await find_filter(grp_id, keyword)
+        _, btn, alerts, _ = await find_filter(grp_id, keyword)
         if alerts is not None:
             alerts = ast.literal_eval(alerts)
             alert = alerts[int(i)]
             alert = alert.replace("\\n", "\n").replace("\\t", "\t")
             await query.answer(alert, show_alert=True)
-    if query.data.startswith("file"):
-        ident, file_id = query.data.split("#")
-        files_ = await get_file_details(file_id)
-        if not files_:
-            return await query.answer('No such file exist.')
-        files = files_[0]
-        title = files.file_name
-        size = get_size(files.file_size)
-        f_caption = files.caption
-        settings = await get_settings(query.message.chat.id)
-        if CUSTOM_FILE_CAPTION:
-            try:
-                f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
-                                                       file_size='' if size is None else size,
-                                                       file_caption='' if f_caption is None else f_caption)
-            except Exception as e:
-                logger.exception(e)
-            f_caption = f_caption
-        if f_caption is None:
-            f_caption = f"{files.file_name}"
 
-        try:
-            if AUTH_CHANNEL and not await is_subscribed(client, query):
-                await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-                return
-            elif settings['botpm']:
-                await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-                return
-            else:
-                media_id=await client.send_cached_media(
-                    chat_id=query.from_user.id,
-                    file_id=file_id,
-                    caption=f"<code>{await replace_blacklist(f_caption, script.BLACKLIST)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
-                    protect_content=True if ident == "filep" else False 
-                )
-                await query.answer('Check PM, I have sent files in pm', show_alert=True)
-                del_msg = await client.send_message(
-                    text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
-                    chat_id=query.from_user.id,
-                    reply_to_message_id=media_id.id
-                    )
-                await asyncio.sleep(WAIT_TIME or 600)
-                await media_id.delete()
-                await del_msg.edit("__⊘ This message was deleted__")
-
-        except UserIsBlocked:
-            await query.answer('Unblock the bot mahn !', show_alert=True)
-        except PeerIdInvalid:
-            await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-        except Exception as e:
-            await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-    elif query.data.startswith("checksub"):
+    if query.data.startswith("checksub"):
         if FORCESUB_CHANNEL and not await is_subscribed(client, query):
             await query.answer("Please Join My Channel Then Click Try Again 😒", show_alert=True)
             return
@@ -768,7 +472,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             chat_id=query.from_user.id,
             file_id=file_id,
             caption=f"<code>{await replace_blacklist(f_caption, script.BLACKLIST)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
-            protect_content=True if ident == 'checksubp' else False
         )
         del_msg = await client.send_message(
             text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
@@ -829,7 +532,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
        
     elif query.data == "confirm":
         buttons = [[
-                    InlineKeyboardButton('📣 Help', url="https://t.me/lemx4"),
+                    InlineKeyboardButton('📣 Help', url="https://t.me/caredeskbot"),
                     InlineKeyboardButton('◀️ Back', callback_data="remads"),
                 ]]
         await query.message.edit(
@@ -840,7 +543,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "refer":
         user_id = query.from_user.id
-        referral_points = await db.get_refferal_count(user_id)
+        referral_points = await db.fetch_value(user_id, "referral")
         refferal_link = f"https://t.me/{temp.U_NAME}?start=ReferID-{user_id}"
         buttons = [[
                     InlineKeyboardButton('🎐 Invite', url=f"https://telegram.me/share/url?url={refferal_link}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83"),
@@ -855,7 +558,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "refer_point":
         user_id = query.from_user.id
-        referral_points = await db.get_refferal_count(user_id)
+        referral_points = await db.fetch_value(user_id, "referral")
         await query.answer(f"You have {referral_points} refferal points.", show_alert=True
         )
 
@@ -1052,107 +755,100 @@ async def cb_handler(client: Client, query: CallbackQuery):
         codes_str = "\n".join(f"`{code}`" for code in codes_generated)
         await query.message.edit(f"<b>Redeem codes:</b>\n\n{codes_str}")
 
-
-
-
-     #maintainance
+    #maintainance
     elif query.data == "maintenance":
-        config = await mdb.get_configuration_value("maintenance_mode")
-        if config is True:
-            await mdb.update_configuration("maintenance_mode", False)
-            await query.message.edit(f"<b>Maintenance mode disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("maintenance_mode", True)
-            await query.message.edit(f"<b>Maintenance mode enabled.</b>", reply_markup=None)
-
+        await toggle_config(query, "maintenance_mode", "Maintenance mode")
     elif query.data == "1link1file":
-        config = await mdb.get_configuration_value("one_link")
-        if config is True:
-            await mdb.update_configuration("one_link", False)
-            await query.message.edit(f"<b>1 time Ads in private disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("one_link", True)
-            await query.message.edit(f"<b>1 time Ads in private enabled.</b>", reply_markup=None)
-
+        await toggle_config(query, "one_link", "1 time Ads in private")
     elif query.data == "1linkgroup":
-        config = await mdb.get_configuration_value("one_link_one_file_group")
-        if config is True:
-            await mdb.update_configuration("one_link_one_file_group", False)
-            await query.message.edit(f"<b>1 time Ads in group disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("one_link_one_file_group", True)
-            await query.message.edit(f"<b>1 time Ads in group enabled.</b>", reply_markup=None)
-
-
+        await toggle_config(query, "one_link_one_file_group", "1 time Ads in group")
     elif query.data == "autoapprove":
-        config = await mdb.get_configuration_value("auto_accept")
-        if config is True:
-            await mdb.update_configuration("auto_accept", False)
-            await query.message.edit(f"<b>Auto approve disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("auto_accept", True)
-            await query.message.edit(f"<b>Auto approve enabled.</b>", reply_markup=None)
-
+        await toggle_config(query, "auto_accept", "Auto approve")
     elif query.data == "private_filter":
-        config = await mdb.get_configuration_value("private_filter")
-        if config is True:
-            await mdb.update_configuration("private_filter", False)
-            await query.message.edit(f"<b>Private filter disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("private_filter", True)
-            await query.message.edit(f"<b>Private filter enabled.</b>", reply_markup=None)
-
+        await toggle_config(query, "private_filter", "Private filter")
     elif query.data == "group_filter":
-        config = await mdb.get_configuration_value("group_filter")
-        if config is True:
-            await mdb.update_configuration("group_filter", False)
-            await query.message.edit(f"<b>Group filter disabled.</b>", reply_markup=None)
-        else:
-            await mdb.update_configuration("group_filter", True)
-            await query.message.edit(f"<b>Group filter enabled.</b>", reply_markup=None)              
-
+        await toggle_config(query, "group_filter", "Group filter")
     elif query.data == "terms_and_condition":
-        config = await mdb.get_configuration_value("terms")
-        print(f"Terms: {config}")
-        if config is True:
-            await mdb.update_configuration("terms", False)
-            await query.message.edit(f"<b>Terms&Condition disabled.</b>", reply_markup=None)
+        await toggle_config(query, "terms", "Terms&Condition")
+    elif query.data == "spoll_check":
+        await toggle_config(query, "spoll_check", "Spell Check")
+
+    '''
+    
+    elif query.data == "extramod":
+        buttons = [
+            [InlineKeyboardButton("Top Searches of the day", callback_data="topsearch")],
+            [InlineKeyboardButton("Movie suggestions", callback_data="movie_suggest")]
+        ]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await query.message.edit(
+            f"Choose an option",
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+        )
+
+    elif query.data == "movie_suggest":
+        languages = ["Bengali", "English", "Hindi", "Tamil", "Telegu", "Malayalam", "Punjabi", "Gujrati"]
+        button = await create_buttons(languages, "lang")
+        await query.message.edit(
+            text=f"<b>Choose language</b>",
+            reply_markup=InlineKeyboardMarkup(button),
+            disable_web_page_preview=True,
+        )
+
+    elif query.data.startswith("lang#"):
+        lang = query.data.split("#")[1]
+        years = [str(year) for year in range(2023, 2013, -1)]
+        button = await create_buttons(years, f"yr#{lang}")
+        await query.message.edit(
+            text=f"<b>Choose year</b>",
+            reply_markup=InlineKeyboardMarkup(button),
+            disable_web_page_preview=True,
+        )
+
+    elif query.data.startswith("yr#"):
+        langu, yr = query.data.split("#")[1:]
+        genres = ["Action", "Drama", "Horror", "Sci-fi", "Romance", "Thriller", "Mystery", "Fantasy", "Fiction", "Historical"]
+        button = await create_buttons(genres, f"sugg#{langu}#{yr}")
+        await query.message.edit(
+            text=f"<b>Choose genre</b>",
+            reply_markup=InlineKeyboardMarkup(button),
+            disable_web_page_preview=True,
+        )
+
+    elif query.data.startswith("sugg#"):
+        language, year, genre = query.data.split("#")[1:]
+        print(f"{language} {year} {genre}")
+        movies = await get_movies(genre, language, year)
+        if movies:
+            suggestion = await format_movie_suggestion(movies)
+            await query.message.edit(suggestion, reply_markup=None)
         else:
-            await mdb.update_configuration("terms", True)
-            await query.message.edit(f"<b>Terms&Condition enabled.</b>", reply_markup=None)     
+            await query.edit("No movies found for the given query.", reply_markup=None)
 
-
-
-                
-    elif query.data.startswith("setgs"):
-        ident, set_type, status, grp_id = query.data.split("#")
-        grpid = await active_connection(str(query.from_user.id))
-
-        if str(grp_id) != str(grpid):
-            await query.message.edit("Your Active Connection Has Been Changed. Go To /settings.")
-            return await query.answer('Share & Support Us♥️')
-
-        if status == "True":
-            await save_group_settings(grpid, set_type, False)
-        else:
-            await save_group_settings(grpid, set_type, True)
-
-        settings = await get_settings(grpid)
-
-        if settings is not None:
-            buttons = [
-                [
-                    InlineKeyboardButton('Spell Check',
-                                         callback_data=f'setgs#spell_check#{settings["spell_check"]}#{str(grp_id)}'),
-                    InlineKeyboardButton('✅ Yes' if settings["spell_check"] else '❌ No',
-                                         callback_data=f'setgs#spell_check#{settings["spell_check"]}#{str(grp_id)}')
-                ]
-            ]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            await query.message.edit_reply_markup(reply_markup)
+    '''        
 
     await query.answer('Share & Support Us♥️')
 
+async def toggle_config(query, config_key, message):
+    config = await mdb.get_configuration_value(config_key)
+    if config is True:
+        await mdb.update_configuration(config_key, False)
+        await query.message.edit(f"<b>{message} disabled.</b>", reply_markup=None)
+    else:
+        await mdb.update_configuration(config_key, True)
+        await query.message.edit(f"<b>{message} enabled.</b>", reply_markup=None)
+
+
+async def create_buttons(names, callback_prefix):
+    return [
+        [
+            InlineKeyboardButton(name, callback_data=f"{callback_prefix}#{name.lower()}")
+            for name in names[i:i+2]
+        ]
+        for i in range(0, len(names), 2)
+    ]
+    
 
 async def delete_files(query, limit, file_type):
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)

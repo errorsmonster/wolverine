@@ -47,7 +47,7 @@ async def redeem_generate(client, message):
     codes_str = "\n".join(f"`{code}`" for code in codes_generated)
     await message.reply_text(f"<b>Redeem codes:</b>\n\n{codes_str}")
 
-@Client.on_message(filters.regex(r"^([A-Z0-9]{10})([A-Za-z0-9+/]{4})([A-Z0-9]{10})$") & filters.private)
+@Client.on_message(filters.regex(r"^([A-Z0-9]{10})([A-Za-z0-9+/]{4})([A-Z0-9]{10})$"))
 async def validate_code(client, message):
     # Access the matched groups directly
     first_part_code = message.matches[0][1]

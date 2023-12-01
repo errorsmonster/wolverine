@@ -1,8 +1,8 @@
 import re
 import math
 import time
+import base64
 from Script import script
-from info import SLOW_MODE_DELAY
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from database.users_chats_db import db
@@ -12,11 +12,9 @@ from database.ia_filterdb import get_search_results
 from plugins.shortner import urlshare
 
 
+
 BUTTONS = {}
 SPELL_CHECK = {}
-blacklist = script.BLACKLIST
-slow_mode = SLOW_MODE_DELAY
-
 
 @Client.on_callback_query(filters.regex(r"^free"))
 async def free_next_page(bot, query):
@@ -42,8 +40,11 @@ async def free_next_page(bot, query):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        user_id = query.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8') 
+        shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}")
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
@@ -87,28 +88,24 @@ async def free_next_page(bot, query):
 
 
 
-async def free_filter(client, msg, spoll=False):
-    if not spoll:
-        message = msg
-        if message.text.startswith("/"): return  # ignore commands
-        if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+async def free_filter(_, msg):
+    message = msg
+    if message.text.startswith("/"): return  # ignore commands
+    if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+        return
+    if 2 < len(message.text) < 100:
+        search = message.text
+        files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+        if not files:
             return
-        if 2 < len(message.text) < 100:
-            search = message.text
-            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
-            if not files:
-                return
-        else:
-            return
-    else:
-        message = msg.message.reply_to_message
-        search, files, offset, total_results = spoll
        
-    # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        user_id = message.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8') 
+        shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}")
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
@@ -128,5 +125,7 @@ async def free_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
     cap = f"Here is what i found for your query {search}"
-    await db.update_timestamps(message.from_user.id, int(time.time()))
+    await db.update_value(message.from_user.id, "timestamps", int(time.time()))
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
+
+

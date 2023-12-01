@@ -1,5 +1,5 @@
 import motor.motor_asyncio
-from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT
+from info import DATABASE_NAME, DATABASE_URI
 from datetime import datetime, timedelta
 
 class Database:
@@ -8,8 +8,6 @@ class Database:
         self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
         self.db = self._client[database_name]
         self.col = self.db.users
-        self.grp = self.db.groups
-        
         
     def new_user(self, id, name):
         return dict(
@@ -35,40 +33,7 @@ class Database:
         user = await self.col.find_one({'id': int(id)})
         return False if not user else user
     
-    # update files count of user
-    async def update_files_count(self, user_id, count):
-        await self.col.update_one(
-        {"id": user_id}, 
-        {"$set": {"files_count": count}}
-    )
-
-    # get files count of user
-    async def get_files_count(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        if user is None:
-            return
-        return user.get("files_count")
-    
-    # update total files count of user
-    async def update_lifetime_files(self, user_id, count):
-        await self.col.update_one(
-        {"id": user_id}, 
-        {"$set": {"lifetime_files": count}}
-    )
-
-    # get total files count of user
-    async def get_lifetime_files(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        return user.get("lifetime_files", 0)
-
-
-    # check last reset date of user
-    async def get_last_reset(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        if user is None:
-            return None
-        return user.get("last_reset")
-    
+ 
     # reset fiiles count of user
     async def reset_daily_files_count(self, user_id):
         user = await self.col.find_one({"id": user_id})
@@ -81,23 +46,11 @@ class Database:
     async def reset_all_files_count(self):
         await self.col.update_many({}, {"$set": {"files_count": 0, "last_reset": datetime.now().strftime("%Y-%m-%d")}})
 
-    async def get_timestamps(self, id):
-        user = await self.col.find_one({"id": id})
-        if user is None:
-            return None
-        return user.get("timestamps")
-
-    async def update_timestamps(self, id, time):
-        await self.col.update_one({"id": id}, {"$set": {"timestamps": time}})
-
     async def is_user_joined(self, id):
         user = await self.col.find_one({"id": id})
         if user is None:
             return False
         return user.get("user_joined")
-
-    async def update_user_joined(self, id, status):
-        await self.col.update_one({"id": id}, {"$set": {"user_joined": status}}) 
 
     async def reset_all_users_joined(self):
         await self.col.update_many({}, {"$set": {"user_joined": False}})
@@ -171,27 +124,6 @@ class Database:
                 
                 if expiry_date <= now:
                     await self.remove_user_premium(user_id)
-
-    # update refferal count of user
-    async def update_refferal_count(self, user_id, count):
-        await self.col.update_one({"id": user_id}, {"$set": {"referral": count}})   
-
-    # count refferal of user
-    async def get_refferal_count(self, user_id):
-        user = await self.col.find_one({"id": user_id})
-        if user is None:
-            return 0
-        return user.get("referral", 0)
-
-    def new_group(self, id, title):
-        return dict(
-            id=id,
-            title=title,
-            chat_status=dict(
-                is_disabled=False,
-                reason="",
-            ),
-        )
          
     async def add_user(self, id, name):
         user = self.new_user(id, name)
@@ -237,59 +169,22 @@ class Database:
 
     async def get_banned(self):
         users = self.col.find({'ban_status.is_banned': True})
-        chats = self.grp.find({'chat_status.is_disabled': True})
-        b_chats = [chat['id'] async for chat in chats]
         b_users = [user['id'] async for user in users]
-        return b_users, b_chats
+        return b_users
     
-    async def add_chat(self, chat, title):
-        chat = self.new_group(chat, title)
-        await self.grp.insert_one(chat)
-    
-    async def get_chat(self, chat):
-        chat = await self.grp.find_one({'id': int(chat)})
-        return False if not chat else chat.get('chat_status')
-    
-    async def re_enable_chat(self, id):
-        chat_status=dict(
-            is_disabled=False,
-            reason="",
-        )
-        await self.grp.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
-        
-    async def update_settings(self, id, settings):
-        await self.grp.update_one({'id': int(id)}, {'$set': {'settings': settings}})
-        
-    async def get_settings(self, id):
-        default = {
-            'button': SINGLE_BUTTON,
-            'botpm': P_TTI_SHOW_OFF,
-            'file_secure': PROTECT_CONTENT,
-            'imdb': IMDB,
-            'spell_check': SPELL_CHECK_REPLY,
-            'welcome': MELCOW_NEW_USERS,
-            'template': IMDB_TEMPLATE
-        }
-        chat = await self.grp.find_one({'id': int(id)})
-        if chat:
-            return chat.get('settings', default)
-        return default
-    
-    async def disable_chat(self, chat, reason="No Reason"):
-        chat_status=dict(
-            is_disabled=True,
-            reason=reason,
-        )
-        await self.grp.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
-    
-    async def total_chat_count(self):
-        count = await self.grp.count_documents({})
-        return count
-    
-    async def get_all_chats(self):
-        return self.grp.find({})
-
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
+    
+
+    async def fetch_value(self, user_id, key):
+        user = await self.col.find_one({"id": user_id})
+        if user is None:
+            await self.add_user(user_id, "None")
+            return None
+        return user.get(key)
+
+    async def update_value(self, user_id, key, value):
+        await self.col.update_one({"id": user_id}, {"$set": {key: value}})
+
 
 db = Database(DATABASE_URI, DATABASE_NAME)

@@ -1,6 +1,6 @@
 import logging
-from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, FORCESUB_CHANNEL, ADMINS
+from pyrogram.errors import InputUserDeactivated, FloodWait, UserIsBlocked, PeerIdInvalid
+from info import MAX_LIST_ELM, FORCESUB_CHANNEL, ADMINS
 from imdb import Cinemagoer
 import asyncio
 from pyrogram.types import Message, InlineKeyboardButton
@@ -76,6 +76,8 @@ async def broadcast_messages(user_id, message):
     except Exception as e:
         return False, "Error"
 
+
+# search engine
 async def search_gagala(text):
     usr_agent = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -83,65 +85,40 @@ async def search_gagala(text):
     }
     text = quote_plus(text)
 
+    async def fetch(url, session, params=None):
+        async with session.get(url, params=params) as response:
+            return await response.text()
+
     async with aiohttp.ClientSession(headers=usr_agent) as session:
-        # First, try searching with Google
-        url = f'https://www.google.com/search?q={text}'
-        async with session.get(url) as response:
-            html_content = await response.text()
-            soup = BeautifulSoup(html_content, 'html.parser')
-            google_results = [title.getText() for title in soup.find_all('h3')]
+        # Try searching with Google
+        html_content = await fetch(f'https://www.google.com/search?q={text}', session)
+        soup = BeautifulSoup(html_content, 'html.parser')
+        results = [title.getText() for title in soup.find_all('h3')]
 
-        # Check if any results were found with Google
-        if google_results:
-            return google_results
-
-        # Try searching with Yahoo
-        url = f'https://search.yahoo.com/search?q={text}'
-        async with session.get(url) as response:
-            html_content = await response.text()
+        # If no results, try searching with Yahoo
+        if not results:
+            html_content = await fetch(f'https://search.yahoo.com/search?q={text}', session)
             soup = BeautifulSoup(html_content, 'html.parser')
             titles = soup.find_all('a', class_='d-ib fz-20 lh-26 td-hu tc va-bot mxw-100p')
-            ntitle = [kit.contents[1] for kit in titles]
+            results = [kit.contents[1] for kit in titles]
 
-        if ntitle:
-            return ntitle
-
-        # If no results, try searching with Brave
-        brave_results = []
-        params = {
-            'q': text,
-            'source': 'web',
-            'tf': 'at',
-            'offset': 0
-        }
-
-        while True:
-            async with session.get('https://search.brave.com/search', params=params) as response:
-                html_content = await response.text()
+        # If still no results, try searching with Brave
+        if not results:
+            params = {'q': text, 'source': 'web', 'tf': 'at', 'offset': 0}
+            while True:
+                html_content = await fetch('https://search.brave.com/search', session, params)
                 soup = BeautifulSoup(html_content, 'lxml')
 
-            if soup.select_one('.ml-15'):
-                params['offset'] += 1
-            else:
-                break
+                if soup.select_one('.ml-15'):
+                    params['offset'] += 1
+                else:
+                    break
 
-            brave_results.extend([result.select_one('.snippet-title').get_text().strip() for result in soup.select('.snippet')])
+                results.extend([result.select_one('.snippet-title').get_text().strip() for result in soup.select('.snippet')])
 
-        return brave_results
+        return results
 
-async def get_settings(group_id):
-    settings = temp.SETTINGS.get(group_id)
-    if not settings:
-        settings = await db.get_settings(group_id)
-        temp.SETTINGS[group_id] = settings
-    return settings
-    
-async def save_group_settings(group_id, key, value):
-    current = await get_settings(group_id)
-    current[key] = value
-    temp.SETTINGS[group_id] = current
-    await db.update_settings(group_id, current)
-    
+
 def get_size(size):
     """Get size in readable format"""
 
@@ -175,8 +152,6 @@ def get_file_id(msg: Message):
                 return obj
 
 def extract_user(message: Message) -> Union[int, str]:
-    """extracts the user from a message"""
-    # https://github.com/SpEcHiDe/PyroGramBot/blob/f30e2cca12002121bad1982f68cd0ff9814ce027/pyrobot/helper_functions/extract_user.py#L7
     user_id = None
     user_first_name = None
     if message.reply_to_message:
@@ -373,13 +348,4 @@ async def fetch_quote_content():
                 # If not a list, assume it's a single quote
                 return quote_data.get("content", None)
             else:
-                print(f"Error: Unable to fetch quote. Status code: {response.status}")
                 return None
-
-def encode_to_base64(text):
-    encoded_data = base64.urlsafe_b64encode(text.encode('utf-8')).rstrip(b'=').decode('utf-8')
-    return encoded_data
-
-def decode_from_base64(text):
-    decoded_data = base64.urlsafe_b64decode(text.encode('utf-8'))
-    return decoded_data
