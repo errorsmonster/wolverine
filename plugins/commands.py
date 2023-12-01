@@ -159,8 +159,8 @@ async def start(client, message):
     data = message.command[1].strip()
     if data.startswith("encrypt-"):
         _, rest_of_data = data.split('-', 1)
-        encypt_id, file_id = rest_of_data.split('_', 1)
-        userid = await decode_from_base64(encypt_id)
+        encypted_user_id, file_id = rest_of_data.split('_', 1)
+        userid = await decode_from_base64(encypted_user_id)
         print(userid)
 
         files_ = await get_file_details(file_id)
