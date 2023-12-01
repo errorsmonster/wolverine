@@ -7,6 +7,8 @@ from pyrogram import Client, filters
 from pyrogram.errors import MessageNotModified
 from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
+from plugins.pm_filter import advantage_spell_chok
+from database.config_db import mdb
 
 
 BUTTONS = {}
@@ -93,7 +95,10 @@ async def paid_filter(_, msg):
         search = message.text
         files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
         if not files:
-            return
+            if await mdb.get_configuration_value("spoll_check"):
+                return await advantage_spell_chok(msg)
+            else:
+                return
        
     search_results_text = []
     for file in files:

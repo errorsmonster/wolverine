@@ -89,25 +89,21 @@ async def free_next_page(bot, query):
 
 
 
-async def free_filter(_, msg, spoll=False):
-    if not spoll:
-        message = msg
-        if message.text.startswith("/"): return  # ignore commands
-        if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
-            return
-        if 2 < len(message.text) < 100:
-            search = message.text
-            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
-            if not files:
-                if await mdb.get_configuration_value("spoll_check"):
-                    return await advantage_spell_chok(msg)
-                else:
-                    return
+async def free_filter(_, msg):
+    message = msg
+    if message.text.startswith("/"): return  # ignore commands
+    if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+        return
+    if 2 < len(message.text) < 100:
+        search = message.text
+        files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+        if not files:
+            if await mdb.get_configuration_value("spoll_check"):
+                return await advantage_spell_chok(msg)
+            else:
+                return
         else:
             return
-    else:
-        message = msg.message.reply_to_message
-        search, files, offset, total_results = spoll
        
     search_results_text = []
     for file in files:
