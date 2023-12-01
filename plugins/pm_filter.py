@@ -95,11 +95,11 @@ async def filters_private_handlers(client, message):
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
+    '''
     if 2 < len(message.text) < 100:
         search = message.text.lower()
         encoded_search = quote(search)
     
-    '''
         files, _, _ = await get_search_results(search, offset=0, filter=True)
         if not files:
             google = "https://google.com/search?q="
@@ -112,7 +112,7 @@ async def filters_private_handlers(client, message):
                 reply_markup=reply_markup,
             )
             return
-    '''
+    '''        
 
     try:
         if premium_status is True:
