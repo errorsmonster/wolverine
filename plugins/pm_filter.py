@@ -214,7 +214,7 @@ async def public_group_filter(client, message):
 async def advantage_spoll_choker(bot, query):
     _, user, movie_ = query.data.split('#')
     if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer("Not for you!")
+        return await query.answer("Not for you!", show_alert=True)
     if movie_ == "close_spellcheck":
         return await query.message.delete()
     movies = SPELL_CHECK.get(query.message.reply_to_message.id)
@@ -276,7 +276,7 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
+    m = await msg.reply("<b>Did you mean any one of these?</b>",
                     reply_markup=InlineKeyboardMarkup(btn))
     if WAIT_TIME is not None:
         await asyncio.sleep(WAIT_TIME)
