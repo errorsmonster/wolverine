@@ -15,7 +15,7 @@ from database.users_chats_db import db
 from database.config_db import mdb
 from pyrogram.errors import MessageNotModified
 from utils import get_size, is_subscribed, search_gagala, temp, replace_blacklist, fetch_quote_content
-from plugins.shortner import gplinks
+from plugins.shortner import shareus as link_shortner
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
@@ -312,7 +312,7 @@ async def next_page(bot, query):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -378,7 +378,7 @@ async def auto_filter(client, msg, spoll=False):
         search, files, offset, total_results = spoll
     search_results_text = []
     for file in files:
-        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -415,7 +415,7 @@ async def callback_auto_filter(msg, query):
     files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     search_results_text = []
     for file in files:
-        shortlink = await gplinks(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
