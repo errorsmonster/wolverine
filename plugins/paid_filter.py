@@ -1,26 +1,21 @@
-import asyncio
+import base64
 import re
 import math
-import time
 from Script import script
-from info import SLOW_MODE_DELAY, WAIT_TIME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from pyrogram.errors import MessageNotModified
-from utils import get_size, get_settings, replace_blacklist, temp, encode_to_base64, decode_from_base64
+from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
 
 
 BUTTONS = {}
 SPELL_CHECK = {}
 blacklist = script.BLACKLIST
-slow_mode = SLOW_MODE_DELAY
-waitime = WAIT_TIME
-
 
 @Client.on_callback_query(filters.regex(r"^forward"))
 async def paid_next_page(bot, query):
-    ident, req, key, offset = query.data.split("_")
+    _, req, key, offset = query.data.split("_")
     try:
         offset = int(offset)
     except:
@@ -37,17 +32,19 @@ async def paid_next_page(bot, query):
         n_offset = 0
 
     if not files:
-        return
-    settings = await get_settings(query.message.chat.id)
-    if settings['button']:
-        # Construct a text message with hyperlinks
-        search_results_text = []
-        for file in files:
-            shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}"
-            file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
-            search_results_text.append(file_link)
+        return 
+    
+    search_results_text = []
+    for file in files:
+        user_id = query.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        search_results_text.append(file_link)
 
-        search_results_text = "\n\n".join(search_results_text)
+
+    search_results_text = "\n\n".join(search_results_text)
 
     btn = []
     
@@ -86,27 +83,24 @@ async def paid_next_page(bot, query):
     await query.answer("©PrimeHub™")
 
 
-async def paid_filter(client, msg, spoll=False):
-    if not spoll:
-        message = msg
-        if message.text.startswith("/"): return  # ignore commands
-        if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+async def paid_filter(_, msg):
+    message = msg
+    if message.text.startswith("/"):
+        return
+    if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+        return
+    if 2 < len(message.text) < 100:
+        search = message.text
+        files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+        if not files:
             return
-        if 2 < len(message.text) < 100:
-            search = message.text
-            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
-            if not files:
-                return
-        else:
-            return
-    else:
-        message = msg.message.reply_to_message
-        search, files, offset, total_results = spoll
        
-    # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}"
+        user_id = message.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -127,3 +121,5 @@ async def paid_filter(client, msg, spoll=False):
         )
     cap = f"Here is what i found for your query {search}"
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
+
+

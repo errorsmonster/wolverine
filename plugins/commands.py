@@ -7,10 +7,9 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from database.config_panel import mdb
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, FORCESUB_CHANNEL, WAIT_TIME
-from utils import get_settings, is_subscribed, temp, replace_blacklist
-from database.connections_mdb import active_connection
+from database.config_db import mdb
+from info import CHANNELS, ADMINS, FORCESUB_CHANNEL, WAIT_TIME
+from utils import is_subscribed, temp, replace_blacklist
 from database.ia_filterdb import get_search_results
 import re
 import base64
@@ -33,11 +32,6 @@ async def start(client, message):
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply(script.START_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.U_NAME, temp.B_NAME), reply_markup=reply_markup, disable_web_page_preview=True)
         await asyncio.sleep(2)
-        if not await db.get_chat(message.chat.id):
-            total=await client.get_chat_members_count(message.chat.id)
-            await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
-            await db.add_chat(message.chat.id, message.chat.title)
-        return
     term = await mdb.get_configuration_value("terms")
     if not await db.is_user_exist(message.from_user.id) and term and len(message.command) != 2:
         button = [
@@ -141,7 +135,7 @@ async def start(client, message):
     if message.command[1] == "refer":
         m = await message.reply_text(f"<b>Generating Your Refferal Link...</b>")
         user_id = message.from_user.id
-        referral_points = await db.get_refferal_count(user_id)
+        referral_points = await db.referral(user_id, "referral")
         refferal_link = f"https://t.me/{temp.U_NAME}?start=ReferID-{user_id}"
         keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔗 Invite Your Friends", url=f"https://telegram.me/share/url?url={refferal_link}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83")]])
         await m.edit(f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will be rewarded 10 refferal points and after 50 points you will get 1 month premium subscription.\n\n Referral Points: {referral_points}</b>",
@@ -152,8 +146,8 @@ async def start(client, message):
     
 
     # for counting each files for user
-    files_counts = await db.get_files_count(message.from_user.id) or 0
-    lifetime_files = await db.get_lifetime_files(message.from_user.id)
+    files_counts = await db.fetch_value(message.from_user.id, "files_count") or 0
+    lifetime_files = await db.fetch_value(message.from_user.id, "lifetime_files")
     # optinal function for checking time difference between currrent time and next 12'o clock
     current_datetime = datetime.now()
     next_day = current_datetime + timedelta(days=1)
@@ -163,9 +157,13 @@ async def start(client, message):
 
 
     data = message.command[1].strip()
-    if data.startswith("encrypt-"):
+    if data.startswith(f"{temp.U_NAME}"):
         _, rest_of_data = data.split('-', 1)
-        userid, file_id = rest_of_data.split('_', 1)
+        encypted_user_id, file_id = rest_of_data.split('_', 1)
+        user_id_bytes = base64.urlsafe_b64decode(encypted_user_id)  # Decode from URL-safe base64
+        userid = user_id_bytes.decode('utf-8')  # Convert bytes back to string
+        print(userid)
+        
         files_ = await get_file_details(file_id)
 
         if not files_:
@@ -184,7 +182,7 @@ async def start(client, message):
             button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
             
         if premium_status is not True and files_counts is not None and files_counts >= 15:
-                return await message.reply(f"<b>You Have Exceeded Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>")
+                return await message.reply(f"<b>You Have Exceeded Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>", disable_web_page_preview=True)
             
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
@@ -193,15 +191,14 @@ async def start(client, message):
             reply_markup=InlineKeyboardMarkup(button)
             )
         
-        await db.update_files_count(message.from_user.id, files_counts + 1)
-        await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
+        await db.update_value(message.from_user.id, "files_count", files_counts + 1)
+        await db.update_value(message.from_user.id, "lifetime_files", lifetime_files + 1)
     
         del_msg = await client.send_message(
             text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",
             chat_id=message.from_user.id,
             reply_to_message_id=media_id.id)
         
-    
         await asyncio.sleep(waitime or 600)
         await media_id.delete()
         await del_msg.edit("__⊘ This message was deleted__")
@@ -229,11 +226,11 @@ async def start(client, message):
             try:
                 await db.add_user(message.from_user.id, message.from_user.first_name)
                 await asyncio.sleep(1)
-                referral = await db.get_refferal_count(invite_id)  # Fetch the current referral count
-                await db.update_refferal_count(invite_id, referral + 10)  # Update the referral count
+                referral = await db.fetch_value(invite_id, "referral") 
+                await db.update_value(invite_id, "referral", referral + 10) 
                 await asyncio.sleep(1)
-                referral_count = await db.get_refferal_count(message.from_user.id)
-                await db.update_refferal_count(message.from_user.id, referral_count + 10) # Update the referral count to invted user
+                referral_count = await db.fetch_value(message.from_user.id, "referral")
+                await db.update_value(message.from_user.id, "referral", referral_count + 10)
                 await client.send_message(text=f"You have successfully Invited {message.from_user.mention}", chat_id=invite_id)
                 await message.reply_text(f"You have been successfully invited by {invited_user.first_name}", disable_web_page_preview=True)
             except Exception as e:
@@ -286,16 +283,16 @@ async def start(client, message):
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
-            protect_content=True if pre == 'filep' else False,
+
             caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
     
         # for counting each files for user
-        files_counts = await db.get_files_count(message.from_user.id) or 0
-        lifetime_files = await db.get_lifetime_files(message.from_user.id)
-        await db.update_files_count(message.from_user.id, files_counts + 1)
-        await db.update_lifetime_files(message.from_user.id, lifetime_files + 1)
+        files_counts = await db.fetch_value(message.from_user.id, "files_count") or 0
+        lifetime_files = await db.fetch_value(message.from_user.id, "lifetime_files")
+        await db.update_value(message.from_user.id, "files_count", files_counts + 1)
+        await db.update_value(message.from_user.id, "lifetime_files", lifetime_files + 1)
 
         del_msg = await client.send_message(
             text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",
@@ -306,7 +303,7 @@ async def start(client, message):
         await media_id.delete()
         await del_msg.edit("__⊘ This message was deleted__")
     except Exception as e:
-        await message.reply(f"Something went wrong:\n{e}\n\nPlease report this issue by replying @admin")
+        await message.reply(f"<b>Erorr:</b> ```{e}```\n\n<b>Please report this issue by replying @admin</b>")
         logger.error(e)
 
         
@@ -343,7 +340,6 @@ async def channel_info(bot, message):
 
 @Client.on_message(filters.command('logs') & filters.user(ADMINS))
 async def log_file(bot, message):
-    """Send log file"""
     try:
         await message.reply_document('TelegramBot.log')
     except Exception as e:
@@ -367,7 +363,7 @@ async def delete(bot, message):
         await msg.edit('This is not supported file format')
         return
     
-    file_id, file_ref = unpack_new_file_id(media.file_id)
+    file_id, _ = unpack_new_file_id(media.file_id)
 
     result = await Media.collection.delete_one({
         '_id': file_id,
@@ -449,79 +445,4 @@ async def delete_multiple_files(bot, message):
 @Client.on_callback_query(filters.regex(r'^autofilter_delete'))
 async def delete_all_index_confirm(bot, message):
     await Media.collection.drop()
-    await message.answer('Share & Support Us♥️')
     await message.message.edit('Succesfully Deleted All The Indexed Files.')
-
-
-@Client.on_message(filters.command('settings') & filters.user(ADMINS))
-async def settings(client, message):
-    userid = message.from_user.id if message.from_user else None
-    if not userid:
-        return await message.reply(f"You are anonymous admin. Use /connect {message.chat.id} in PM")
-    chat_type = message.chat.type
-
-    if chat_type == enums.ChatType.PRIVATE:
-        grpid = await active_connection(str(userid))
-        if grpid is not None:
-            grp_id = grpid
-            try:
-                chat = await client.get_chat(grpid)
-                title = chat.title
-            except:
-                await message.reply_text("Make sure I'm present in your group!!", quote=True)
-                return
-        else:
-            await message.reply_text("I'm not connected to any groups!", quote=True)
-            return
-
-    elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        grp_id = message.chat.id
-        title = message.chat.title
-
-    else:
-        return
-
-    st = await client.get_chat_member(grp_id, userid)
-    if (
-            st.status != enums.ChatMemberStatus.ADMINISTRATOR
-            and st.status != enums.ChatMemberStatus.OWNER
-            and str(userid) not in ADMINS
-    ):
-        return
-
-    settings = await get_settings(grp_id)
-
-    if settings is not None:
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    'File Secure',
-                    callback_data=f'setgs#file_secure#{settings["file_secure"]}#{grp_id}',
-                ),
-                InlineKeyboardButton(
-                    '✅ Yes' if settings["file_secure"] else '❌ No',
-                    callback_data=f'setgs#file_secure#{settings["file_secure"]}#{grp_id}',
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    'Spell Check',
-                    callback_data=f'setgs#spell_check#{settings["spell_check"]}#{grp_id}',
-                ),
-                InlineKeyboardButton(
-                    '✅ Yes' if settings["spell_check"] else '❌ No',
-                    callback_data=f'setgs#spell_check#{settings["spell_check"]}#{grp_id}',
-                ),
-            ],
-        ]
-
-        reply_markup = InlineKeyboardMarkup(buttons)
-
-        await message.reply_text(
-            text=f"<b>Change Your Settings for {title} As Your Wish ⚙</b>",
-            reply_markup=reply_markup,
-            disable_web_page_preview=True,
-            parse_mode=enums.ParseMode.HTML,
-            reply_to_message_id=message.id
-        )
-

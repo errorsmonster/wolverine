@@ -7,7 +7,7 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTER
+from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -67,7 +67,6 @@ async def save_file(media):
 
 
 async def get_search_results(query, file_type=None, max_results=None, offset=0, filter=False):
-    """For given query return (results, next_offset)"""
     if max_results is None:
         max_results = 10
     query = query.strip()
@@ -83,9 +82,7 @@ async def get_search_results(query, file_type=None, max_results=None, offset=0, 
     except:
         return []
 
-    if USE_CAPTION_FILTER:
-        filter = {'$or': [{'file_name': regex}, {'caption': regex}]}
-    else:
+    if filter:
         filter = {'file_name': regex}
 
     if file_type:
@@ -98,14 +95,12 @@ async def get_search_results(query, file_type=None, max_results=None, offset=0, 
         next_offset = ''
 
     cursor = Media.find(filter)
-    # Sort by recent
     cursor.sort('$natural', -1)
-    # Slice files according to offset and max results
     cursor.skip(offset).limit(max_results)
-    # Get list of files
     files = await cursor.to_list(length=max_results)
 
     return files, next_offset, total_results
+
 
 
 async def get_file_details(query):
@@ -113,6 +108,7 @@ async def get_file_details(query):
     cursor = Media.find(filter)
     filedetails = await cursor.to_list(length=1)
     return filedetails
+
 
 
 def encode_file_id(s: bytes) -> str:
@@ -132,8 +128,10 @@ def encode_file_id(s: bytes) -> str:
     return base64.urlsafe_b64encode(r).decode().rstrip("=")
 
 
+
 def encode_file_ref(file_ref: bytes) -> str:
     return base64.urlsafe_b64encode(file_ref).decode().rstrip("=")
+
 
 
 def unpack_new_file_id(new_file_id):
@@ -152,23 +150,19 @@ def unpack_new_file_id(new_file_id):
     return file_id, file_ref
 
 
+
 async def get_all_file_ids(offset=0, batch_size=100):
-    """Retrieve file IDs from the database with asynchronous pagination"""
-    filter = {}  # No specific filter, fetch all documents
+    filter = {}
     total_results = await Media.count_documents(filter)
 
-    # Calculate the number of batches
-    num_batches = -(-total_results // batch_size)  # Equivalent to math.ceil(total_results / batch_size)
+    num_batches = -(-total_results // batch_size)
 
-    # Fetch file IDs in batches using asynchronous pagination
     file_ids = []
     for i in range(num_batches):
-        # Calculate the offset for each batch
         current_offset = i * batch_size
 
-        # Aggregation pipeline to fetch distinct file IDs
         pipeline = [
-            {'$sort': {'_id': 1}},  # Adjust the sorting as needed
+            {'$sort': {'_id': 1}},
             {'$skip': current_offset},
             {'$limit': batch_size},
             {'$group': {'_id': None, 'file_ids': {'$addToSet': '$_id'}}},
@@ -176,11 +170,9 @@ async def get_all_file_ids(offset=0, batch_size=100):
 
         cursor = db[COLLECTION_NAME].aggregate(pipeline)
 
-        # Get file IDs for the current batch
         result = await cursor.to_list(length=1)
         batch_file_ids = result[0]['file_ids'] if result else []
 
-        # Append the batch to the result
         file_ids.extend(batch_file_ids)
 
     return file_ids

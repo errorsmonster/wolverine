@@ -8,9 +8,8 @@ from database.users_chats_db import db
 async def private_fsub(client: Client, message: ChatJoinRequest):
     user = message.from_user
     try:
-        await db.update_user_joined(user.id, True)
+        await db.update_value(user.id, "user_joined", True)
     except Exception as e:
-        print(e)
         pass    
 
 @Client.on_message(filters.private & filters.command("resetforcesub") & filters.user(ADMINS))

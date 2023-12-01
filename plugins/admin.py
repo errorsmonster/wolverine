@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
-from database.config_panel import mdb
+from database.config_db import mdb
 
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
@@ -129,13 +129,13 @@ async def resetdaily(client, message):
     await m.edit("Successfully reset daily files count!")
 
 #reset daily files count of user
-@Client.on_message(filters.command("resetusers") & filters.user(ADMINS))
+@Client.on_message(filters.command("reset") & filters.user(ADMINS))
 async def resetdailyuser(client, message):
     user_id = message.command[1]
     if not user_id:
         return await message.reply("Please provide a user id")
     m = await message.reply_text("Resetting daily files count of user...")
-    await db.reset_daily_files_count(user_id)
+    await db.update_value(user_id, "files_count", 0)
     await m.edit("Successfully reset daily files count of user!")
 
 # remove all premium user from database
@@ -198,7 +198,7 @@ async def userinfo(client, message):
     users = await db.get_user(user_id)
     total_files_sent = users.get("lifetime_files") or "N/A"
     dc_id = user.dc_id or "Invalid DP"
-    refferal = await db.get_refferal_count(user_id)
+    refferal = await db.fetch_value(user_id, "refferal")
     today_recieved = users.get("files_count") or "N/A"
 
     if premium:
@@ -289,7 +289,7 @@ async def reffer(_, message):
     m = await message.reply_text(f"<b>Generating Your Refferal Link...</b>")
     await asyncio.sleep(2)
     user_id = message.from_user.id
-    referral_points = await db.get_refferal_count(user_id)
+    referral_points = await db.fetch_value(user_id, "refferal")
     refferal_link = f"https://t.me/{temp.U_NAME}?start=ReferID-{user_id}"
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("🔗 Invite Your Friends", url=f"https://telegram.me/share/url?url={refferal_link}&text=Hello%21%20Experience%20a%20bot%20that%20offers%20a%20vast%20library%20of%20unlimited%20movies%20and%20series.%20%F0%9F%98%83")]])
     await m.edit(f"<b>Here is your refferal link:\n\n{refferal_link}\n\nShare this link with your friends, Each time they join, Both of you will be rewarded 10 refferal points and after 50 points you will get 1 month premium subscription.\n\n Referral Points: {referral_points}</b>",
@@ -488,7 +488,20 @@ async def send_message_to_user(client, message):
     except Exception as e:
         await message.reply(f"An unexpected error occurred: {str(e)}")
 
-@Client.on_message(filters.command("admin") & filters.private & filters.user(ADMINS))
+@Client.on_message(filters.command("suggestions"))
+async def movie_suggest(_, Message):
+    button = [
+        [InlineKeyboardButton("Movie Sugeesions", callback_data="movie_suggestions")],
+        [InlineKeyboardButton("Close", callback_data="close_data")]
+    ]
+    reply_markup = InlineKeyboardMarkup(button)
+    await Message.reply_text(
+        text="**Movie Suggestions**",
+        reply_markup=reply_markup,
+        disable_web_page_preview=True
+    )
+
+@Client.on_message(filters.command("admin") & filters.user(ADMINS))
 async def admin_controll(client, message):
     button = [
         [
@@ -508,7 +521,8 @@ async def admin_controll(client, message):
             InlineKeyboardButton("Auto Approve 🔵" if await mdb.get_configuration_value("auto_accept") else "Auto Approve", callback_data="autoapprove"),
         ],
         [
-            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance")
+            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance"),
+            InlineKeyboardButton("Spell Check 🔵" if await mdb.get_configuration_value("spoll_check") else "Spell Check", callback_data="spoll_check"),
         ]
     ]
 
