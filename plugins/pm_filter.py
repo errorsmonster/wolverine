@@ -174,21 +174,22 @@ async def filters_private_handlers(client, message):
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
+
     if message.text.startswith("/") or not await mdb.get_configuration_value("group_filter"):
         return
 
     files_counts = await db.fetch_value(message.from_user.id, "files_count")
-    one_link_one_file_group = await mdb.get_configuration_value("one_link_one_file_group")
-
+    one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
     await mdb.update_top_messages(message.from_user.id, message.text) 
-
-    group_id = message.chat.id
     
+    if await db.is_premium_status(message.from_user.id):
+        text, button = await paid_filter(client, message)
+        m = await message.reply(text=text, reply_markup=button, disable_web_page_preview=True)
+
     text, markup = await auto_filter(client, message)
     free, button = await free_filter(client, message)
-
     try:
-        if group_id in AUTH_GROUPS and one_link_one_file_group and files_counts >= 1:
+        if message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
             m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)    
         else:
             m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)   
