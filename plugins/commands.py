@@ -9,7 +9,7 @@ from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from database.config_panel import mdb
 from info import CHANNELS, ADMINS, FORCESUB_CHANNEL, WAIT_TIME
-from utils import is_subscribed, temp, replace_blacklist, decode_from_base64
+from utils import is_subscribed, temp, replace_blacklist
 from database.ia_filterdb import get_search_results
 import re
 import base64
@@ -157,7 +157,7 @@ async def start(client, message):
 
 
     data = message.command[1].strip()
-    if data.startswith("encrypt-"):
+    if data.startswith(f"{temp.U_NAME}"):
         _, rest_of_data = data.split('-', 1)
         encypted_user_id, file_id = rest_of_data.split('_', 1)
         user_id_bytes = base64.urlsafe_b64decode(encypted_user_id)  # Decode from URL-safe base64

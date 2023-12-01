@@ -6,7 +6,7 @@ from info import SLOW_MODE_DELAY, WAIT_TIME
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
 from pyrogram.errors import MessageNotModified
-from utils import get_size, replace_blacklist, temp, encode_to_base64
+from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
 
 
@@ -42,7 +42,7 @@ async def paid_next_page(bot, query):
         user_id = query.from_user.id
         user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
         urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{urlsafe_encoded_user_id}_{file.file_id}"
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -109,7 +109,7 @@ async def paid_filter(client, msg, spoll=False):
         user_id = message.from_user.id
         user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
         urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{urlsafe_encoded_user_id}_{file.file_id}"
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 

@@ -1,6 +1,7 @@
 import re
 import math
 import time
+import base64
 from Script import script
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, filters
@@ -38,7 +39,10 @@ async def free_next_page(bot, query):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        user_id = query.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8') 
+        shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -102,7 +106,10 @@ async def free_filter(client, msg, spoll=False):
        
     search_results_text = []
     for file in files:
-        shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
+        user_id = message.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8') 
+        shortlink = await urlshare(f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
