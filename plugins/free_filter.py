@@ -11,7 +11,7 @@ from pyrogram.errors import MessageNotModified
 from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
 from plugins.shortner import urlshare
-from plugins.pm_filter import advantage_spell_chok
+
 
 
 BUTTONS = {}
@@ -133,3 +133,6 @@ async def free_filter(_, msg):
     cap = f"Here is what i found for your query {search}"
     await db.update_value(message.from_user.id, "timestamps", int(time.time()))
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
+
+# imports to avoide circuler import
+from plugins.pm_filter import advantage_spell_chok

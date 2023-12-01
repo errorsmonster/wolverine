@@ -7,7 +7,6 @@ from pyrogram import Client, filters
 from pyrogram.errors import MessageNotModified
 from utils import get_size, replace_blacklist, temp
 from database.ia_filterdb import get_search_results
-from plugins.pm_filter import advantage_spell_chok
 from database.config_db import mdb
 
 
@@ -126,3 +125,7 @@ async def paid_filter(_, msg):
         )
     cap = f"Here is what i found for your query {search}"
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
+
+
+# imports to avoide circuler import
+from plugins.pm_filter import advantage_spell_chok
