@@ -181,18 +181,19 @@ async def public_group_filter(client, message):
     files_counts = await db.fetch_value(message.from_user.id, "files_count")
     one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
     await mdb.update_top_messages(message.from_user.id, message.text) 
-    
-    if await db.is_premium_status(message.from_user.id):
-        text, button = await paid_filter(client, message)
-        m = await message.reply(text=text, reply_markup=button, disable_web_page_preview=True)
 
-    text, markup = await auto_filter(client, message)
-    free, button = await free_filter(client, message)
     try:
+        text, button = await paid_filter(client, message)
+        text1, button1 = await auto_filter(client, message)
+        text2, button2 = await free_filter(client, message)
+
+        if await db.is_premium_status(message.from_user.id):
+            m = await message.reply(text=text, reply_markup=button, disable_web_page_preview=True)
+
         if message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
-            m = await message.reply(text=free, reply_markup=button, disable_web_page_preview=True)    
+            m = await message.reply(text=text2, reply_markup=button2, disable_web_page_preview=True)    
         else:
-            m = await message.reply(text=text, reply_markup=markup, disable_web_page_preview=True)   
+            m = await message.reply(text=text1, reply_markup=button1, disable_web_page_preview=True)   
 
     except Exception as e:
         print(e)
