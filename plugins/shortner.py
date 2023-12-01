@@ -2,7 +2,7 @@ import aiohttp
 
 async def shareus(link):
     url = f'https://api.shareus.io/easy_api'
-    api_key = "UVZ5NmnAZkNdK6azyMoTP9Ij3n62"
+    api_key = "uYnR5DeLGOT72EOmEAelPA8JY622"
 
     params = {'key': api_key, 'link': link}
     
