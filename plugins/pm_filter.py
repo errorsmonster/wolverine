@@ -95,7 +95,6 @@ async def filters_private_handlers(client, message):
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
-    '''
     if 2 < len(message.text) < 100:
         search = message.text.lower()
         encoded_search = quote(search)
@@ -111,8 +110,7 @@ async def filters_private_handlers(client, message):
                 text="<b>I couldn't find a movie in my database. Please check the spelling or the release date and try again.</b>",
                 reply_markup=reply_markup,
             )
-            return
-    '''        
+            return      
 
     try:
         if premium_status is True:
@@ -228,6 +226,7 @@ async def advantage_spoll_choker(bot, query):
         k = await query.message.edit('This Movie Not Found In My DataBase')
         await asyncio.sleep(10)
         await k.delete()
+
 async def advantage_spell_chok(msg):
     query = re.sub(
         r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?)",
