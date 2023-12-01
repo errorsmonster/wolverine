@@ -37,6 +37,7 @@ async def paid_next_page(bot, query):
 
     if not files:
         return 
+    
     search_results_text = []
     for file in files:
         user_id = query.from_user.id
@@ -86,29 +87,23 @@ async def paid_next_page(bot, query):
     await query.answer("©PrimeHub™")
 
 
-async def paid_filter(client, msg, spoll=False):
-    if not spoll:
-        message = msg
-        if message.text.startswith("/"): return  # ignore commands
-        if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+async def paid_filter(_, msg):
+    message = msg
+    if message.text.startswith("/"):
+        return
+    if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+        return
+    if 2 < len(message.text) < 100:
+        search = message.text
+        files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+        if not files:
             return
-        if 2 < len(message.text) < 100:
-            search = message.text
-            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
-            if not files:
-                return
-        else:
-            return
-    else:
-        message = msg.message.reply_to_message
-        search, files, offset, total_results = spoll
        
-    # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
         user_id = message.from_user.id
-        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
-        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
+        user_id_bytes = str(user_id).encode('utf-8')
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')
         shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
         search_results_text.append(file_link)
