@@ -183,18 +183,16 @@ async def public_group_filter(client, message):
     premium = await db.is_premium_status(message.from_user.id)
     await mdb.update_top_messages(message.from_user.id, message.text) 
 
+    filter = None
     try:
-        text, button = await paid_filter(client, message)
-        text1, button1 = await auto_filter(client, message)
-        text2, button2 = await free_filter(client, message)
-
         if premium:
-            m = await message.reply(text=text, reply_markup=button, disable_web_page_preview=True)
-
-        if not premium and message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
-            m = await message.reply(text=text2, reply_markup=button2, disable_web_page_preview=True)    
+            text, button = await paid_filter(client, message)
+        elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
+            text, button = await free_filter(client, message)
         else:
-            m = await message.reply(text=text1, reply_markup=button1, disable_web_page_preview=True)   
+            text, button = await auto_filter(client, message)
+
+        filter = await message.reply(text=text, reply_markup=button, disable_web_page_preview=True)
 
     except Exception as e:
         print(e)
@@ -203,8 +201,8 @@ async def public_group_filter(client, message):
         if WAIT_TIME is not None:
             await asyncio.sleep(WAIT_TIME)
             await message.delete()
-            await m.delete()
-
+            if filter:
+                await filter.delete()
 
 @Client.on_callback_query(filters.regex(r"^spolling"))
 async def advantage_spoll_choker(bot, query):
