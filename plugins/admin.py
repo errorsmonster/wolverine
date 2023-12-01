@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from database.ia_filterdb import get_search_results
-from database.config_panel import mdb
+from database.config_db import mdb
 
 
 ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"

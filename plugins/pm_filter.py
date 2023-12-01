@@ -12,7 +12,7 @@ from info import SLOW_MODE_DELAY, ADMINS, AUTH_GROUPS, FORCESUB_CHANNEL, WAIT_TI
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters
 from database.users_chats_db import db
-from database.config_panel import mdb
+from database.config_db import mdb
 from pyrogram.errors import MessageNotModified
 from utils import get_size, is_subscribed, search_gagala, temp, replace_blacklist, fetch_quote_content
 from plugins.shortner import gplinks
