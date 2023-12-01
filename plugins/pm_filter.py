@@ -95,22 +95,18 @@ async def filters_private_handlers(client, message):
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
     
-    if 2 < len(message.text) < 100:
-        search = message.text.lower()
-        encoded_search = quote(search)
-    
-        files, _, _ = await get_search_results(search, offset=0, filter=True)
-        if not files:
-            google = "https://google.com/search?q="
-            reply_markup = InlineKeyboardMarkup([
-                [InlineKeyboardButton("🔍 Check Your Spelling", url=f"{google}{encoded_search}%20movie")],
-                [InlineKeyboardButton("🗓 Check Release Date", url=f"{google}{encoded_search}%20release%20date")]
-            ])
-            await msg.edit(
-                text="<b>I couldn't find a movie in my database. Please check the spelling or the release date and try again.</b>",
-                reply_markup=reply_markup,
-            )
-            return      
+    files, _, _ = await get_search_results(message.text.lower(), offset=0, filter=True)
+    if not files:
+        google = "https://google.com/search?q="
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🔍 Check Your Spelling", url=f"{google}{quote(message.text.lower())}%20movie")],
+            [InlineKeyboardButton("🗓 Check Release Date", url=f"{google}{quote(message.text.lower())}%20release%20date")]
+        ])
+        await msg.edit(
+            text="<b>I couldn't find a movie in my database. Please check the spelling or the release date and try again.</b>",
+            reply_markup=reply_markup,
+        )
+        return      
 
     try:
         if premium_status is True:
