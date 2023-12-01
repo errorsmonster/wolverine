@@ -177,6 +177,11 @@ async def public_group_filter(client, message):
 
     if message.text.startswith("/") or not await mdb.get_configuration_value("group_filter"):
         return
+    
+    files, _, _ = await get_search_results(message.text.lower(), offset=0, filter=True)
+    if not files:
+        if await mdb.get_configuration_value("spoll_check"):
+            return await advantage_spell_chok(message)
 
     files_counts = await db.fetch_value(message.from_user.id, "files_count")
     one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
@@ -203,6 +208,7 @@ async def public_group_filter(client, message):
             await message.delete()
             if filter:
                 await filter.delete()
+                
 
 @Client.on_callback_query(filters.regex(r"^spolling"))
 async def advantage_spoll_choker(bot, query):
