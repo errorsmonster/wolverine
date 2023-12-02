@@ -209,7 +209,7 @@ async def public_group_filter(client, message):
 async def advantage_spoll_choker(bot, query):
     _, user, movie_ = query.data.split('#')
     if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer("Not for you!", show_alert=True)
+        return await query.answer("Not For You", show_alert=True)
     if movie_ == "close_spellcheck":
         return await query.message.delete()
     movies = SPELL_CHECK.get(query.message.reply_to_message.id)
@@ -220,11 +220,13 @@ async def advantage_spoll_choker(bot, query):
     files, offset, total_results = await get_search_results(movie, offset=0, filter=True)
     if files:
         k = (movie, files, offset, total_results)
-        await auto_filter(bot, query, k)
+        text, button = await auto_filter(bot, query, k)
+        await query.message.edit(text, reply_markup=button, disable_web_page_preview=True)
     else:
         k = await query.message.edit('This Movie Not Found In My DataBase')
         await asyncio.sleep(10)
         await k.delete()
+
 
 async def advantage_spell_chok(msg):
     query = re.sub(
@@ -253,14 +255,14 @@ async def advantage_spell_chok(msg):
                 gs_parsed.append(match.group(1))
     user = msg.from_user.id if msg.from_user else 0
     movielist = []
-    gs_parsed = list(dict.fromkeys(gs_parsed))
+    gs_parsed = list(dict.fromkeys(gs_parsed))  # removing duplicates https://stackoverflow.com/a/7961425
     if len(gs_parsed) > 3:
         gs_parsed = gs_parsed[:3]
     movielist += [(re.sub(r'(\-|\(|\)|_)', '', i, flags=re.IGNORECASE)).strip() for i in gs_parsed]
     movielist = list(dict.fromkeys(movielist))  # removing duplicates
     if not movielist:
-        k = await msg.reply("**I couldn't find anything related to that. Check your spelling**")
-        await asyncio.sleep(15)
+        k = await msg.reply("I couldn't find anything related to that. Check your spelling")
+        await asyncio.sleep(8)
         await k.delete()
         return
     SPELL_CHECK[msg.id] = movielist
@@ -271,13 +273,10 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    m = await msg.reply("<b>Did you mean any one of these?</b>",
+    await msg.reply(f"<b>Did you mean any one of these?</b>",
                     reply_markup=InlineKeyboardMarkup(btn))
-    if WAIT_TIME is not None:
-        await asyncio.sleep(WAIT_TIME)
-        await m.delete()
-
-
+    
+    
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
@@ -351,7 +350,7 @@ async def next_page(bot, query):
     await query.answer()
     
     
-async def auto_filter(client, msg, spoll=False):
+async def auto_filter(_, msg, spoll=False):
     if not spoll:
         message = msg
         if message.text.startswith("/"):
@@ -403,6 +402,8 @@ async def auto_filter(client, msg, spoll=False):
     # add timestamp to database for floodwait
     await db.update_value(message.from_user.id, "timestamps", int(time.time()))
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
+
+
 
 # callback autofilter
 async def callback_auto_filter(msg, query):
