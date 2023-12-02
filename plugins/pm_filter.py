@@ -390,11 +390,8 @@ async def auto_filter(client, msg, spoll=False):
 
 
 async def spoll_filter(_, message, msg):
-    if 2 < len(message.text) < 100:
-        files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
-        if not files:
-            return
-    else:
+    files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
+    if not files:
         return
     search_results_text = []
     for file in files:
@@ -404,13 +401,7 @@ async def spoll_filter(_, message, msg):
 
     search_results_text = "\n\n".join(search_results_text)
 
-    btn = []   
-    btn.append([
-            InlineKeyboardButton("🪙 Upgrade", url=f"https://t.me/{temp.U_NAME}?start=upgrade"),
-            InlineKeyboardButton("🔗 Refer", url=f"https://t.me/{temp.U_NAME}?start=refer")
-        ])
-    
-    btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
+    btn = []
     
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
