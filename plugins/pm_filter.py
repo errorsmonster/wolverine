@@ -213,10 +213,7 @@ async def advantage_spoll_choker(bot, query):
             return await query.answer("Not For You", show_alert=True)
         if movie_ == "close_spellcheck":
             return await query.message.delete()
-        movies = SPELL_CHECK.get(query.message.reply_to_message.id)
-        if not movies:
-            return await query.answer("You are clicking on an old button which is expired.", show_alert=True)
-        movie = movies[(int(movie_))]
+        movie = movie_.replace("_", " ")  # Fetch movie name from callback_data
         await query.answer('Checking for Movie in database...')
         files, offset, total_results = await get_search_results(movie, offset=0, filter=True)
         if files:
@@ -228,6 +225,7 @@ async def advantage_spoll_choker(bot, query):
             await k.delete()
     except Exception as e:
         logging.error(f"Spoll Error: {e}")
+        return await query.answer(f"{e}", show_alert=True)
 
 async def advantage_spell_chok(msg):
     query = re.sub(
@@ -258,13 +256,12 @@ async def advantage_spell_chok(msg):
         await k.delete()
         return
     SPELL_CHECK[msg.id] = movielist
-    btn = [[InlineKeyboardButton(text=movie.strip(), callback_data=f"spolling#{user}#{k}")]
-            for k, movie in enumerate(movielist)] + [[InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')]]
+    btn = [[InlineKeyboardButton(text=movie.strip(), callback_data=f"spolling#{user}#{movie.replace(' ', '_')}")]  # Pass movie name in callback_data
+            for movie in movielist] + [[InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')]]
     await msg.reply("Did you mean any one of these?",
                     reply_markup=InlineKeyboardMarkup(btn))
     
     
-
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
