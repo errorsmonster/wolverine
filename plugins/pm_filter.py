@@ -218,7 +218,9 @@ async def advantage_spoll_choker(bot, query):
         await query.answer('Checking for Movie in database...')
         files, _, _ = await get_search_results(movie.lower(), offset=0, filter=True)
         if files:
-            await spoll_filter(query, movie)
+            text, button = await spoll_filter(query, movie)
+            await query.message.edit(text=text, reply_markup=button, disable_web_page_preview=True)
+
         else:
             k = await query.message.edit('This Movie Not Found In My DataBase')
             await asyncio.sleep(10)
