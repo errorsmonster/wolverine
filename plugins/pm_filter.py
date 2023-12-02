@@ -215,10 +215,9 @@ async def advantage_spoll_choker(bot, query):
             return await query.message.delete()
         movie = movie_.replace("_", " ")  # Fetch movie name from callback_data
         await query.answer('Checking for Movie in database...')
-        files, offset, total_results = await get_search_results(movie, offset=0, filter=True)
+        files, _, _ = await get_search_results(movie, offset=0, filter=True)
         if files:
-            k = (movie, files, offset, total_results)
-            await auto_filter(bot, query, k)
+            await spoll_filter(_, query, movie)
         else:
             k = await query.message.edit('This Movie Not Found In DataBase')
             await asyncio.sleep(10)
@@ -384,6 +383,39 @@ async def auto_filter(client, msg, spoll=False):
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
     cap = f"Here is what i found for your query {search}"
+    # add timestamp to database for floodwait
+    await db.update_value(message.from_user.id, "timestamps", int(time.time()))
+    return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
+
+
+
+async def spoll_filter(_, message, msg):
+    files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
+    if not files:
+        return
+    search_results_text = []
+    for file in files:
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=file_{file.file_id}")
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
+        search_results_text.append(file_link)
+
+    search_results_text = "\n\n".join(search_results_text)
+
+    btn = []
+    
+    if offset != "":
+        key = f"{message.chat.id}-{message.id}"
+        BUTTONS[key] = message
+        req = message.from_user.id if message.from_user else 0
+        btn.append(
+            [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
+             InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}")]
+        )
+    else:
+        btn.append(
+            [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
+        )
+    cap = f"Here is what i found for your query {message}"
     # add timestamp to database for floodwait
     await db.update_value(message.from_user.id, "timestamps", int(time.time()))
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
