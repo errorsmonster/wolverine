@@ -314,15 +314,12 @@ def humanbytes(size):
 
 
 
-async def replace_blacklist(file_name, blacklist, remove_emojis=True, remove_special_chars=False, remove_links=True):
+async def replace_blacklist(file_name, blacklist, remove_emojis=True, remove_links=True):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
 
     if remove_emojis:
         file_name = emoji.get_emoji_regexp().sub(u'', file_name)
-
-    if remove_special_chars:
-        file_name = re.sub(r'[^a-zA-Z0-9\s]', '', file_name)
         
     if remove_links:
         file_name = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', file_name)
