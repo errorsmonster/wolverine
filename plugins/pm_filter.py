@@ -178,11 +178,6 @@ async def public_group_filter(client, message):
     if message.text.startswith("/") or not await mdb.get_configuration_value("group_filter"):
         return
     
-    files, _, _ = await get_search_results(message.text.lower(), offset=0, filter=True)
-    if not files:
-        if await mdb.get_configuration_value("spoll_check"):
-            return await advantage_spell_chok(message)
-
     files_counts = await db.fetch_value(message.from_user.id, "files_count")
     one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
     premium = await db.is_premium_status(message.from_user.id)
@@ -200,7 +195,7 @@ async def public_group_filter(client, message):
         filter = await message.reply(text=text, reply_markup=button, disable_web_page_preview=True)
 
     except Exception as e:
-        print(e)
+        logger.error(e)
 
     finally:
         if WAIT_TIME is not None:
@@ -214,7 +209,7 @@ async def public_group_filter(client, message):
 async def advantage_spoll_choker(bot, query):
     _, user, movie_ = query.data.split('#')
     if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer("Not for you!")
+        return await query.answer("Not for you!", show_alert=True)
     if movie_ == "close_spellcheck":
         return await query.message.delete()
     movies = SPELL_CHECK.get(query.message.reply_to_message.id)
@@ -276,7 +271,7 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
+    m = await msg.reply("<b>Did you mean any one of these?</b>",
                     reply_markup=InlineKeyboardMarkup(btn))
     if WAIT_TIME is not None:
         await asyncio.sleep(WAIT_TIME)
@@ -312,7 +307,7 @@ async def next_page(bot, query):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=file_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -378,7 +373,7 @@ async def auto_filter(client, msg, spoll=False):
         search, files, offset, total_results = spoll
     search_results_text = []
     for file in files:
-        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=file_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -415,12 +410,14 @@ async def callback_auto_filter(msg, query):
     files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     search_results_text = []
     for file in files:
-        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=file_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
     cap = f"Here is what i found for your query {search}"
+    if not search_results_text:
+        return
     return f"<b>{cap}\n\n{search_results_text}</b>"
 
 # callback paidfilter
@@ -429,12 +426,17 @@ async def callback_paid_filter(msg, query):
     files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     search_results_text = []
     for file in files:
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}"
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
+        user_id = query.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
     cap = f"Here is what i found for your query {search}"
+    if not search_results_text:
+        return
     return f"<b>{cap}\n\n{search_results_text}</b>"       
 
 

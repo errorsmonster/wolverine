@@ -11,7 +11,6 @@ from database.ia_filterdb import get_search_results
 
 BUTTONS = {}
 SPELL_CHECK = {}
-blacklist = script.BLACKLIST
 
 @Client.on_callback_query(filters.regex(r"^forward"))
 async def paid_next_page(bot, query):
@@ -40,7 +39,7 @@ async def paid_next_page(bot, query):
         user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
         urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
         shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
 
@@ -101,7 +100,7 @@ async def paid_filter(_, msg):
         user_id_bytes = str(user_id).encode('utf-8')
         urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')
         shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, blacklist)}]({shortlink})"
+        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.blacklist)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
