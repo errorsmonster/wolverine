@@ -216,7 +216,7 @@ async def advantage_spoll_choker(bot, query):
         movie = movie_.replace("_", " ")  # Fetch movie name from callback_data
         print(movie)
         await query.answer('Checking for Movie in database...')
-        files, _, _ = await get_search_results(movie, offset=0, filter=True)
+        files, _, _ = await get_search_results(movie.lower(), offset=0, filter=True)
         if files:
             await spoll_filter(query, movie)
         else:
