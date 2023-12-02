@@ -178,11 +178,6 @@ async def public_group_filter(client, message):
     if message.text.startswith("/") or not await mdb.get_configuration_value("group_filter"):
         return
     
-    files, _, _ = await get_search_results(message.text.lower(), offset=0, filter=True)
-    if not files:
-        if await mdb.get_configuration_value("spoll_check"):
-            return await advantage_spell_chok(message)
-
     files_counts = await db.fetch_value(message.from_user.id, "files_count")
     one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
     premium = await db.is_premium_status(message.from_user.id)
@@ -200,7 +195,7 @@ async def public_group_filter(client, message):
         filter = await message.reply(text=text, reply_markup=button, disable_web_page_preview=True)
 
     except Exception as e:
-        print(e)
+        logger.error(e)
 
     finally:
         if WAIT_TIME is not None:
@@ -214,7 +209,7 @@ async def public_group_filter(client, message):
 async def advantage_spoll_choker(bot, query):
     _, user, movie_ = query.data.split('#')
     if int(user) != 0 and query.from_user.id != int(user):
-        return await query.answer("Not for you!")
+        return await query.answer("Not For You", show_alert=True)
     if movie_ == "close_spellcheck":
         return await query.message.delete()
     movies = SPELL_CHECK.get(query.message.reply_to_message.id)
@@ -227,18 +222,17 @@ async def advantage_spoll_choker(bot, query):
         k = (movie, files, offset, total_results)
         await auto_filter(bot, query, k)
     else:
-        k = await query.message.edit('This Movie Not Found In My DataBase')
+        k = await query.message.edit('This Movie Not Found In DataBase')
         await asyncio.sleep(10)
         await k.delete()
+
 
 async def advantage_spell_chok(msg):
     query = re.sub(
         r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?)",
         "", msg.text, flags=re.IGNORECASE)  # plis contribute some common words
     query = query.strip() + " movie"
-    g_s = await search_gagala(query)
-    g_s += await search_gagala(msg.text)
-    gs_parsed = []
+    g_s = await search_gagala(query) + await search_gagala(msg.text)
     if not g_s:
         k = await msg.reply("I couldn't find any movie in that name.")
         await asyncio.sleep(8)
@@ -246,42 +240,28 @@ async def advantage_spell_chok(msg):
         return
     regex = re.compile(r".*(imdb|wikipedia).*", re.IGNORECASE)  # look for imdb / wiki results
     gs = list(filter(regex.match, g_s))
-    gs_parsed = [re.sub(
+    gs_parsed = list(set([re.sub(
         r'\b(\-([a-zA-Z-\s])\-\simdb|(\-\s)?imdb|(\-\s)?wikipedia|\(|\)|\-|reviews|full|all|episode(s)?|film|movie|series)',
-        '', i, flags=re.IGNORECASE) for i in gs]
+        '', i, flags=re.IGNORECASE) for i in gs]))
     if not gs_parsed:
         reg = re.compile(r"watch(\s[a-zA-Z0-9_\s\-\(\)]*)*\|.*",
                          re.IGNORECASE)  # match something like Watch Niram | Amazon Prime
-        for mv in g_s:
-            match = reg.match(mv)
-            if match:
-                gs_parsed.append(match.group(1))
+        gs_parsed = list(set([match.group(1) for mv in g_s if (match := reg.match(mv))]))
     user = msg.from_user.id if msg.from_user else 0
-    movielist = []
-    gs_parsed = list(dict.fromkeys(gs_parsed))
-    if len(gs_parsed) > 3:
-        gs_parsed = gs_parsed[:3]
-    movielist += [(re.sub(r'(\-|\(|\)|_)', '', i, flags=re.IGNORECASE)).strip() for i in gs_parsed]
-    movielist = list(dict.fromkeys(movielist))  # removing duplicates
+    gs_parsed = gs_parsed[:3] if len(gs_parsed) > 3 else gs_parsed
+    movielist = list(set([(re.sub(r'(\-|\(|\)|_)', '', i, flags=re.IGNORECASE)).strip() for i in gs_parsed]))
     if not movielist:
-        k = await msg.reply("**I couldn't find anything related to that. Check your spelling**")
-        await asyncio.sleep(15)
+        k = await msg.reply("I couldn't find anything related to that. Check your spelling")
+        await asyncio.sleep(8)
         await k.delete()
         return
     SPELL_CHECK[msg.id] = movielist
-    btn = [[
-        InlineKeyboardButton(
-            text=movie.strip(),
-            callback_data=f"spolling#{user}#{k}",
-        )
-    ] for k, movie in enumerate(movielist)]
-    btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    m = await msg.reply("I couldn't find anything related to that\nDid you mean any one of these?",
+    btn = [[InlineKeyboardButton(text=movie.strip(), callback_data=f"spolling#{user}#{k}")]
+            for k, movie in enumerate(movielist)] + [[InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')]]
+    await msg.reply("Did you mean any one of these?",
                     reply_markup=InlineKeyboardMarkup(btn))
-    if WAIT_TIME is not None:
-        await asyncio.sleep(WAIT_TIME)
-        await m.delete()
-
+    
+    
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
@@ -312,7 +292,7 @@ async def next_page(bot, query):
     # Construct a text message with hyperlinks
     search_results_text = []
     for file in files:
-        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=file_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -378,7 +358,7 @@ async def auto_filter(client, msg, spoll=False):
         search, files, offset, total_results = spoll
     search_results_text = []
     for file in files:
-        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{message.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=file_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
@@ -415,12 +395,14 @@ async def callback_auto_filter(msg, query):
     files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     search_results_text = []
     for file in files:
-        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}")
+        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=file_{file.file_id}")
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
     cap = f"Here is what i found for your query {search}"
+    if not search_results_text:
+        return
     return f"<b>{cap}\n\n{search_results_text}</b>"
 
 # callback paidfilter
@@ -429,12 +411,17 @@ async def callback_paid_filter(msg, query):
     files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
     search_results_text = []
     for file in files:
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start=encrypt-{query.from_user.id}_{file.file_id}"
+        user_id = query.from_user.id
+        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
+        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
+        shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
         file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
         search_results_text.append(file_link)
 
     search_results_text = "\n\n".join(search_results_text)
     cap = f"Here is what i found for your query {search}"
+    if not search_results_text:
+        return
     return f"<b>{cap}\n\n{search_results_text}</b>"       
 
 
