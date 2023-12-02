@@ -180,7 +180,7 @@ async def public_group_filter(client, message):
     files_counts = await db.fetch_value(message.from_user.id, "files_count")
     one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
     premium = await db.is_premium_status(message.from_user.id)
-    await mdb.update_top_messages(message.from_user.id, message.text) 
+    await mdb.update_top_messages(message.from_user.id, message.text)
 
     filter = None
     try:
