@@ -20,7 +20,6 @@ from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
 from database.filters_mdb import find_filter
-from plugins.tmdb import get_movies, format_movie_suggestion
 import logging
 
 logger = logging.getLogger(__name__)

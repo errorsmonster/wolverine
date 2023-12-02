@@ -13,15 +13,15 @@ class Database:
         return dict(
             id=id,
             name=name,
-            Premium=False, # user is premium or not
-            premium_expiry=None, # duration of premium
-            purchase_date=None, # date of purchase
-            timestamps=0, # floodwait time
-            user_joined=False, # user joined or not
-            files_count=0, # Daily files count
-            lifetime_files=0, # Lifetime files count
-            referral=0, # refferal count
-            last_reset=datetime.now().strftime("%Y-%m-%d"), # Last reset date
+            Premium=False, 
+            premium_expiry=None, 
+            purchase_date=None, 
+            timestamps=0, 
+            user_joined=False, 
+            files_count=0, 
+            lifetime_files=0, 
+            referral=0, 
+            last_reset=datetime.now().strftime("%Y-%m-%d"),
             ban_status=dict(
                 is_banned=False,
                 ban_reason="",
