@@ -106,7 +106,7 @@ async def remove_paid(client, message):
 async def request(client, message):
     # Strip the command and normalize the movie name
     movie_name = message.text.replace("/request", "").replace("/Request", "").strip()
-    files, offset, total_results = await get_search_results(movie_name.lower(), offset=0, filter=True)
+    files, _, _ = await get_search_results(movie_name.lower(), offset=0, filter=True)
 
     if not movie_name:
         await message.reply_text(script.REQM, disable_web_page_preview=True)

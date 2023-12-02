@@ -404,7 +404,6 @@ async def auto_filter(_, msg, spoll=False):
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
 
 
-
 # callback autofilter
 async def callback_auto_filter(msg, query):
     search=msg
