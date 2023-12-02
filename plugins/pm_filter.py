@@ -214,12 +214,13 @@ async def advantage_spoll_choker(bot, query):
         if movie_ == "close_spellcheck":
             return await query.message.delete()
         movie = movie_.replace("_", " ")  # Fetch movie name from callback_data
+        print(movie)
         await query.answer('Checking for Movie in database...')
         files, _, _ = await get_search_results(movie, offset=0, filter=True)
         if files:
-            await spoll_filter(_, query, movie)
+            await spoll_filter(query, movie)
         else:
-            k = await query.message.edit('This Movie Not Found In DataBase')
+            k = await query.message.edit('This Movie Not Found In My DataBase')
             await asyncio.sleep(10)
             await k.delete()
     except Exception as e:
@@ -389,8 +390,8 @@ async def auto_filter(client, msg, spoll=False):
 
 
 
-async def spoll_filter(_, message, msg):
-    files, offset, total_results = await get_search_results(msg.lower(), offset=0, filter=True)
+async def spoll_filter(query, text):
+    files, offset, total_results = await get_search_results(text.lower(), offset=0, filter=True)
     if not files:
         return
     search_results_text = []
@@ -404,9 +405,9 @@ async def spoll_filter(_, message, msg):
     btn = []
     
     if offset != "":
-        key = f"{message.chat.id}-{message.id}"
-        BUTTONS[key] = message
-        req = message.from_user.id if message.from_user else 0
+        key = f"{query.chat.id}-{query.id}"
+        BUTTONS[key] = query
+        req = query.from_user.id if query.from_user else 0
         btn.append(
             [InlineKeyboardButton(text=f"🗓 1/{math.ceil(int(total_results) / 10)}", callback_data="pages"),
              InlineKeyboardButton(text="NEXT ⏩", callback_data=f"next_{req}_{key}_{offset}")]
@@ -415,9 +416,7 @@ async def spoll_filter(_, message, msg):
         btn.append(
             [InlineKeyboardButton(text="🗓 1/1", callback_data="pages")]
         )
-    cap = f"Here is what i found for your query {message}"
-    # add timestamp to database for floodwait
-    await db.update_value(message.from_user.id, "timestamps", int(time.time()))
+    cap = f"Here is what i found for your query {text}"
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
 
 # callback autofilter
