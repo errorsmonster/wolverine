@@ -195,7 +195,7 @@ async def public_group_filter(client, message):
         filter = await message.reply(text=text, reply_markup=button, disable_web_page_preview=True)
 
     except Exception as e:
-        print(e)
+        logger.error(e)
 
     finally:
         if WAIT_TIME is not None:
