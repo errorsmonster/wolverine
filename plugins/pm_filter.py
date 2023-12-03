@@ -39,7 +39,7 @@ async def filters_private_handlers(client, message):
         return
     
     url_pattern = re.compile(r'https?://\S+')
-    if user_id not in ADMINS:
+    if message.from_user.id not in ADMINS:
         if re.search(url_pattern, message.text):
             await message.delete()
             return
