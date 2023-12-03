@@ -44,7 +44,6 @@ async def filters_private_handlers(client, message):
             await message.delete()
             return
 
-
     now = datetime.now()
     tody = int(now.timestamp())
     user_id = message.from_user.id
