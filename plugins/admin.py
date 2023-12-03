@@ -106,7 +106,7 @@ async def remove_paid(client, message):
 async def request(client, message):
     # Strip the command and normalize the movie name
     movie_name = message.text.replace("/request", "").replace("/Request", "").strip()
-    files, offset, total_results = await get_search_results(movie_name.lower(), offset=0, filter=True)
+    files, _, _ = await get_search_results(movie_name.lower(), offset=0, filter=True)
 
     if not movie_name:
         await message.reply_text(script.REQM, disable_web_page_preview=True)
@@ -132,11 +132,15 @@ async def resetdaily(client, message):
 @Client.on_message(filters.command("reset") & filters.user(ADMINS))
 async def resetdailyuser(client, message):
     user_id = message.command[1]
-    if not user_id:
-        return await message.reply("Please provide a user id")
+    if len(message.command) < 2:
+        return await message.reply("Please provide a user id / username")
     m = await message.reply_text("Resetting daily files count of user...")
-    await db.update_value(user_id, "files_count", 0)
-    await m.edit("Successfully reset daily files count of user!")
+    await asyncio.sleep(2)
+    success = await db.reset_daily_files_count(user_id)
+    if success:
+        await m.edit("Successfully reset daily files count of user!")
+    else:
+        await m.edit("Failed to reset daily files count of user!")    
 
 # remove all premium user from database
 @Client.on_message(filters.command("remove_all_premium") & filters.user(ADMINS))
@@ -488,18 +492,6 @@ async def send_message_to_user(client, message):
     except Exception as e:
         await message.reply(f"An unexpected error occurred: {str(e)}")
 
-@Client.on_message(filters.command("suggestions"))
-async def movie_suggest(_, Message):
-    button = [
-        [InlineKeyboardButton("Movie Sugeesions", callback_data="movie_suggestions")],
-        [InlineKeyboardButton("Close", callback_data="close_data")]
-    ]
-    reply_markup = InlineKeyboardMarkup(button)
-    await Message.reply_text(
-        text="**Movie Suggestions**",
-        reply_markup=reply_markup,
-        disable_web_page_preview=True
-    )
 
 @Client.on_message(filters.command("admin") & filters.user(ADMINS))
 async def admin_controll(client, message):
