@@ -29,7 +29,6 @@ logger.setLevel(logging.ERROR)
 BUTTONS = {}
 SPELL_CHECK = {}
 
-
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def filters_private_handlers(client, message):
 
