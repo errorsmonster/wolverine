@@ -4,6 +4,7 @@ import math
 import time
 import base64
 from datetime import datetime, timedelta
+import pytz
 from urllib.parse import quote
 from Script import script
 import aiohttp
@@ -37,8 +38,13 @@ async def filters_private_handlers(client, message):
 
     if message.text.startswith("/"):
         return
-  
-    await mdb.update_top_messages(message.from_user.id, message.text)    
+    
+    url_pattern = re.compile(r'https?://\S+')
+    if user_id not in ADMINS:
+        if re.search(url_pattern, message.text):
+            await message.delete()
+            return
+
 
     now = datetime.now()
     tody = int(now.timestamp())
@@ -52,27 +58,19 @@ async def filters_private_handlers(client, message):
     duration = user.get("premium_expiry")
 
     # optinal function for checking time difference between currrent time and next 12'o clock
-    current_datetime = datetime.now()
+    kolkata = pytz.timezone('Asia/Kolkata')
+    current_datetime = datetime.now(kolkata)
     next_day = current_datetime + timedelta(days=1)
-    next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
+    next_day_midnight = datetime(next_day.year, next_day.month, next_day.day, tzinfo=kolkata)
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
     time_difference = round(time_difference)
+    today = datetime.now(kolkata).strftime("%Y-%m-%d")
 
     maintenance_mode = await mdb.get_configuration_value("maintenance_mode")
     one_file_one_link = await mdb.get_configuration_value("one_link")
     private_filter = await mdb.get_configuration_value("private_filter")
 
-    # Todays Date
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    url_pattern = re.compile(r'https?://\S+')
-    if user_id not in ADMINS:
-        if re.search(url_pattern, message.text):
-            await message.delete()
-            return
-
-    if referral is None or referral <= 0:
-        await db.update_value(user_id, "referral", 0)
+    await mdb.update_top_messages(message.from_user.id, message.text)    
 
     if referral is not None and referral >= 50:
         await db.update_value(user_id, "referral", referral - 50)
@@ -85,11 +83,11 @@ async def filters_private_handlers(client, message):
         await mdb.delete_all_messages()
         return 
     
-    if maintenance_mode is not None and maintenance_mode is True:
+    if maintenance_mode is True:
         await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later</b>", disable_web_page_preview=True)
         return
     
-    if private_filter is not None and private_filter is False:
+    if private_filter is False:
         return
  
     msg = await message.reply_text(f"<b>Searching For Your Request...</b>", reply_to_message_id=message.id)
@@ -109,25 +107,21 @@ async def filters_private_handlers(client, message):
 
     try:
         if premium_status is True:
-            is_expired = await db.check_expired_users(user_id)
-            
-            if is_expired:
+            if await db.check_expired_users(user_id):
                 await msg.edit(f"<b>Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.</b>", disable_web_page_preview=True)
                 return
             
-            if files_counts is not None and files_counts >= 50:
+            if files_counts >= 50:
                 await msg.edit(f"<b>Your Account Has Been Locked Due To Spamming, And It'll Be Unlocked After {time_difference} Hours.</b>")
                 return
             
-            if duration == 29:
-                if files_counts is not None and files_counts >= 20:
-                    await msg.edit(f"<b>You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
-                    return
+            if duration == 29 and files_counts >= 20:
+                await msg.edit(f"<b>You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
+                return
                 
-            # call auto filter
+            filter = None
             text, markup = await paid_filter(client, message)
-            if text or markup:
-                m = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
+            filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         else:
             if user_timestamps:
@@ -138,37 +132,36 @@ async def filters_private_handlers(client, message):
                     while remaining_time > 0:
                         await msg.edit(f"<b>Please Wait For {remaining_time} Seconds Before Sending Another Request.</b>")
                         await asyncio.sleep(2)
-                        current_time = int(time.time())
-                        time_diff = current_time - user_timestamps
-                        remaining_time = max(0, SLOW_MODE_DELAY - time_diff)
+                        remaining_time = max(0, SLOW_MODE_DELAY - int(time.time()) + user_timestamps)
                     await message.delete()
                     await msg.delete()
                     return
-                
-            if files_counts is not None and files_counts >= 10:
+
+            if not one_file_one_link and files_counts >= 10:
                 await msg.edit(
                     f"<b>You Have Reached Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>",
                     disable_web_page_preview=True)
                 return
         
-            auto, keyboard = await auto_filter(client, message)
-            free, button = await free_filter(client, message)
-            if one_file_one_link is not None and one_file_one_link is True:
-                if files_counts is not None and files_counts >= 1:
-                    m = await msg.edit(text=free, reply_markup=button, disable_web_page_preview=True)
+            try:
+                filter = None
+                if one_file_one_link is True and files_counts is not None and files_counts >= 1:
+                    text , button = await free_filter(client, message)
                 else:
-                    m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
-            else:
-                m = await msg.edit(text=auto, reply_markup=keyboard, disable_web_page_preview=True)
- 
+                    text, button = await auto_filter(client, message)
+        
+                filter = await msg.edit(text=text, reply_markup=button, disable_web_page_preview=True)  
+            except:
+                pass
+
     except Exception as e:
         await msg.edit(f"<b>Opps! Something Went Wrong.</b>")
         logger.error(e)
 
     finally:
-        if WAIT_TIME is not None:
-            await asyncio.sleep(WAIT_TIME)
-            await m.delete()
+        await asyncio.sleep(WAIT_TIME)
+        if filter:
+            await filter.delete()
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
