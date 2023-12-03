@@ -104,7 +104,8 @@ async def filters_private_handlers(client, message):
             reply_markup=reply_markup,
         )
         return      
-
+    
+    filter = None
     try:
         if premium_status is True:
             if await db.check_expired_users(user_id):
@@ -119,7 +120,6 @@ async def filters_private_handlers(client, message):
                 await msg.edit(f"<b>You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
                 return
                 
-            filter = None
             text, markup = await paid_filter(client, message)
             filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
@@ -144,7 +144,6 @@ async def filters_private_handlers(client, message):
                 return
         
             try:
-                filter = None
                 if one_file_one_link is True and files_counts is not None and files_counts >= 1:
                     text , button = await free_filter(client, message)
                 else:
