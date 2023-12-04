@@ -128,7 +128,7 @@ async def filters_private_handlers(client, message):
                     remaining_time = SLOW_MODE_DELAY - time_diff
                     while remaining_time > 0:
                         await msg.edit(f"<b>Please Wait For {remaining_time} Seconds Before Sending Another Request.</b>")
-                        await asyncio.sleep(2)
+                        await asyncio.sleep(1)
                         remaining_time = max(0, SLOW_MODE_DELAY - int(time.time()) + user_timestamps)
                     await message.delete()
                     await msg.delete()
