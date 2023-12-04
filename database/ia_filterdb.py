@@ -149,16 +149,11 @@ def unpack_new_file_id(new_file_id):
 
 
 
-async def get_all_file_ids(offset=0, batch_size=100):
-    filter = {}
-    total_results = await Media.count_documents(filter)
-
-    num_batches = -(-total_results // batch_size)
-
+async def get_all_file_ids(batch_size=100):
     file_ids = []
-    for i in range(num_batches):
-        current_offset = i * batch_size
+    current_offset = 0
 
+    while True:
         pipeline = [
             {'$sort': {'_id': 1}},
             {'$skip': current_offset},
@@ -167,10 +162,14 @@ async def get_all_file_ids(offset=0, batch_size=100):
         ]
 
         cursor = db[COLLECTION_NAME].aggregate(pipeline)
-
         result = await cursor.to_list(length=1)
-        batch_file_ids = result[0]['file_ids'] if result else []
 
+        if not result:
+            break
+
+        batch_file_ids = result[0]['file_ids']
         file_ids.extend(batch_file_ids)
+
+        current_offset += batch_size
 
     return file_ids
