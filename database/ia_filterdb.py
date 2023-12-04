@@ -148,7 +148,6 @@ def unpack_new_file_id(new_file_id):
     return file_id, file_ref
 
 
-
 async def get_all_file_ids(batch_size=100):
     file_ids = []
     current_offset = 0
