@@ -35,7 +35,6 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'rosi')
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)
 SPELL_CHECK_REPLY = is_enabled(environ.get("SPELL_CHECK_REPLY", "False"), True)
-MAX_LIST_ELM = environ.get("MAX_LIST_ELM", None)
 TMDB_API_KEY = environ.get("TMDB_API_KEY", "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2Y2JiNjZjM2QwODc5YTZkMWM0YmZjNzBlZDg3YjA2MyIsInN1YiI6IjY1Njg2ZTgxZmI1Mjk5MDEwMjYxNTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PhnAFz5jGTdwuUNpX7ETB9hHnAPtVSTKiVL2VsUI998")
 
 FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001773614166"))

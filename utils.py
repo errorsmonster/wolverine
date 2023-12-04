@@ -1,6 +1,6 @@
 import logging
 from pyrogram.errors import InputUserDeactivated, FloodWait, UserIsBlocked, PeerIdInvalid
-from info import MAX_LIST_ELM, FORCESUB_CHANNEL, ADMINS
+from info import FORCESUB_CHANNEL, ADMINS
 from imdb import Cinemagoer
 import asyncio
 from pyrogram.types import Message, InlineKeyboardButton
@@ -179,16 +179,6 @@ def extract_user(message: Message) -> Union[int, str]:
         user_first_name = message.from_user.first_name
     return (user_id, user_first_name)
 
-def list_to_str(k):
-    if not k:
-        return "N/A"
-    elif len(k) == 1:
-        return str(k[0])
-    elif MAX_LIST_ELM:
-        k = k[:int(MAX_LIST_ELM)]
-        return ' '.join(f'{elem}, ' for elem in k)
-    else:
-        return ' '.join(f'{elem}, ' for elem in k)
 
 def last_online(from_user):
     time = ""
