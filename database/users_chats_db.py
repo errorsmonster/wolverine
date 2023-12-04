@@ -41,7 +41,6 @@ class Database:
             return
         await self.col.update_one({"id": user_id}, {"$set": {"files_count": 0, "last_reset": datetime.now().strftime("%Y-%m-%d")}})
 
-
     # reset files count for all user forcefully
     async def reset_all_files_count(self):
         await self.col.update_many({}, {"$set": {"files_count": 0, "last_reset": datetime.now().strftime("%Y-%m-%d")}})
@@ -107,23 +106,6 @@ class Database:
         if days_left < 0:
             await self.remove_user_premium(user_id)
             return "Your subscription has expired."
-
-
-    # remove all expired user
-    async def remove_expired_users(self):
-        now = datetime.utcnow()
-        expired_users = await self.col.find({}).to_list(None)
-        
-        for user in expired_users:
-            user_id = user['id']
-            purchase_date = user.get('purchase_date')
-            premium_expiry_days = user.get('premium_expiry')
-            
-            if purchase_date is not None and premium_expiry_days is not None:
-                expiry_date = purchase_date + timedelta(days=premium_expiry_days)
-                
-                if expiry_date <= now:
-                    await self.remove_user_premium(user_id)
          
     async def add_user(self, id, name):
         user = self.new_user(id, name)
@@ -172,10 +154,6 @@ class Database:
         b_users = [user['id'] async for user in users]
         return b_users
     
-    async def get_db_size(self):
-        return (await self.db.command("dbstats"))['dataSize']
-    
-
     async def fetch_value(self, user_id, key):
         user = await self.col.find_one({"id": user_id})
         if user is None:
