@@ -65,7 +65,6 @@ async def save_file(media):
             return True, 1
 
 
-
 async def get_search_results(query, file_type=None, max_results=None, offset=0, filter=False):
     if max_results is None:
         max_results = 10
