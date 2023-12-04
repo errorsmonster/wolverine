@@ -763,61 +763,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await toggle_config(query, "terms", "Terms&Condition")
     elif query.data == "spoll_check":
         await toggle_config(query, "spoll_check", "Spell Check")
-
-    '''
-    
-    elif query.data == "extramod":
-        buttons = [
-            [InlineKeyboardButton("Top Searches of the day", callback_data="topsearch")],
-            [InlineKeyboardButton("Movie suggestions", callback_data="movie_suggest")]
-        ]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit(
-            f"Choose an option",
-            reply_markup=reply_markup,
-            disable_web_page_preview=True,
-        )
-
-    elif query.data == "movie_suggest":
-        languages = ["Bengali", "English", "Hindi", "Tamil", "Telegu", "Malayalam", "Punjabi", "Gujrati"]
-        button = await create_buttons(languages, "lang")
-        await query.message.edit(
-            text=f"<b>Choose language</b>",
-            reply_markup=InlineKeyboardMarkup(button),
-            disable_web_page_preview=True,
-        )
-
-    elif query.data.startswith("lang#"):
-        lang = query.data.split("#")[1]
-        years = [str(year) for year in range(2023, 2013, -1)]
-        button = await create_buttons(years, f"yr#{lang}")
-        await query.message.edit(
-            text=f"<b>Choose year</b>",
-            reply_markup=InlineKeyboardMarkup(button),
-            disable_web_page_preview=True,
-        )
-
-    elif query.data.startswith("yr#"):
-        langu, yr = query.data.split("#")[1:]
-        genres = ["Action", "Drama", "Horror", "Sci-fi", "Romance", "Thriller", "Mystery", "Fantasy", "Fiction", "Historical"]
-        button = await create_buttons(genres, f"sugg#{langu}#{yr}")
-        await query.message.edit(
-            text=f"<b>Choose genre</b>",
-            reply_markup=InlineKeyboardMarkup(button),
-            disable_web_page_preview=True,
-        )
-
-    elif query.data.startswith("sugg#"):
-        language, year, genre = query.data.split("#")[1:]
-        print(f"{language} {year} {genre}")
-        movies = await get_movies(genre, language, year)
-        if movies:
-            suggestion = await format_movie_suggestion(movies)
-            await query.message.edit(suggestion, reply_markup=None)
-        else:
-            await query.edit("No movies found for the given query.", reply_markup=None)
-
-    '''        
+    elif query.data == "force_subs":
+        await toggle_config(query, "forcesub", "Force Subscribe")
 
     await query.answer('Share & Support Us♥️')
 
@@ -830,16 +777,6 @@ async def toggle_config(query, config_key, message):
         await mdb.update_configuration(config_key, True)
         await query.message.edit(f"<b>{message} enabled.</b>", reply_markup=None)
 
-
-async def create_buttons(names, callback_prefix):
-    return [
-        [
-            InlineKeyboardButton(name, callback_data=f"{callback_prefix}#{name.lower()}")
-            for name in names[i:i+2]
-        ]
-        for i in range(0, len(names), 2)
-    ]
-    
 
 async def delete_files(query, limit, file_type):
     k = await query.message.edit(text=f"Deleting <b>{file_type.upper()}</b> files...", reply_markup=None)

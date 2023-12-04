@@ -46,7 +46,8 @@ class Database:
             private_filter=True,
             group_filter=True,
             terms=True,
-            spoll_check=True):
+            spoll_check=True,
+            forcesub=True):
         
         return {
             'maintenance_mode': maintenance_mode,
@@ -56,7 +57,8 @@ class Database:
             'private_filter': private_filter,
             'group_filter': group_filter,
             'terms': terms,
-            'spoll_check': spoll_check
+            'spoll_check': spoll_check,
+            'forcesub': forcesub
         }
 
     async def update_configuration(self, key, value):

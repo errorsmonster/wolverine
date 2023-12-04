@@ -65,8 +65,8 @@ async def start(client, message):
         )
         return
     data = message.command[1]
-    print(f"Data: {data}")
-    if not data.split("-", 1)[0] == "ReferID" and FORCESUB_CHANNEL and not await is_subscribed(client, message):
+    forcesub = await mdb.get_configuration_value("forcesub")
+    if not data.split("-", 1)[0] == "ReferID" and FORCESUB_CHANNEL and forcesub and not await is_subscribed(client, message):
         try:
             invite_link = await client.create_chat_invite_link(int(FORCESUB_CHANNEL), creates_join_request=True)
         except Exception as e:
@@ -303,7 +303,7 @@ async def start(client, message):
         await media_id.delete()
         await del_msg.edit("__⊘ This message was deleted__")
     except Exception as e:
-        await message.reply(f"<b>Erorr:</b> ```{e}```\n\n<b>Please report this issue by replying @admin</b>")
+        await message.reply(f"<b>Erorr: {e}\n\nPlease report this issue by replying @admin")
         logger.error(e)
 
         
