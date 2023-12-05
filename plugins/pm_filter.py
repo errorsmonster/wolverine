@@ -103,7 +103,6 @@ async def filters_private_handlers(client, message):
         )
         return      
     
-    filter = None
     try:
         if premium_status is True:
             if await db.check_expired_users(user_id):
@@ -119,7 +118,7 @@ async def filters_private_handlers(client, message):
                 return
                 
             text, markup = await paid_filter(client, message)
-            filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
+            await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         else:
             if user_timestamps:
@@ -129,7 +128,7 @@ async def filters_private_handlers(client, message):
                     remaining_time = SLOW_MODE_DELAY - time_diff
                     while remaining_time > 0:
                         await msg.edit(f"<b>Please Wait For {remaining_time} Seconds Before Sending Another Request.</b>")
-                        await asyncio.sleep(2)
+                        await asyncio.sleep(1)
                         remaining_time = max(0, SLOW_MODE_DELAY - int(time.time()) + user_timestamps)
                     await message.delete()
                     await msg.delete()
@@ -142,6 +141,7 @@ async def filters_private_handlers(client, message):
                 return
         
             try:
+                filter = None
                 if one_file_one_link is True and files_counts is not None and files_counts >= 1:
                     text , button = await free_filter(client, message)
                 else:
