@@ -6,6 +6,7 @@ import asyncio
 import logging
 from utils import replace_blacklist
 from Script import script
+from pyrogram.errors import BadRequest
 lock = asyncio.Lock()
 
 # Set up logging
@@ -52,6 +53,10 @@ async def get_files_from_db(client, message):
             if success:
                 total += 1
                 await m.edit(f"**{total}/{total_files}** files have been forwarded.")
+        except BadRequest as bad:
+            if bad.message == "MESSAGE_NOT_MODIFIED":
+                logging.warning("Message is not modified, continuing...")
+                continue  # Skip to the next iteration
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
             await asyncio.sleep(e.x)
