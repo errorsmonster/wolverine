@@ -103,6 +103,7 @@ async def filters_private_handlers(client, message):
         )
         return      
     
+    filter = None
     try:
         if premium_status is True:
             if await db.check_expired_users(user_id):
@@ -118,7 +119,7 @@ async def filters_private_handlers(client, message):
                 return
                 
             text, markup = await paid_filter(client, message)
-            await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
+            filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         else:
             if user_timestamps:
@@ -141,7 +142,6 @@ async def filters_private_handlers(client, message):
                 return
         
             try:
-                filter = None
                 if one_file_one_link is True and files_counts is not None and files_counts >= 1:
                     text , button = await free_filter(client, message)
                 else:
@@ -172,8 +172,8 @@ async def public_group_filter(client, message):
     premium = await db.is_premium_status(message.from_user.id)
     await mdb.update_top_messages(message.from_user.id, message.text)
 
-    filter = None
     try:
+        filter = None
         if premium:
             text, button = await paid_filter(client, message)
         elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
