@@ -634,29 +634,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(f"<b>Fetching Top Searches, Be Patience It'll Take Some Time</b>", show_alert=True)
         top_searches = await mdb.get_top_messages(20)
 
-        unique_messages = set()
+        unique_messages = {msg.lower() for msg in top_searches if msg.lower() not in unique_messages and is_valid_string(msg)}
         truncated_messages = []
 
-        for msg in top_searches:
-            if msg.lower() not in unique_messages and is_valid_string(msg):
-                unique_messages.add(msg.lower())
-
-                files, _, _ = await get_search_results(msg.lower())
-                if files:
-                    if len(msg) > 20:
-                        truncated_messages.append(msg[:20 - 3])
-                    else:
-                        truncated_messages.append(msg)
+        for msg in unique_messages:
+            files, _, _ = await get_search_results(msg)
+            if files:
+                truncated_messages.append(msg[:20 - 3] if len(msg) > 20 else msg)
 
         # Display two buttons in a row
-        keyboard = []
-        for i in range(0, len(truncated_messages), 2):
-            row_buttons = []
-            for j in range(2):
-                if i + j < len(truncated_messages):
-                    msg = truncated_messages[i + j]
-                    row_buttons.append(InlineKeyboardButton(msg, callback_data=f"search#{msg}"))
-            keyboard.append(row_buttons)
+        keyboard = [[InlineKeyboardButton(truncated_messages[i + j], callback_data=f"search#{truncated_messages[i + j]}") for j in range(2) if i + j < len(truncated_messages)] for i in range(0, len(truncated_messages), 2)]
 
         keyboard.append([
             InlineKeyboardButton("⛔️ Close", callback_data="close_data"),
@@ -665,6 +652,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.edit(f"<b>Here is the top searches of the day</b>", reply_markup=reply_markup, disable_web_page_preview=True)
 
+        
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]
         await query.answer(text=f"Searching for your request :)")
