@@ -109,13 +109,14 @@ async def filters_private_handlers(client, message):
             if await db.check_expired_users(user_id):
                 await msg.edit(f"<b>Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.</b>", disable_web_page_preview=True)
                 return
-            
-            if files_counts >= 50:
+            if files_counts >= 100:
                 await msg.edit(f"<b>Your Account Has Been Locked Due To Spamming, And It'll Be Unlocked After {time_difference} Hours.</b>")
                 return
-            
-            if duration == 29 and files_counts >= 20:
-                await msg.edit(f"<b>You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
+            if duration == 29 and files_counts >= 30:
+                await msg.edit(f"<b>You Can Only Get 30 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
+                return
+            if duration == 28 and files_counts >= 25:
+                await msg.edit(f"<b>You Can Only Get 25 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
                 return
                 
             text, markup = await paid_filter(client, message)
@@ -652,7 +653,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.edit(f"<b>Here is the top searches of the day</b>", reply_markup=reply_markup, disable_web_page_preview=True)
 
-        
+
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]
         await query.answer(text=f"Searching for your request :)")
