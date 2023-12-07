@@ -38,6 +38,7 @@ async def get_files_from_db(client, message):
     total_files = await Media.count_documents()
     files = await get_all_file_ids()
     total = 0
+    failed = 0
     for file in files:
         if cancel_forwarding:
             await m.edit("**File forwarding process has been canceled.**")
@@ -52,11 +53,13 @@ async def get_files_from_db(client, message):
             success = await forward_file(client, file_id, caption)
             if success:
                 total += 1
-                await m.edit(f"**{total}/{total_files}** files have been forwarded.")
+                await m.edit(f"**Success** - {total}\n**Total** - {total_files}\n**Failed** - {failed}")
         except BadRequest as bad:
-            if bad.message == "MESSAGE_NOT_MODIFIED":
-                logging.warning("Message is not modified, continuing...")
-                continue  # Skip to the next iteration
+                failed += 1
+                await m.edit(f"**Success** - {total}\n**Total** - {total_files}\n**Failed** - {failed}")
+                logging.error(f"BadRequest: {bad}")
+                await asyncio.sleep(1)
+
         except FloodWait as e:
             logging.warning(f"FloodWait: Waiting for {e.x} seconds.")
             await asyncio.sleep(e.x)
