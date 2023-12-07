@@ -1,12 +1,11 @@
 from pyrogram import Client, filters
 from database.ia_filterdb import get_file_details, get_all_file_ids, Media
 from info import FORWARD_CHANNEL, ADMINS
-from pyrogram.errors import FloodWait
 import asyncio
 import logging
 from utils import replace_blacklist
 from Script import script
-from pyrogram.errors import BadRequest
+from pyrogram.errors import BadRequest, FloodWait
 lock = asyncio.Lock()
 
 # Set up logging
