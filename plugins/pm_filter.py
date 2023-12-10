@@ -55,7 +55,6 @@ async def filters_private_handlers(client, message):
     referral = await db.fetch_value(user_id, "referral")
     duration = user.get("premium_expiry")
 
-    # optinal function for checking time difference between currrent time and next 12'o clock
     kolkata = pytz.timezone('Asia/Kolkata')
     current_datetime = datetime.now(kolkata)
     next_day = current_datetime + timedelta(days=1)
@@ -172,9 +171,9 @@ async def public_group_filter(client, message):
     one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
     premium = await db.is_premium_status(message.from_user.id)
     await mdb.update_top_messages(message.from_user.id, message.text)
-
+    
+    filter = None
     try:
-        filter = None
         if premium:
             text, button = await paid_filter(client, message)
         elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
