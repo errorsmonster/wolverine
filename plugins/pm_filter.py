@@ -111,11 +111,8 @@ async def filters_private_handlers(client, message):
             if files_counts >= 100:
                 await msg.edit(f"<b>Your Account Has Been Locked Due To Spamming, And It'll Be Unlocked After {time_difference} Hours.</b>")
                 return
-            if duration == 29 and files_counts >= 30:
+            if duration == 28 and files_counts >= 30:
                 await msg.edit(f"<b>You Can Only Get 30 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
-                return
-            if duration == 28 and files_counts >= 25:
-                await msg.edit(f"<b>You Can Only Get 25 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
                 return
                 
             text, markup = await paid_filter(client, message)
