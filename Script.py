@@ -37,7 +37,7 @@ Name - {}
 
     #remove ads
     REMADS_TEXT = """
-<b>Free</b>\nAds & no direct links.\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, no waiting time, web download and web streaming.\n\n<b>Plan Cost - ₹29/month & ₹145/6Month </b>\nPrices may increase in the future.
+<b>Free</b>\nAds & no direct links.\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, no waiting time, web download and web streaming.\n\n<b>Plan Cost - ₹29/Month, ₹149/6M & ₹279/Year </b>\nPrices may increase in the future.
 """
     #confirm text
     CNFRM_TEXT = """
