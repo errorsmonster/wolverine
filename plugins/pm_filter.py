@@ -142,14 +142,14 @@ async def filters_private_handlers(client, message):
                 return
         
             try:
-                if one_file_one_link is True and files_counts is not None and files_counts >= 1:
+                if one_file_one_link and (files_counts is not None and files_counts >= 1):
                     text , button = await free_filter(client, message)
                 else:
                     text, button = await auto_filter(client, message)
         
                 filter = await msg.edit(text=text, reply_markup=button, disable_web_page_preview=True)  
             except:
-                pass
+                logger.error("Error in auto filter")
 
     except Exception as e:
         await msg.edit(f"<b>Opps! Something Went Wrong.</b>")
