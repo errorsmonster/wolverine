@@ -55,7 +55,6 @@ async def filters_private_handlers(client, message):
     referral = await db.fetch_value(user_id, "referral")
     duration = user.get("premium_expiry")
 
-    # optinal function for checking time difference between currrent time and next 12'o clock
     kolkata = pytz.timezone('Asia/Kolkata')
     current_datetime = datetime.now(kolkata)
     next_day = current_datetime + timedelta(days=1)
@@ -109,13 +108,14 @@ async def filters_private_handlers(client, message):
             if await db.check_expired_users(user_id):
                 await msg.edit(f"<b>Your Premium Subscription Has Been Expired. Please <a href=https://t.me/{temp.U_NAME}?start=upgrade>Renew</a> Your Subscription To Continue Using Premium.</b>", disable_web_page_preview=True)
                 return
-            
-            if files_counts >= 50:
+            if files_counts >= 100:
                 await msg.edit(f"<b>Your Account Has Been Locked Due To Spamming, And It'll Be Unlocked After {time_difference} Hours.</b>")
                 return
-            
-            if duration == 29 and files_counts >= 20:
-                await msg.edit(f"<b>You Can Only Get 20 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
+            if duration == 29 and files_counts >= 30:
+                await msg.edit(f"<b>You Can Only Get 30 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
+                return
+            if duration == 28 and files_counts >= 25:
+                await msg.edit(f"<b>You Can Only Get 25 Files a Day, Please Wait For {time_difference} Hours To Request Again</b>")
                 return
                 
             text, markup = await paid_filter(client, message)
@@ -142,14 +142,14 @@ async def filters_private_handlers(client, message):
                 return
         
             try:
-                if one_file_one_link is True and files_counts is not None and files_counts >= 1:
+                if one_file_one_link and (files_counts is not None and files_counts >= 1):
                     text , button = await free_filter(client, message)
                 else:
                     text, button = await auto_filter(client, message)
         
                 filter = await msg.edit(text=text, reply_markup=button, disable_web_page_preview=True)  
             except:
-                pass
+                logger.error("Error in auto filter")
 
     except Exception as e:
         await msg.edit(f"<b>Opps! Something Went Wrong.</b>")
@@ -171,9 +171,9 @@ async def public_group_filter(client, message):
     one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
     premium = await db.is_premium_status(message.from_user.id)
     await mdb.update_top_messages(message.from_user.id, message.text)
-
+    
+    filter = None
     try:
-        filter = None
         if premium:
             text, button = await paid_filter(client, message)
         elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
@@ -634,29 +634,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(f"<b>Fetching Top Searches, Be Patience It'll Take Some Time</b>", show_alert=True)
         top_searches = await mdb.get_top_messages(20)
 
-        unique_messages = set()
+        unique_messages = {msg.lower() for msg in top_searches if msg.lower() not in unique_messages and is_valid_string(msg)}
         truncated_messages = []
 
-        for msg in top_searches:
-            if msg.lower() not in unique_messages and is_valid_string(msg):
-                unique_messages.add(msg.lower())
-
-                files, _, _ = await get_search_results(msg.lower())
-                if files:
-                    if len(msg) > 20:
-                        truncated_messages.append(msg[:20 - 3])
-                    else:
-                        truncated_messages.append(msg)
+        for msg in unique_messages:
+            files, _, _ = await get_search_results(msg)
+            if files:
+                truncated_messages.append(msg[:20 - 3] if len(msg) > 20 else msg)
 
         # Display two buttons in a row
-        keyboard = []
-        for i in range(0, len(truncated_messages), 2):
-            row_buttons = []
-            for j in range(2):
-                if i + j < len(truncated_messages):
-                    msg = truncated_messages[i + j]
-                    row_buttons.append(InlineKeyboardButton(msg, callback_data=f"search#{msg}"))
-            keyboard.append(row_buttons)
+        keyboard = [[InlineKeyboardButton(truncated_messages[i + j], callback_data=f"search#{truncated_messages[i + j]}") for j in range(2) if i + j < len(truncated_messages)] for i in range(0, len(truncated_messages), 2)]
 
         keyboard.append([
             InlineKeyboardButton("⛔️ Close", callback_data="close_data"),
@@ -664,6 +651,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ])
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.edit(f"<b>Here is the top searches of the day</b>", reply_markup=reply_markup, disable_web_page_preview=True)
+
 
     elif query.data.startswith("search#"):
         search = query.data.split("#")[1]

@@ -28,7 +28,7 @@ async def how2download(_, message):
 
 @Client.on_message(filters.private & filters.regex(r"^(hi+|hello+|hey+)$", re.IGNORECASE))
 async def echo(_, message):
-    response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>Please Provide The Name Of The Movie Or Series You're Looking For, and I'll Help You To Find It..</b>, "
+    response_text = f"<b>Hello</b>, {message.from_user.mention}!\n<b>Please Provide The Name Of The Movie Or Series You're Looking For, and I'll Help You To Find It..</b>"
     await message.reply_text(response_text, reply_to_message_id=message.id, disable_web_page_preview=True)
 
 @Client.on_message(filters.media & ~filters.photo & filters.private & ~filters.user(ADMINS))
