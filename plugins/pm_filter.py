@@ -790,6 +790,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup=reply_markup,
             disable_web_page_preview=True,
         )
+        
     elif query.data == "shareus":
         await set_shortner(query, "shareus")
     elif query.data == "gplinks":
