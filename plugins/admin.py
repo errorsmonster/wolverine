@@ -519,6 +519,9 @@ async def admin_controll(client, message):
         [
             InlineKeyboardButton("Force Subscribe 🔵" if await mdb.get_configuration_value("forcesub") else "Force Subscribe", callback_data="force_subs"),
             InlineKeyboardButton("Shortner", callback_data="shortner")
+        ],
+        [
+            InlineKeyboardButton("Close", callback_data="close_data")
         ]
     ]
 
