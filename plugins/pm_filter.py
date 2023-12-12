@@ -753,10 +753,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     # Shortner button
     elif query.data == "shortner":
+        shortnr = await mdb.get_configuration_value("shortner")
         buttons = [[
-            InlineKeyboardButton("Shareus 🔵" if await mdb.get_configuration_value("shortner") else "Shareus", callback_data="shareus"),
-            InlineKeyboardButton("GPLinks 🔵" if await mdb.get_configuration_value("shortner") else "GPLinks", callback_data="gplinks"),
-            InlineKeyboardButton("AdLinkfly 🔵" if await mdb.get_configuration_value("shortner") else "AdLinkFly", callback_data="adlinkfly"),
+            InlineKeyboardButton("Shareus 🔵" if shortnr == "shareus" else "Shareus", callback_data="shareus"),
+            InlineKeyboardButton("GPLinks 🔵" if shortnr == "gplinks" else "GPLinks", callback_data="gplinks"),
+            InlineKeyboardButton("AdLinkfly 🔵" if shortnr == "adlinkfly" else "AdLinkFly", callback_data="adlinkfly"),
             ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit(
@@ -769,7 +770,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "gplinks":
         await set_shortner(query, "gplinks")
     elif query.data == "adlinkfly":
-        await set_shortner(query, "adlinkfly")      
+        await set_shortner(query, "adlinkfly")   
 
     await query.answer('Share & Support Us♥️')
 
