@@ -12,10 +12,6 @@ from database.ia_filterdb import get_search_results
 from database.config_db import mdb
 
 
-ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
-DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
-TEXT = "<b>Hello {}, Welcome To {}</b>"
-
 PATTERN_DOWNLOAD = re.compile(
     r"\bhow to (?:download|find|search for|get) (?:movie(?:s)?|series|link(?:s)?)\b",
     re.IGNORECASE
@@ -98,7 +94,7 @@ async def remove_paid(client, message):
         return await message.reply("This might be a channel, make sure it's a user.")
     else:
         await db.remove_user_premium(k.id)
-        await message.reply(DEL_PAID_TEXT.format(k.first_name))
+        await message.reply(f"Successfully Removed Subscription for {k.first_name}")
         
         
 #request command 
@@ -267,24 +263,18 @@ async def allcommands(client, message):
     await message.reply_text(
         f"<b>Commands:</b>\n"
         f"<b>➲/stats</b> - To get bot stats\n"
-        f"<b>➲/user</b> - To get user info\n"
+        f"<b>➲/admin</b> - Admin panel\n"
+        f"<b>➲/info</b> - To get user info\n"
         f"<b>➲/premiumlist</b> - To list all premium users\n"
         f"<b>➲/resetdaily</b> - To reset daily files count\n"
         f"<b>➲/add_paid</b> - To add a user as premium\n"
         f"<b>➲/remove_paid</b> - To remove a user from premium\n"
-        f"<b>➲/channel</b> - To get channel info\n"
         f"<b>➲/broadcast</b> - To broadcast a message to all users\n"
-        f"<b>➲/id</b> - To get chat id\n"
-        f"<b>➲/info</b> - To get user info\n"
         f"<b>➲/license</b> - To get redeem code\n"
         f"<b>➲/revoke</b> - To revoke redeem code\n"
-        f"<b>➲/leave</b> - To leave a chat\n"
-        f"<b>➲/disable</b> - To disable a chat\n"
-        f"<b>➲/enable</b> - To enable a chat\n"
         f"<b>➲/invite</b> - To get invite link of a chat\n"
         f"<b>➲/ban</b> - To ban a user\n"
         f"<b>➲/unban</b> - To unban a user\n"
-        f"<b>➲/chats</b> - To get all chats\n"
         )
     
 # Add functions for refferal system
@@ -304,7 +294,7 @@ async def reffer(_, message):
 async def redeem_req(_, message):
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Purchase Now", callback_data="remads")]])
     await message.reply(
-        text=f"<b>Kindly Provide The Redeem Code For Premium Activation.\n\n⚠️ If you don't have a redeem code, you can purchase one here.</b>",
+        text=f"<b>Kindly Provide The Redeem Code For Premium Activation.\n\nIf you don't have a redeem code, you can purchase one here.</b>",
         reply_markup=keyboard
     )
 
@@ -391,7 +381,7 @@ async def autoapprove(client: Client, message: ChatJoinRequest):
     try:
         if APPROVE is not None and APPROVE is True:
             await client.approve_chat_join_request(chat.id, user.id)
-            await client.send_message(chat_id=chat.id, text=TEXT.format(user.mention, chat.title))
+            await client.send_message(chat_id=chat.id, text=f"<b>Hello {user.mention,}, Welcome To {chat.title}</b>")
     except Exception as e:
         print(e)
 
@@ -519,6 +509,9 @@ async def admin_controll(client, message):
         [
             InlineKeyboardButton("Force Subscribe 🔵" if await mdb.get_configuration_value("forcesub") else "Force Subscribe", callback_data="force_subs"),
             InlineKeyboardButton("Shortner", callback_data="shortner")
+        ],
+        [
+            InlineKeyboardButton("Close", callback_data="close_data")
         ]
     ]
 
