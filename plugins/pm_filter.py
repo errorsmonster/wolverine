@@ -186,7 +186,8 @@ async def public_group_filter(client, message):
         if WAIT_TIME is not None:
             await asyncio.sleep(WAIT_TIME)
             await message.delete()
-            await filter.delete()
+            if filter:
+                await filter.delete()
                 
 
 @Client.on_callback_query(filters.regex(r"^spolling"))
