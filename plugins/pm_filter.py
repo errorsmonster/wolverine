@@ -756,8 +756,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
         shortnr = await mdb.get_configuration_value("shortner")
         buttons = [[
             InlineKeyboardButton("Shareus 🔵" if shortnr == "shareus" else "Shareus", callback_data="shareus"),
+            ],[
             InlineKeyboardButton("GPLinks 🔵" if shortnr == "gplinks" else "GPLinks", callback_data="gplinks"),
+            ],[
             InlineKeyboardButton("AdLinkfly 🔵" if shortnr == "adlinkfly" else "AdLinkFly", callback_data="adlinkfly"),
+            ],[
+            InlineKeyboardButton("Close", callback_data="close_data")
             ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit(
