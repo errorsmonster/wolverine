@@ -169,7 +169,6 @@ async def public_group_filter(client, message):
     premium = await db.is_premium_status(message.from_user.id)
     await mdb.update_top_messages(message.from_user.id, message.text)
     
-    filter = None
     try:
         if premium:
             text, button = await paid_filter(client, message)
