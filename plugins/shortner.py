@@ -44,7 +44,7 @@ async def gplinks(link):
 
 async def adlinkfly(link):
     url = f"https://shortify.in/api"
-    api_key = ""
+    api_key = "ce34a5441431b6af2d82a88cb46fd8c0301e6ff2"
     params = {'api': api_key, 'url': link, 'format': 'text'}
     try:
         async with aiohttp.ClientSession() as session:
@@ -64,6 +64,7 @@ async def linkpass(link):
                 return data["short_url"]
     except Exception as e:
         return f"{shorner}"
+    
     
 async def urlshare(link):
     shortner = f'https://urlshare.onrender.com/?create&url={link}'
