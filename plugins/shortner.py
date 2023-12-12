@@ -43,7 +43,7 @@ async def gplinks(link):
 
 
 async def adlinkfly(link):
-    url = f"https://shortify.in/api"
+    url = f"https://shortyfi.in/api"
     api_key = "ce34a5441431b6af2d82a88cb46fd8c0301e6ff2"
     params = {'api': api_key, 'url': link, 'format': 'text'}
     try:
