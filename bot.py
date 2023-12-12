@@ -1,11 +1,4 @@
 import logging
-import logging.config
-
-# Get logging configurations
-logging.config.fileConfig('logging.conf')
-logging.getLogger().setLevel(logging.INFO)
-logging.getLogger("pyrogram").setLevel(logging.ERROR)
-
 from pyrogram import Client, __version__
 from database.ia_filterdb import Media
 from database.users_chats_db import db
