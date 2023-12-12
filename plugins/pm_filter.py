@@ -16,7 +16,7 @@ from database.users_chats_db import db
 from database.config_db import mdb
 from pyrogram.errors import MessageNotModified
 from utils import get_size, is_subscribed, search_gagala, temp, replace_blacklist, fetch_quote_content
-from plugins.shortner import shareus as link_shortner
+from plugins.shortner import shortlink as link_shortner
 from plugins.paid_filter import paid_filter
 from plugins.free_filter import free_filter
 from database.ia_filterdb import Media, get_file_details, get_search_results
@@ -751,7 +751,36 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "force_subs":
         await toggle_config(query, "forcesub", "Force Subscribe")
 
+    # Shortner button
+    elif query.data == "shortner":
+        shortnr = await mdb.get_configuration_value("shortner")
+        buttons = [[
+            InlineKeyboardButton("Shareus 🔵" if shortnr == "shareus" else "Shareus", callback_data="shareus"),
+            ],[
+            InlineKeyboardButton("GPLinks 🔵" if shortnr == "gplinks" else "GPLinks", callback_data="gplinks"),
+            ],[
+            InlineKeyboardButton("AdLinkfly 🔵" if shortnr == "adlinkfly" else "AdLinkFly", callback_data="adlinkfly"),
+            ],[
+            InlineKeyboardButton("Close", callback_data="close_data")
+            ]]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await query.message.edit(
+            text=f"<b>Choose the shortner</b>",
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+        )
+    elif query.data == "shareus":
+        await set_shortner(query, "shareus")
+    elif query.data == "gplinks":
+        await set_shortner(query, "gplinks")
+    elif query.data == "adlinkfly":
+        await set_shortner(query, "adlinkfly")   
+
     await query.answer('Share & Support Us♥️')
+
+async def set_shortner(query, shortner):
+    await mdb.update_configuration("shortner", shortner)
+    await query.message.edit(f"<b>{shortner} shortner enabled.</b>", reply_markup=None)    
 
 async def toggle_config(query, config_key, message):
     config = await mdb.get_configuration_value(config_key)
