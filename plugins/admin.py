@@ -12,10 +12,6 @@ from database.ia_filterdb import get_search_results
 from database.config_db import mdb
 
 
-ADD_PAID_TEXT = "Successfully Enabled {}'s Subscription for {} days"
-DEL_PAID_TEXT = "Successfully Removed Subscription for {}"
-TEXT = "<b>Hello {}, Welcome To {}</b>"
-
 PATTERN_DOWNLOAD = re.compile(
     r"\bhow to (?:download|find|search for|get) (?:movie(?:s)?|series|link(?:s)?)\b",
     re.IGNORECASE
@@ -98,7 +94,7 @@ async def remove_paid(client, message):
         return await message.reply("This might be a channel, make sure it's a user.")
     else:
         await db.remove_user_premium(k.id)
-        await message.reply(DEL_PAID_TEXT.format(k.first_name))
+        await message.reply(f"Successfully Removed Subscription for {k.first_name}")
         
         
 #request command 
@@ -391,7 +387,7 @@ async def autoapprove(client: Client, message: ChatJoinRequest):
     try:
         if APPROVE is not None and APPROVE is True:
             await client.approve_chat_join_request(chat.id, user.id)
-            await client.send_message(chat_id=chat.id, text=TEXT.format(user.mention, chat.title))
+            await client.send_message(chat_id=chat.id, text=f"<b>Hello {user.mention,}, Welcome To {chat.title}</b>")
     except Exception as e:
         print(e)
 
