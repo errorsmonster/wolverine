@@ -769,7 +769,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "gplinks":
         await set_shortner(query, "gplinks")
     elif query.data == "adlinkfly":
-        await set_shortner(query, "adlinkfly")            
+        await set_shortner(query, "adlinkfly")      
 
     await query.answer('Share & Support Us♥️')
 
