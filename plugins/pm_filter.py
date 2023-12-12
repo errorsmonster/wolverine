@@ -66,6 +66,7 @@ async def filters_private_handlers(client, message):
     maintenance_mode = await mdb.get_configuration_value("maintenance_mode")
     one_file_one_link = await mdb.get_configuration_value("one_link")
     private_filter = await mdb.get_configuration_value("private_filter")
+    freefilter = await mdb.get_configuration_value("freefilter")
 
     await mdb.update_top_messages(message.from_user.id, message.text)    
 
@@ -118,6 +119,10 @@ async def filters_private_handlers(client, message):
             text, markup = await paid_filter(client, message)
             filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
+        elif freefilter is True:
+            text, markup = await free_filter(client, message)
+            filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
+
         else:
             if user_timestamps:
                 current_time = int(time.time())
@@ -150,7 +155,6 @@ async def filters_private_handlers(client, message):
 
     except Exception as e:
         await msg.edit(f"<b>Opps! Something Went Wrong.</b>")
-        logger.error(e)
 
     finally:
         await asyncio.sleep(WAIT_TIME)
@@ -166,6 +170,7 @@ async def public_group_filter(client, message):
     
     files_counts = await db.fetch_value(message.from_user.id, "files_count")
     one_time_ads = await mdb.get_configuration_value("one_link_one_file_group")
+    freefilter = await mdb.get_configuration_value("freefilter")
     premium = await db.is_premium_status(message.from_user.id)
     await mdb.update_top_messages(message.from_user.id, message.text)
     
@@ -174,6 +179,8 @@ async def public_group_filter(client, message):
             text, button = await paid_filter(client, message)
         elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
             text, button = await free_filter(client, message)
+        elif freefilter is True:
+            text, button = await free_filter(client, message)    
         else:
             text, button = await auto_filter(client, message)
 
@@ -762,6 +769,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await toggle_config(query, "spoll_check", "Spell Check")
     elif query.data == "force_subs":
         await toggle_config(query, "forcesub", "Force Subscribe")
+    elif query.data == "freefilter":
+        await toggle_config(query, "freefilter", "Free Filter")
 
     # Shortner button
     elif query.data == "shortner":
