@@ -294,7 +294,7 @@ async def reffer(_, message):
 async def redeem_req(_, message):
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Purchase Now", callback_data="remads")]])
     await message.reply(
-        text=f"<b>Kindly Provide The Redeem Code For Premium Activation.\n\nIf you don't have a redeem code, you can purchase one here.</b>",
+        text=f"<b>Kindly Provide The Redeem Code For Premium Activation.\n\nIf You Don't Have a Redeem Code, You Can Purchase One Here.</b>",
         reply_markup=keyboard
     )
 
