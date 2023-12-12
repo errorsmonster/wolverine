@@ -1,4 +1,16 @@
 import aiohttp
+from database.config_db import db
+
+
+async def shortlink(link):
+    shortner = await db.get_configuration_value("shortlink")
+    if shortner is None or shortner == "shareus":
+        return await shareus(link)
+    elif shortner == "gplinks":
+        return await gplinks(link)
+    if shortner == "adlinkfly":
+        return await adlinkfly(link)
+        
 
 async def shareus(link):
     url = f'https://api.shareus.io/easy_api'
@@ -14,12 +26,26 @@ async def shareus(link):
         shortlink = f"{url}?key={api_key}&link={link}"
         return shortlink
     
+
 async def gplinks(link):
     url = f'https://gplinks.in/api'
     api_key = "2578d98dd859758740ff88707e6a45d05213d131"
 
     params = {'api': api_key, 'url': link, 'format': 'text'}
     
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params, raise_for_status=True) as response:
+                return await response.text()
+    except Exception as e:
+        shortlink = f"{url}?api={api_key}&url={link}&format=text"
+        return shortlink
+
+
+async def adlinkfly(link):
+    url = f"https://shortify.in/api"
+    api_key = ""
+    params = {'api': api_key, 'url': link, 'format': 'text'}
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params=params, raise_for_status=True) as response:

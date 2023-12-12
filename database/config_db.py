@@ -46,7 +46,8 @@ class Database:
             group_filter=True,
             terms=True,
             spoll_check=True,
-            forcesub=True):
+            forcesub=True,
+            shortlink=None):
         
         return {
             'maintenance_mode': maintenance_mode,
@@ -57,7 +58,8 @@ class Database:
             'group_filter': group_filter,
             'terms': terms,
             'spoll_check': spoll_check,
-            'forcesub': forcesub
+            'forcesub': forcesub,
+            'shortlink': shortlink,
         }
 
     async def update_configuration(self, key, value):
