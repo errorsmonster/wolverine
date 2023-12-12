@@ -484,43 +484,34 @@ async def send_message_to_user(client, message):
 
 
 @Client.on_message(filters.command("admin") & filters.user(ADMINS))
-async def admin_controll(client, message):
-    button = [
-        [
-            InlineKeyboardButton("DeleteFiles", callback_data="delback"),
-            InlineKeyboardButton("Redeem Code", callback_data="redeem"),
-        ],
-        [
-            InlineKeyboardButton("1 Time Ads GC 🔵" if await mdb.get_configuration_value("one_link_one_file_group") else "1 Ads Group", callback_data="1linkgroup"),
-            InlineKeyboardButton("1 Time Ads PM 🔵" if await mdb.get_configuration_value("one_link") else "1 Ads private", callback_data="1link1file"),
-        ],
-        [
-            InlineKeyboardButton("Group Filter 🔵" if await mdb.get_configuration_value("group_filter") else "Group Filter", callback_data="group_filter"),
-            InlineKeyboardButton("Private Filter 🔵" if await mdb.get_configuration_value("private_filter") else "Private Filter", callback_data="private_filter"),
-        ],
-        [
-            InlineKeyboardButton("Terms 🔵" if await mdb.get_configuration_value("terms") else "Terms", callback_data="terms_and_condition"),
-            InlineKeyboardButton("Auto Approve 🔵" if await mdb.get_configuration_value("auto_accept") else "Auto Approve", callback_data="autoapprove"),
-        ],
-        [
-            InlineKeyboardButton("Maintainence 🔵" if await mdb.get_configuration_value("maintenance_mode") else "Maintainence", callback_data="maintenance"),
-            InlineKeyboardButton("Spell Check 🔵" if await mdb.get_configuration_value("spoll_check") else "Spell Check", callback_data="spoll_check"),
-        ],
-        [
-            InlineKeyboardButton("Force Subscribe 🔵" if await mdb.get_configuration_value("forcesub") else "Force Subscribe", callback_data="force_subs"),
-            InlineKeyboardButton("Shortner", callback_data="shortner")
-        ],
-        [
-            InlineKeyboardButton("Free Filter 🔵" if await mdb.get_configuration_value("freefilter") else "Free Filter", callback_data="freefilter")
-        ],
-        [
-            InlineKeyboardButton("⛔️ Close", callback_data="close_data")
-        ]
+async def admin_controll(_, message):
+    buttons_config_with_mdb = [
+        ("one_link_one_file_group", "1 Time Ads GC 🔵", "1 Ads Group", "1linkgroup"), # mdb key, text, blue_emoji_text, callback
+        ("one_link", "1 Time Ads PM 🔵", "1 Ads private", "1link1file"),
+        ("group_filter", "Group Filter 🔵", "Group Filter", "group_filter"),
+        ("private_filter", "Private Filter 🔵", "Private Filter", "private_filter"),
+        ("terms", "Terms 🔵", "Terms", "terms_and_condition"),
+        ("auto_accept", "Auto Approve 🔵", "Auto Approve", "autoapprove"),
+        ("maintenance_mode", "Maintainence 🔵", "Maintainence", "maintenance"),
+        ("spoll_check", "Spell Check 🔵", "Spell Check", "spoll_check"),
+        ("forcesub", "Force Subscribe 🔵", "Force Subscribe", "force_subs"),
+        ("freefilter", "Free Filter 🔵", "Free Filter", "freefilter"),
     ]
 
-    reply_markup = InlineKeyboardMarkup(button)
+    buttons_config_without_mdb = [
+        ("DeleteFiles", "delback"), # text, callback
+        ("Redeem Code", "redeem"),
+        ("Shortner", "shortner")
+    ]
+
+    button = [
+        [InlineKeyboardButton(text, callback_data=callback) for text, callback in buttons_config_without_mdb]] + [
+        [InlineKeyboardButton(text if await mdb.get_configuration_value(key) else alt_text, callback_data=callback) for key, text, alt_text, callback in buttons_config_with_mdb[i:i+2]]
+        for i in range(0, len(buttons_config_with_mdb), 2)
+    ]
+
     await message.reply_text(
         text="**Admin Control Panel**",
-        reply_markup=reply_markup,
+        reply_markup=InlineKeyboardMarkup(button),
         disable_web_page_preview=True
     )
