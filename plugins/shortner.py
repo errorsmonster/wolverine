@@ -1,9 +1,9 @@
 import aiohttp
-from database.config_db import db
+from database.config_db import mdb
 
 
 async def shortlink(link):
-    shortner = await db.get_configuration_value("shortlink")
+    shortner = await mdb.get_configuration_value("shortner")
     if shortner is None or shortner == "shareus":
         return await shareus(link)
     elif shortner == "gplinks":

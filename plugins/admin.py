@@ -517,7 +517,8 @@ async def admin_controll(client, message):
             InlineKeyboardButton("Spell Check 🔵" if await mdb.get_configuration_value("spoll_check") else "Spell Check", callback_data="spoll_check"),
         ],
         [
-            InlineKeyboardButton("Force Subscribe 🔵" if await mdb.get_configuration_value("forcesub") else "Force Subscribe", callback_data="force_subs")
+            InlineKeyboardButton("Force Subscribe 🔵" if await mdb.get_configuration_value("forcesub") else "Force Subscribe", callback_data="force_subs"),
+            InlineKeyboardButton("Shortner", callback_data="shortner")
         ]
     ]
 
