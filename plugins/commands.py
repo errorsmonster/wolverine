@@ -13,6 +13,7 @@ from utils import is_subscribed, temp, replace_blacklist
 from database.ia_filterdb import get_search_results
 import re
 import base64
+import pytz
 logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
@@ -149,9 +150,10 @@ async def start(client, message):
     files_counts = await db.fetch_value(message.from_user.id, "files_count") or 0
     lifetime_files = await db.fetch_value(message.from_user.id, "lifetime_files")
     # optinal function for checking time difference between currrent time and next 12'o clock
-    current_datetime = datetime.now()
+    kolkata = pytz.timezone('Asia/Kolkata')
+    current_datetime = datetime.now(kolkata)
     next_day = current_datetime + timedelta(days=1)
-    next_day_midnight = datetime(next_day.year, next_day.month, next_day.day)
+    next_day_midnight = datetime(next_day.year, next_day.month, next_day.day, tzinfo=kolkata)
     time_difference = (next_day_midnight - current_datetime).total_seconds() / 3600
     time_difference = round(time_difference)
 
@@ -174,10 +176,7 @@ async def start(client, message):
         
         files = files_[0]
         premium_status = await db.is_premium_status(message.from_user.id)
-        button = [[
-            InlineKeyboardButton("Support", url=f"https://t.me/iPrimehub"),
-            InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
-            ]]
+        button = []
         if premium_status is True:
             button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
             
@@ -274,7 +273,7 @@ async def start(client, message):
 
         premium_status = await db.is_premium_status(message.from_user.id)
         button = [[
-            InlineKeyboardButton("Support", url=f"https://t.me/iPrimehub"),
+            InlineKeyboardButton("Search", url=f"https://t.me/{temp.U_NAME}"),
             InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
             ]]
         if premium_status is True:
