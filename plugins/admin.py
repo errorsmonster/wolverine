@@ -484,7 +484,7 @@ async def send_message_to_user(client, message):
 
 
 @Client.on_message(filters.command("admin") & filters.user(ADMINS))
-async def admin_controll(_, message):
+async def admin_controll(client, message):
     buttons_config_with_mdb = [
         ("one_link_one_file_group", "1 Time Ads GC 🔵", "1 Ads Group", "1linkgroup"), # mdb key, text, blue_emoji_text, callback
         ("one_link", "1 Time Ads PM 🔵", "1 Ads private", "1link1file"),
