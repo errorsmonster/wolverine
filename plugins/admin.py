@@ -263,24 +263,18 @@ async def allcommands(client, message):
     await message.reply_text(
         f"<b>Commands:</b>\n"
         f"<b>➲/stats</b> - To get bot stats\n"
-        f"<b>➲/user</b> - To get user info\n"
+        f"<b>➲/admin</b> - Admin panel\n"
+        f"<b>➲/info</b> - To get user info\n"
         f"<b>➲/premiumlist</b> - To list all premium users\n"
         f"<b>➲/resetdaily</b> - To reset daily files count\n"
         f"<b>➲/add_paid</b> - To add a user as premium\n"
         f"<b>➲/remove_paid</b> - To remove a user from premium\n"
-        f"<b>➲/channel</b> - To get channel info\n"
         f"<b>➲/broadcast</b> - To broadcast a message to all users\n"
-        f"<b>➲/id</b> - To get chat id\n"
-        f"<b>➲/info</b> - To get user info\n"
         f"<b>➲/license</b> - To get redeem code\n"
         f"<b>➲/revoke</b> - To revoke redeem code\n"
-        f"<b>➲/leave</b> - To leave a chat\n"
-        f"<b>➲/disable</b> - To disable a chat\n"
-        f"<b>➲/enable</b> - To enable a chat\n"
         f"<b>➲/invite</b> - To get invite link of a chat\n"
         f"<b>➲/ban</b> - To ban a user\n"
         f"<b>➲/unban</b> - To unban a user\n"
-        f"<b>➲/chats</b> - To get all chats\n"
         )
     
 # Add functions for refferal system
@@ -300,7 +294,7 @@ async def reffer(_, message):
 async def redeem_req(_, message):
     keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Purchase Now", callback_data="remads")]])
     await message.reply(
-        text=f"<b>Kindly Provide The Redeem Code For Premium Activation.\n\n⚠️ If you don't have a redeem code, you can purchase one here.</b>",
+        text=f"<b>Kindly Provide The Redeem Code For Premium Activation.\n\nIf you don't have a redeem code, you can purchase one here.</b>",
         reply_markup=keyboard
     )
 
