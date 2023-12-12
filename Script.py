@@ -45,16 +45,16 @@ Name - {}
 """
     # Terms & Conditions
     TERMS = """
-**By using our service, you agree to adhere to the following terms:
+**By using our service, you agree to the following terms:
 
-• The bot is provided on an "as is" basis, and we reserve the right to modify or discontinue its services without prior notice.
-• While we make every effort to provide accurate movie information, we cannot guarantee the availability of all content.
-• Advertisements displayed are independent of our control; any actions resulting from them are solely your responsibility.
-• The bot collect user IDs for the purpose of providing updates and recording purchase history for premium services.
-• We disclaim any responsibility for copyright infringement, and users are solely accountable for the utilization of our services.
+1. Our service is provided "as is". We may change or stop providing our service at any time without prior notice.
+2. We strive to provide accurate information. However, we cannot guarantee the accuracy or availability of all content.
+3. Advertisements displayed are not under our control. Any actions you take based on these advertisements are your responsibility.
+4. We collect user IDs to provide updates and keep track of purchases for premium services.
+5. We are not responsible for any copyright infringement that may occur. Users are solely responsible for how they use our services.
 
-By using our bot, you acknowledge that you have read, understood, and agreed these Terms.**
-"""
+By using our service, you confirm that you have read, understood, and agreed to these terms.**
+ """
 
     # removing blacklisted words
     BLACKLIST = ['tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'www', 'http', 'https',
