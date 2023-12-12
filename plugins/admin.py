@@ -514,7 +514,7 @@ async def admin_controll(client, message):
             InlineKeyboardButton("Free Filter 🔵" if await mdb.get_configuration_value("freefilter") else "Free Filter", callback_data="freefilter")
         ],
         [
-            InlineKeyboardButton("Close", callback_data="close_data")
+            InlineKeyboardButton("⛔️ Close", callback_data="close_data")
         ]
     ]
 

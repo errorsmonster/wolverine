@@ -698,7 +698,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     [InlineKeyboardButton("Watch", url=online),
                     InlineKeyboardButton("Download", url=download)
                     ],[
-                    InlineKeyboardButton("Close", callback_data='close_data')
+                    InlineKeyboardButton("⛔️ Close", callback_data='close_data')
                     ]]
             ))
         except Exception as e:
@@ -782,7 +782,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[
             InlineKeyboardButton("AdLinkfly 🔵" if shortnr == "adlinkfly" else "AdLinkFly", callback_data="adlinkfly"),
             ],[
-            InlineKeyboardButton("Close", callback_data="close_data")
+            InlineKeyboardButton("⛔️ Close", callback_data="close_data")
             ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit(
