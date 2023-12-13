@@ -183,7 +183,7 @@ async def public_group_filter(client, message):
 
         elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
             text, button = await free_filter(client, message)   
-            
+
         else:
             text, button = await auto_filter(client, message)
 

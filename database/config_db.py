@@ -48,7 +48,7 @@ class Database:
             spoll_check=True,
             forcesub=True,
             shortner=None,
-            freefilter=True):
+            freefilter=False):
         
         return {
             'maintenance_mode': maintenance_mode,
