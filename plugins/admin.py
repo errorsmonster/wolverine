@@ -481,12 +481,12 @@ async def send_message_to_user(client, message):
         await message.reply(f"Error: {str(ve)}")
     except Exception as e:
         await message.reply(f"An unexpected error occurred: {str(e)}")
-        
+
 
 @Client.on_message(filters.command("admin") & filters.user(ADMINS))
 async def admin_controll(client, message):
     buttons_config_with_mdb = [
-        ("one_link_one_file_group", "1 Time Ads GC 🟢", "1 Ads Group", "1linkgroup"),
+        ("one_link_one_file_group", "1 Time Ads GC 🟢", "1 Ads Group", "1linkgroup"), # mdb key, text, alt_text, callback
         ("one_link", "1 Time Ads PM 🟢", "1 Ads private", "1link1file"),
         ("group_filter", "Group Filter 🟢", "Group Filter", "group_filter"),
         ("private_filter", "Private Filter 🟢", "Private Filter", "private_filter"),
@@ -495,7 +495,7 @@ async def admin_controll(client, message):
         ("maintenance_mode", "Maintainence 🟢", "Maintainence", "maintenance"),
         ("spoll_check", "Spell Check 🟢", "Spell Check", "spoll_check"),
         ("forcesub", "Force Subscribe 🟢", "Force Subscribe", "force_subs"),
-        ("freefilter", "Free Filter 🟢", "Free Filter", "freefilter"),
+        ("no_ads", "No Ads 🟢", "No Ads", "no_ads"),
     ]
 
     buttons_config_without_mdb = [
