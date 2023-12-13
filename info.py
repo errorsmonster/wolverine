@@ -11,7 +11,6 @@ def is_enabled(value, default):
         return default
 
 # Bot information
-SESSION = environ.get('SESSION', 'autofilter')
 API_ID = environ.get('API_ID', "11948995")
 API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
 BOT_TOKEN = environ.get('BOT_TOKEN', "6496586495:AAFZXdcbC7XANI3lwtmeDTPVs43EHp0HG3I")
@@ -33,16 +32,12 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'ryu')
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
-P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)
-SPELL_CHECK_REPLY = is_enabled(environ.get("SPELL_CHECK_REPLY", "False"), True)
-TMDB_API_KEY = environ.get("TMDB_API_KEY", "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2Y2JiNjZjM2QwODc5YTZkMWM0YmZjNzBlZDg3YjA2MyIsInN1YiI6IjY1Njg2ZTgxZmI1Mjk5MDEwMjYxNTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PhnAFz5jGTdwuUNpX7ETB9hHnAPtVSTKiVL2VsUI998")
-
 FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001773614166"))
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 60))
 WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
 FORWARD_CHANNEL = int(environ.get('FORWARD_CHANNEL', "-1002039632804"))
 
 # other
-ACCESS_KEY = environ.get("ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0")
+ACCESS_KEY = environ.get("ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0") # Get access key from https://licensegen.onrender.com/
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")
 URL = environ.get("STREAM_URL", "https://linkrobot.onrender.com")
