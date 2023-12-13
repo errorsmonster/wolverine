@@ -2,7 +2,7 @@ import logging
 from pyrogram import Client, __version__
 from database.ia_filterdb import Media
 from database.users_chats_db import db
-from info import SESSION, API_ID, API_HASH, BOT_TOKEN
+from info import API_ID, API_HASH, BOT_TOKEN
 from utils import temp
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
@@ -10,20 +10,11 @@ from pyrogram import types
 from aiohttp import web
 from plugins.web import web_server
 
-name = f"""
-██████╗ ██████╗ ██╗███╗   ███╗███████╗██╗  ██╗██╗   ██╗██████╗ 
-██╔══██╗██╔══██╗██║████╗ ████║██╔════╝██║  ██║██║   ██║██╔══██╗
-██████╔╝██████╔╝██║██╔████╔██║█████╗  ███████║██║   ██║██████╔╝
-██╔═══╝ ██╔══██╗██║██║╚██╔╝██║██╔══╝  ██╔══██║██║   ██║██╔══██╗
-██║     ██║  ██║██║██║ ╚═╝ ██║███████╗██║  ██║╚██████╔╝██████╔╝
-╚═╝     ╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
-"""
-
 class Bot(Client):
 
     def __init__(self):
         super().__init__(
-            name=SESSION,
+            name="autofilter",
             api_id=API_ID,
             api_hash=API_HASH,
             bot_token=BOT_TOKEN,
@@ -42,7 +33,7 @@ class Bot(Client):
         temp.U_NAME = me.username
         temp.B_NAME = me.first_name
         self.username = '@' + me.username
-        logging.info(name)
+        print(f"Bot started")
         #web-response
         app = web.AppRunner(await web_server())
         await app.setup()

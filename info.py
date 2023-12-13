@@ -11,7 +11,6 @@ def is_enabled(value, default):
         return default
 
 # Bot information
-SESSION = environ.get('SESSION', 'autofilter')
 API_ID = environ.get('API_ID', "11948995")
 API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
 BOT_TOKEN = environ.get('BOT_TOKEN', "5207489037:AAEtZTr6Ni-dUsmIC5Eh6ZqA_X46kqUYhvA")
@@ -33,10 +32,6 @@ COLLECTION_NAME = environ.get('COLLECTION_NAME', 'netflimsbot')
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
-P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), False)
-SPELL_CHECK_REPLY = is_enabled(environ.get("SPELL_CHECK_REPLY", "False"), True)
-TMDB_API_KEY = environ.get("TMDB_API_KEY", "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2Y2JiNjZjM2QwODc5YTZkMWM0YmZjNzBlZDg3YjA2MyIsInN1YiI6IjY1Njg2ZTgxZmI1Mjk5MDEwMjYxNTA3MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PhnAFz5jGTdwuUNpX7ETB9hHnAPtVSTKiVL2VsUI998")
-
 FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001773614166"))
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 60))
 WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
