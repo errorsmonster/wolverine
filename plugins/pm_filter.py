@@ -772,7 +772,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await toggle_config(query, "spoll_check", "Spell Check")
     elif query.data == "force_subs":
         await toggle_config(query, "forcesub", "Force Subscribe")
-    elif query.data == "freefilter":
+    elif query.data == "freeforall":
         await toggle_config(query, "freefilter", "Free Filter")
 
     # Shortner button
