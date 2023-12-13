@@ -47,7 +47,8 @@ class Database:
             terms=True,
             spoll_check=True,
             forcesub=True,
-            shortner=None):
+            shortner=None,
+            freefilter=True):
         
         return {
             'maintenance_mode': maintenance_mode,
@@ -60,6 +61,7 @@ class Database:
             'spoll_check': spoll_check,
             'forcesub': forcesub,
             'shortner': shortner,
+            'freefilter': freefilter,
         }
 
     async def update_configuration(self, key, value):
