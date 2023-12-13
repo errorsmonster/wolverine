@@ -48,7 +48,7 @@ class Database:
             spoll_check=True,
             forcesub=True,
             shortner=None,
-            freefilter=False):
+            no_ads=False):
         
         return {
             'maintenance_mode': maintenance_mode,
@@ -61,7 +61,7 @@ class Database:
             'spoll_check': spoll_check,
             'forcesub': forcesub,
             'shortner': shortner,
-            'freefilter': freefilter,
+            'no_ads': no_ads,
         }
 
     async def update_configuration(self, key, value):
