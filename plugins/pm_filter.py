@@ -775,15 +775,39 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "no_ads":
         await toggle_config(query, "no_ads", "No Ads")
 
+    elif query.data == "one_time_ads":
+        button=[
+            [InlineKeyboardButton("1 Time Ads in private ⚪️" if await mdb.get_configuration_value("one_link_one_file_group") else "1 Time Ads in private", callback_data="1link1file")],
+            [InlineKeyboardButton("1 Time Ads in Group ⚪️" if await mdb.get_configuration_value("one_link") else "1 Time Ads in Group", callback_data="1linkgroup")]
+            ]
+        reply_markup = InlineKeyboardMarkup(button)
+        await query.message.edit(
+            text=f"<b>Choose the option</b>",
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+        )
+        
+    elif query.data == "auto_filter_all":
+        button=[
+            [InlineKeyboardButton("Private Filter ⚪️" if await mdb.get_configuration_value("private_filter") else "Private Filter", callback_data="private_filter")],
+            [InlineKeyboardButton("Group Filter ⚪️" if await mdb.get_configuration_value("group_filter") else "Group Filter", callback_data="group_filter")]
+            ]
+        reply_markup = InlineKeyboardMarkup(button)
+        await query.message.edit(
+            text=f"<b>Choose the option</b>",
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+        )      
+
     # Shortner button
     elif query.data == "shortner":
         shortnr = await mdb.get_configuration_value("shortner")
         buttons = [[
-            InlineKeyboardButton("Shareus 🔵" if shortnr == "shareus" else "Shareus", callback_data="shareus"),
+            InlineKeyboardButton("Shareus ⚪️" if shortnr == "shareus" else "Shareus", callback_data="shareus"),
             ],[
-            InlineKeyboardButton("GPLinks 🔵" if shortnr == "gplinks" else "GPLinks", callback_data="gplinks"),
+            InlineKeyboardButton("GPLinks ⚪️" if shortnr == "gplinks" else "GPLinks", callback_data="gplinks"),
             ],[
-            InlineKeyboardButton("AdLinkfly 🔵" if shortnr == "adlinkfly" else "AdLinkFly", callback_data="adlinkfly"),
+            InlineKeyboardButton("AdLinkfly ⚪️" if shortnr == "adlinkfly" else "AdLinkFly", callback_data="adlinkfly"),
             ],[
             InlineKeyboardButton("⛔️ Close", callback_data="close_data")
             ]]
