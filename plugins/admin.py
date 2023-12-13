@@ -482,26 +482,24 @@ async def send_message_to_user(client, message):
     except Exception as e:
         await message.reply(f"An unexpected error occurred: {str(e)}")
 
-
 @Client.on_message(filters.command("admin") & filters.user(ADMINS))
 async def admin_controll(client, message):
     buttons_config_with_mdb = [
-        ("one_link_one_file_group", "1 Time Ads GC 🟢", "1 Ads Group", "1linkgroup"), # mdb key, text, alt_text, callback
-        ("one_link", "1 Time Ads PM 🟢", "1 Ads private", "1link1file"),
-        ("group_filter", "Group Filter 🟢", "Group Filter", "group_filter"),
-        ("private_filter", "Private Filter 🟢", "Private Filter", "private_filter"),
-        ("terms", "Terms 🟢", "Terms", "terms_and_condition"),
-        ("auto_accept", "Auto Approve 🟢", "Auto Approve", "autoapprove"),
-        ("maintenance_mode", "Maintainence 🟢", "Maintainence", "maintenance"),
-        ("spoll_check", "Spell Check 🟢", "Spell Check", "spoll_check"),
-        ("forcesub", "Force Subscribe 🟢", "Force Subscribe", "force_subs"),
-        ("no_ads", "No Ads 🟢", "No Ads", "no_ads"),
+        # mdb key, text, alt_text, callback
+        ("terms", "Terms ⚪️", "Terms", "terms_and_condition"),
+        ("auto_accept", "Auto Approve ⚪️", "Auto Approve", "autoapprove"),
+        ("maintenance_mode", "Maintainence ⚪️", "Maintainence", "maintenance"),
+        ("spoll_check", "Spell Check ⚪️", "Spell Check", "spoll_check"),
+        ("forcesub", "Force Subscribe ⚪️", "Force Subscribe", "force_subs"),
+        ("no_ads", "No Ads ⚪️", "No Ads", "no_ads"),
     ]
 
     buttons_config_without_mdb = [
+        ("1 Time Ads", "one_time_ads"),
+        ("Auto Filter", "auto_filter_all"),
+        ("Shortner", "shortner"),
         ("DeleteFiles", "delback"),
         ("Redeem Code", "redeem"),
-        ("Shortner", "shortner"),
         ("⛔️ Close", "close_data")
     ]
 
@@ -514,7 +512,9 @@ async def admin_controll(client, message):
             button_row.append(InlineKeyboardButton(text if config_value else alt_text, callback_data=callback))
         button.append(button_row)
 
-    button += [[InlineKeyboardButton(text, callback_data=callback) for text, callback in buttons_config_without_mdb]]
+    for i in range(0, len(buttons_config_without_mdb), 2):
+        button_row = [InlineKeyboardButton(text, callback_data=callback) for text, callback in buttons_config_without_mdb[i:i+2]]
+        button.append(button_row)
 
     await message.reply_text(
         text="**Admin Control Panel**",
