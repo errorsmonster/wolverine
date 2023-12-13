@@ -38,6 +38,6 @@ WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
 FORWARD_CHANNEL = int(environ.get('FORWARD_CHANNEL', "-1002039632804"))
 
 # other
-ACCESS_KEY = environ.get("ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0") # Get access key from https://licensegen.onrender.com/
+ACCESS_KEY = environ.get("ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0")
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")
 URL = environ.get("STREAM_URL", "https://linkrobot.onrender.com")
