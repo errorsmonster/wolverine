@@ -10,15 +10,6 @@ from pyrogram import types
 from aiohttp import web
 from plugins.web import web_server
 
-name = f"""
-██████╗ ██████╗ ██╗███╗   ███╗███████╗██╗  ██╗██╗   ██╗██████╗ 
-██╔══██╗██╔══██╗██║████╗ ████║██╔════╝██║  ██║██║   ██║██╔══██╗
-██████╔╝██████╔╝██║██╔████╔██║█████╗  ███████║██║   ██║██████╔╝
-██╔═══╝ ██╔══██╗██║██║╚██╔╝██║██╔══╝  ██╔══██║██║   ██║██╔══██╗
-██║     ██║  ██║██║██║ ╚═╝ ██║███████╗██║  ██║╚██████╔╝██████╔╝
-╚═╝     ╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
-"""
-
 class Bot(Client):
 
     def __init__(self):
@@ -42,7 +33,7 @@ class Bot(Client):
         temp.U_NAME = me.username
         temp.B_NAME = me.first_name
         self.username = '@' + me.username
-        logging.info(name)
+        print(f"Bot started")
         #web-response
         app = web.AppRunner(await web_server())
         await app.setup()
