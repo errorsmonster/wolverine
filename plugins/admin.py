@@ -481,34 +481,40 @@ async def send_message_to_user(client, message):
         await message.reply(f"Error: {str(ve)}")
     except Exception as e:
         await message.reply(f"An unexpected error occurred: {str(e)}")
-
+        
 
 @Client.on_message(filters.command("admin") & filters.user(ADMINS))
 async def admin_controll(client, message):
     buttons_config_with_mdb = [
-        ("one_link_one_file_group", "1 Time Ads GC 🔵", "1 Ads Group", "1linkgroup"), # mdb key, text, blue_emoji_text, callback
-        ("one_link", "1 Time Ads PM 🔵", "1 Ads private", "1link1file"),
-        ("group_filter", "Group Filter 🔵", "Group Filter", "group_filter"),
-        ("private_filter", "Private Filter 🔵", "Private Filter", "private_filter"),
-        ("terms", "Terms 🔵", "Terms", "terms_and_condition"),
-        ("auto_accept", "Auto Approve 🔵", "Auto Approve", "autoapprove"),
-        ("maintenance_mode", "Maintainence 🔵", "Maintainence", "maintenance"),
-        ("spoll_check", "Spell Check 🔵", "Spell Check", "spoll_check"),
-        ("forcesub", "Force Subscribe 🔵", "Force Subscribe", "force_subs"),
-        ("freefilter", "Free Filter 🔵", "Free Filter", "freefilter"),
+        ("one_link_one_file_group", "1 Time Ads GC 🟢", "1 Ads Group", "1linkgroup"),
+        ("one_link", "1 Time Ads PM 🟢", "1 Ads private", "1link1file"),
+        ("group_filter", "Group Filter 🟢", "Group Filter", "group_filter"),
+        ("private_filter", "Private Filter 🟢", "Private Filter", "private_filter"),
+        ("terms", "Terms 🟢", "Terms", "terms_and_condition"),
+        ("auto_accept", "Auto Approve 🟢", "Auto Approve", "autoapprove"),
+        ("maintenance_mode", "Maintainence 🟢", "Maintainence", "maintenance"),
+        ("spoll_check", "Spell Check 🟢", "Spell Check", "spoll_check"),
+        ("forcesub", "Force Subscribe 🟢", "Force Subscribe", "force_subs"),
+        ("freefilter", "Free Filter 🟢", "Free Filter", "freefilter"),
     ]
 
     buttons_config_without_mdb = [
-        ("DeleteFiles", "delback"), # text, callback
+        ("DeleteFiles", "delback"),
         ("Redeem Code", "redeem"),
-        ("Shortner", "shortner")
+        ("Shortner", "shortner"),
+        ("⛔️ Close", "close_data")
     ]
 
-    button = [
-        [InlineKeyboardButton(text, callback_data=callback) for text, callback in buttons_config_without_mdb]] + [
-        [InlineKeyboardButton(text if await mdb.get_configuration_value(key) else alt_text, callback_data=callback) for key, text, alt_text, callback in buttons_config_with_mdb[i:i+2]]
-        for i in range(0, len(buttons_config_with_mdb), 2)
-    ]
+    button = []
+
+    for i in range(0, len(buttons_config_with_mdb), 2):
+        button_row = []
+        for key, text, alt_text, callback in buttons_config_with_mdb[i:i+2]:
+            config_value = await mdb.get_configuration_value(key)
+            button_row.append(InlineKeyboardButton(text if config_value else alt_text, callback_data=callback))
+        button.append(button_row)
+
+    button += [[InlineKeyboardButton(text, callback_data=callback) for text, callback in buttons_config_without_mdb]]
 
     await message.reply_text(
         text="**Admin Control Panel**",
