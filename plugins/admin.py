@@ -495,7 +495,7 @@ async def admin_controll(client, message):
         ("maintenance_mode", "Maintainence 🟢", "Maintainence", "maintenance"),
         ("spoll_check", "Spell Check 🟢", "Spell Check", "spoll_check"),
         ("forcesub", "Force Subscribe 🟢", "Force Subscribe", "force_subs"),
-        ("freefilter", "No Ads 🟢", "No Ads", "no_ads"),
+        ("no_ads", "No Ads 🟢", "No Ads", "no_ads"),
     ]
 
     buttons_config_without_mdb = [
