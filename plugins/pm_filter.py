@@ -161,7 +161,6 @@ async def filters_private_handlers(client, message):
         if filter:
             await filter.delete()
 
-
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def public_group_filter(client, message):
 
@@ -174,13 +173,17 @@ async def public_group_filter(client, message):
     premium = await db.is_premium_status(message.from_user.id)
     await mdb.update_top_messages(message.from_user.id, message.text)
     
+    filter = None
     try:
         if premium:
             text, button = await paid_filter(client, message)
-        elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
-            text, button = await free_filter(client, message)
+
         elif freefilter is True:
-            text, button = await free_filter(client, message)    
+            text, button = await free_filter(client, message)
+
+        elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
+            text, button = await free_filter(client, message)   
+
         else:
             text, button = await auto_filter(client, message)
 
@@ -769,7 +772,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await toggle_config(query, "spoll_check", "Spell Check")
     elif query.data == "force_subs":
         await toggle_config(query, "forcesub", "Force Subscribe")
-    elif query.data == "freefilter":
+    elif query.data == "freeforall":
         await toggle_config(query, "freefilter", "Free Filter")
 
     # Shortner button
