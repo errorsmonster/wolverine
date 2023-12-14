@@ -381,7 +381,7 @@ async def autoapprove(client: Client, message: ChatJoinRequest):
     try:
         if APPROVE is not None and APPROVE is True:
             await client.approve_chat_join_request(chat.id, user.id)
-            await client.send_message(chat_id=chat.id, text=f"<b>Hello {user.mention,}, Welcome To {chat.title}</b>")
+            await client.send_message(chat_id=chat.id, text=f"<b>Hello {user.mention}, Welcome To {chat.title}</b>")
     except Exception as e:
         print(e)
 
