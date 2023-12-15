@@ -50,8 +50,6 @@ async def start(client, message):
 
     if len(message.command) != 2:
         buttons = [[
-                    InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
-                    ],[
                     InlineKeyboardButton('📎 Refer', callback_data="refer"),
                     InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
                     ],[

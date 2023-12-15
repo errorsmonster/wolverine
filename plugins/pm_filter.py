@@ -484,8 +484,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(f"**{qoute}**", show_alert=True)
     elif query.data == "home":
         buttons = [[
-                    InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
-                    ],[
                     InlineKeyboardButton('📎 Refer', callback_data="refer"),
                     InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
                     ],[
