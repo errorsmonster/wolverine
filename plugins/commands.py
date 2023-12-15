@@ -305,7 +305,6 @@ async def start(client, message):
         await media_id.delete()
         await del_msg.edit("__⊘ This message was deleted__")
     except Exception as e:
-        await message.reply(f"<b>Erorr: {e}\n\nPlease report this issue by replying @admin")
         logger.error(e)
 
         
