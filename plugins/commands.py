@@ -187,14 +187,10 @@ async def start(client, message):
         if premium_status is not True and files_counts is not None and files_counts >= 15:
                 return await message.reply(f"<b>You Have Exceeded Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>", disable_web_page_preview=True)
         
-        # remove unwanted space and words from caption
-        f_cap = f_caption if f_caption is not None else f"{files.file_name}"
-        caption = re.sub(r'_|\n\n+', ' ', f_cap)
-        
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
-            caption=f"<code>{await replace_blacklist(caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
         
@@ -274,10 +270,6 @@ async def start(client, message):
 
         files = files_[0]
         title = files.file_name
-        f_caption=files.caption
-        f_cap = f_caption if f_caption is not None else f"{files.file_name}"
-        caption = re.sub(r'_|\n\n+', ' ', f_cap)
-
         premium_status = await db.is_premium_status(message.from_user.id)
         button = [[
             InlineKeyboardButton("Search", url=f"https://t.me/{temp.U_NAME}"),
@@ -290,7 +282,7 @@ async def start(client, message):
             chat_id=message.from_user.id,
             file_id=file_id,
 
-            caption=f"<code>{await replace_blacklist(caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
     
