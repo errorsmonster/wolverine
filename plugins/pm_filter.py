@@ -805,7 +805,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "one_time_ads":
         button=[
-            [InlineKeyboardButton("Single Ads in private ⚪️" if await mdb.get_configuration_value("1link1file") else "Single Ads in private", callback_data="1link1file")],
+            [InlineKeyboardButton("Single Ads in private ⚪️" if await mdb.get_configuration_value("one_link") else "Single Ads in private", callback_data="1link1file")],
             [InlineKeyboardButton("Single Ads in Group ⚪️" if await mdb.get_configuration_value("one_link_one_file_group") else "Single  Ads in Group", callback_data="1linkgroup")]
             ]
         reply_markup = InlineKeyboardMarkup(button)
