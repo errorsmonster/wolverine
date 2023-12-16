@@ -315,7 +315,7 @@ async def replace_blacklist(file_name, blacklist, remove_special_chars=False, re
         file_name = demoji.replace(file_name, "")
     if whitespace:
         file_name = re.sub(r'_|\n\n+', ' ', file_name)
-    return file_name
+    return file_name 
 
 
 # To fetch random Quotes
