@@ -190,12 +190,12 @@ async def start(client, message):
         # remove unwanted space and words from caption
         if f_caption is None:
             f_caption = f"{files.file_name}"
-        f_caption = re.sub(r'_|\n\n+', ' ', f_caption)
+        caption = re.sub(r'_|\n\n+', ' ', f_caption)
 
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
-            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{await replace_blacklist(caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
         
@@ -278,7 +278,7 @@ async def start(client, message):
         f_caption=files.caption
         if f_caption is None:
             f_caption = f"{files.file_name}"
-        f_caption = re.sub(r'_|\n\n+', ' ', f_caption)
+        caption = re.sub(r'_|\n\n+', ' ', f_caption)
 
         premium_status = await db.is_premium_status(message.from_user.id)
         button = [[
@@ -292,7 +292,7 @@ async def start(client, message):
             chat_id=message.from_user.id,
             file_id=file_id,
 
-            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{await replace_blacklist(caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
     
