@@ -341,16 +341,7 @@ async def next_page(bot, query):
         )
     elif off_set is None:
         btn.append(
-            [InlineKeyboardButton(f"🗓 {math.ceil(int(offsetbuttons = [[
-                    InlineKeyboardButton('📎 Refer', callback_data="refer"),
-                    InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
-                    ],[
-                    InlineKeyboardButton("Place Ads 🏷️", callback_data=f"place_ads"),
-                    InlineKeyboardButton("Rate Us 🌟",url=f"https://t.me/tlgrmcbot?start=flimrobot-review")
-                    ],[
-                    InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
-                    InlineKeyboardButton('🗣️ Request', callback_data="request")
-                  ]]) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
+            [InlineKeyboardButton(f"🗓 {math.ceil(int(offset) / 10) + 1} / {math.ceil(total / 10)}", callback_data="pages"),
              InlineKeyboardButton("NEXT ⏩", callback_data=f"next_{req}_{key}_{n_offset}")])
     else:
         btn.append(
