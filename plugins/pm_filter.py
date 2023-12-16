@@ -137,7 +137,7 @@ async def filters_private_handlers(client, message):
                     await msg.delete()
                     return
 
-            if not one_file_one_link and files_counts >= 10:
+            if not one_file_one_link and files_counts >= 15:
                 await msg.edit(
                     f"<b>You Have Reached Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>",
                     disable_web_page_preview=True)
