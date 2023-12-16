@@ -13,7 +13,7 @@ from database.users_chats_db import db
 from bs4 import BeautifulSoup
 import aiohttp
 from urllib.parse import quote_plus
-from demoji import demoji
+import demoji
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
