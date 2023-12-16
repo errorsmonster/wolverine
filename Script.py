@@ -58,9 +58,9 @@ By using our service, you confirm that you have read, understood, and agreed to 
 
     # removing blacklisted words
     BLACKLIST = ['tamilblaster', 'filmyzilla', 'streamershub', 'xyz', 'cine', 'www', 'http', 'https',
-                'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'flix',
-                '4u', 'hub', 'movies', 'otthd', 'telegram', 'hoichoihok', '@', ']', '[',
-                'filmy', 'films', 'cinema', 'join', 'club', 'apd', 'F-Press', 'GDTOT',
+                'cloudsmoviesstore', 'moviez2you', 'bkp', 'cinema', 'filmy', 'flix', 'cutemoviez',
+                '4u', 'hub', 'movies', 'otthd', 'telegram', 'hoichoihok', '@', ']', '[', '📁', 'missqueenbotx',
+                'filmy', 'films', 'cinema', 'join', 'club', 'apd', 'F-Press', 'GDTOT', '♻️',
                 'backup', 'primeroom', 'theprofffesorr', 'premium', 'vip', '4wap', 'toonworld4all', 'mlwbd',
                 'Telegram@alpacinodump', 'bollywood', "AllNewEnglishMovie", "7MovieRulz", "1TamilMV",
                 'Bazar', '_Corner20', 'CornersOfficial', 'support', 'iMediaShare', 'Uᴘʟᴏᴀᴅᴇᴅ', 'Bʏ', 'PFM', 'alpacinodump'
