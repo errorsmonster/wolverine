@@ -120,7 +120,7 @@ async def filters_private_handlers(client, message):
             filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         elif no_ads is True:
-            text, markup = await free_filter(client, message)
+            text, markup = await paid_filter(client, message)
             filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         else:
@@ -179,7 +179,7 @@ async def public_group_filter(client, message):
             text, button = await paid_filter(client, message)
 
         elif no_ads is True:
-            text, button = await free_filter(client, message)
+            text, button = await paid_filter(client, message)
 
         elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
             text, button = await free_filter(client, message)   
