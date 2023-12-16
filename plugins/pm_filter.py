@@ -79,7 +79,7 @@ async def filters_private_handlers(client, message):
             logger.error(e)
         btn = [
             [InlineKeyboardButton("Join now", url=invite_link.invite_link)],
-            [InlineKeyboardButton("Try again", "")]
+            [InlineKeyboardButton("Try again", callback_data="checkjoin")]
         ]
         await message.reply_text(
             f"<b>Due to overload only channel subscriber can use this bot.</b>\nPlease join my channel to use this bot",
@@ -566,7 +566,14 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
 
     elif query.data == "place_ads":
-        await query.answer("Stay tune! Ads Placement will be implemented soon", show_alert=True)    
+        await query.answer("Stay tune! Ads Placement will be implemented soon", show_alert=True)  
+
+    elif query.data == "checkjoin":
+        forcesub = await mdb.get_configuration_value("forcesub")
+        if FORCESUB_CHANNEL and forcesub and not await is_subscribed(client, query):
+            await query.answer("Please join in my channel dude!", show_alert=True)
+        else:
+            await query.answer("Thanks for joining, Now you can continue searching", show_alert=True)
 
     elif query.data == "refer":
         user_id = query.from_user.id
