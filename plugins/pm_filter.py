@@ -67,9 +67,26 @@ async def filters_private_handlers(client, message):
     one_file_one_link = await mdb.get_configuration_value("one_link")
     private_filter = await mdb.get_configuration_value("private_filter")
     no_ads = await mdb.get_configuration_value("no_ads")
+    forcesub = await mdb.get_configuration_value("forcesub")
 
-    await mdb.update_top_messages(message.from_user.id, message.text)    
+    # update top messages
+    await mdb.update_top_messages(message.from_user.id, message.text)   
 
+    if FORCESUB_CHANNEL and forcesub and not await is_subscribed(client, message):
+        try:
+            invite_link = await client.create_chat_invite_link(int(FORCESUB_CHANNEL), creates_join_request=True)
+        except Exception as e:
+            logger.error(e)
+        btn = [
+            [InlineKeyboardButton("Join now", url=invite_link.invite_link)],
+            [InlineKeyboardButton("Try again", "")]
+        ]
+        await message.reply_text(
+            f"<b>Due to overload only channel subscriber can use this bot.</b>\nPlease join my channel to use this bot",
+            reply_markup=InlineKeyboardMarkup(btn),
+        )
+        return
+    
     if referral is not None and referral >= 50:
         await db.update_value(user_id, "referral", referral - 50)
         await db.add_user_as_premium(user_id, 28, tody)
@@ -547,7 +564,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup=InlineKeyboardMarkup(buttons),
         disable_web_page_preview=True,
         )
-        
+
     elif query.data == "place_ads":
         await query.answer("Stay tune! Ads Placement will be implemented soon", show_alert=True)    
 
