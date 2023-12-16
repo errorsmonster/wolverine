@@ -135,7 +135,7 @@ async def filters_private_handlers(client, message):
                         remaining_time = max(0, SLOW_MODE_DELAY - int(time.time()) + user_timestamps)
                     await message.delete()
                     await msg.delete()
-                    return
+                    return                          
 
             if not one_file_one_link and files_counts >= 15:
                 await msg.edit(
