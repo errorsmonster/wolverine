@@ -67,9 +67,26 @@ async def filters_private_handlers(client, message):
     one_file_one_link = await mdb.get_configuration_value("one_link")
     private_filter = await mdb.get_configuration_value("private_filter")
     no_ads = await mdb.get_configuration_value("no_ads")
+    forcesub = await mdb.get_configuration_value("forcesub")
 
-    await mdb.update_top_messages(message.from_user.id, message.text)    
+    # update top messages
+    await mdb.update_top_messages(message.from_user.id, message.text)   
 
+    if FORCESUB_CHANNEL and forcesub and not await is_subscribed(client, message):
+        try:
+            invite_link = await client.create_chat_invite_link(int(FORCESUB_CHANNEL), creates_join_request=True)
+        except Exception as e:
+            logger.error(e)
+        btn = [
+            [InlineKeyboardButton("Join now", url=invite_link.invite_link)],
+            [InlineKeyboardButton("Try again", callback_data="checkjoin")]
+        ]
+        await message.reply_text(
+            f"<b>🐾 Due to overload only channel subscriber can use this bot.</b>\nPlease join my channel to use this bot",
+            reply_markup=InlineKeyboardMarkup(btn),
+        )
+        return
+    
     if referral is not None and referral >= 50:
         await db.update_value(user_id, "referral", referral - 50)
         await db.add_user_as_premium(user_id, 28, tody)
@@ -120,7 +137,7 @@ async def filters_private_handlers(client, message):
             filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         elif no_ads is True:
-            text, markup = await free_filter(client, message)
+            text, markup = await paid_filter(client, message)
             filter = await msg.edit(text=text, reply_markup=markup, disable_web_page_preview=True)
 
         else:
@@ -137,7 +154,7 @@ async def filters_private_handlers(client, message):
                     await msg.delete()
                     return
 
-            if not one_file_one_link and files_counts >= 10:
+            if not one_file_one_link and files_counts >= 15:
                 await msg.edit(
                     f"<b>You Have Reached Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>",
                     disable_web_page_preview=True)
@@ -179,7 +196,7 @@ async def public_group_filter(client, message):
             text, button = await paid_filter(client, message)
 
         elif no_ads is True:
-            text, button = await free_filter(client, message)
+            text, button = await paid_filter(client, message)
 
         elif message.chat.id in AUTH_GROUPS and one_time_ads and files_counts >= 1:
             text, button = await free_filter(client, message)   
@@ -484,10 +501,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(f"**{qoute}**", show_alert=True)
     elif query.data == "home":
         buttons = [[
-                    InlineKeyboardButton('💡 How To Download', url=f"https://t.me/QuickAnnounce/5")
-                    ],[
                     InlineKeyboardButton('📎 Refer', callback_data="refer"),
                     InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
+                    ],[
+                    InlineKeyboardButton("Place Ads 🏷️", callback_data=f"place_ads"),
+                    InlineKeyboardButton("Rate Us 🌟",url=f"https://t.me/tlgrmcbot?start=flimrobot-review")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🗣️ Request', callback_data="request")
@@ -537,6 +555,17 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup=InlineKeyboardMarkup(buttons),
         disable_web_page_preview=True,
         )
+
+    elif query.data == "place_ads":
+        await query.answer("Stay tune! Ads Placement will be implemented soon", show_alert=True)  
+
+    elif query.data == "checkjoin":
+        forcesub = await mdb.get_configuration_value("forcesub")
+        if FORCESUB_CHANNEL and forcesub and not await is_subscribed(client, query):
+            await query.answer("Please join in my channel dude!", show_alert=True)
+        else:
+            await query.answer("Thanks for joining, Now you can continue searching", show_alert=True)
+            await query.message.delete()
 
     elif query.data == "refer":
         user_id = query.from_user.id
@@ -757,9 +786,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "maintenance":
         await toggle_config(query, "maintenance_mode", "Maintenance mode")
     elif query.data == "1link1file":
-        await toggle_config(query, "one_link", "1 time Ads in private")
+        await toggle_config(query, "one_link", "Single Ads in private")
     elif query.data == "1linkgroup":
-        await toggle_config(query, "one_link_one_file_group", "1 time Ads in group")
+        await toggle_config(query, "one_link_one_file_group", "Single Ads in group")
     elif query.data == "autoapprove":
         await toggle_config(query, "auto_accept", "Auto approve")
     elif query.data == "private_filter":
@@ -777,8 +806,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "one_time_ads":
         button=[
-            [InlineKeyboardButton("1 Time Ads in private ⚪️" if await mdb.get_configuration_value("one_link_one_file_group") else "1 Time Ads in private", callback_data="1link1file")],
-            [InlineKeyboardButton("1 Time Ads in Group ⚪️" if await mdb.get_configuration_value("one_link") else "1 Time Ads in Group", callback_data="1linkgroup")]
+            [InlineKeyboardButton("Single Ads in private ⚪️" if await mdb.get_configuration_value("one_link") else "Single Ads in private", callback_data="1link1file")],
+            [InlineKeyboardButton("Single Ads in Group ⚪️" if await mdb.get_configuration_value("one_link_one_file_group") else "Single  Ads in Group", callback_data="1linkgroup")]
             ]
         reply_markup = InlineKeyboardMarkup(button)
         await query.message.edit(
