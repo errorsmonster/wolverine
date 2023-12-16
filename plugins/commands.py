@@ -186,17 +186,22 @@ async def start(client, message):
             
         if premium_status is not True and files_counts is not None and files_counts >= 15:
                 return await message.reply(f"<b>You Have Exceeded Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>", disable_web_page_preview=True)
-            
+        
+        # remove unwanted space and words from caption
+        if f_caption is None:
+            f_caption = f"{files.file_name}"
+        cap = await replace_blacklist(f_caption, blacklist)
+        caption = re.sub(r'_|\n\n+', ' ', cap)
+
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
-            caption=f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{caption}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
         
         await db.update_value(message.from_user.id, "files_count", files_counts + 1)
         await db.update_value(message.from_user.id, "lifetime_files", lifetime_files + 1)
-    
         del_msg = await client.send_message(
             text=f"<b>File will be deleted in 10 mins. Save or forward immediately.</b>",
             chat_id=message.from_user.id,
@@ -274,6 +279,7 @@ async def start(client, message):
         f_caption=files.caption
         if f_caption is None:
             f_caption = f"{files.file_name}"
+        caption = re.sub(r'_|\n\n+', ' ', f_caption)
 
         premium_status = await db.is_premium_status(message.from_user.id)
         button = [[
@@ -287,7 +293,7 @@ async def start(client, message):
             chat_id=message.from_user.id,
             file_id=file_id,
 
-            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{await replace_blacklist(caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
     
