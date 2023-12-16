@@ -189,8 +189,8 @@ async def start(client, message):
         
         # remove unwanted space and words from caption
         if f_caption is None:
-            cap = f"{files.file_name}"
-            f_caption = re.sub(r'_|\n\n+', ' ', cap)
+            f_caption = f"{files.file_name}"
+        f_caption = re.sub(r'_|\n\n+', ' ', f_caption)
 
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
@@ -277,8 +277,8 @@ async def start(client, message):
         title = files.file_name
         f_caption=files.caption
         if f_caption is None:
-            cap = f"{files.file_name}"
-            f_caption = re.sub(r'_|\n\n+', ' ', cap)
+            f_caption = f"{files.file_name}"
+        f_caption = re.sub(r'_|\n\n+', ' ', f_caption)
 
         premium_status = await db.is_premium_status(message.from_user.id)
         button = [[
