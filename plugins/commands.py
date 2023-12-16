@@ -188,10 +188,9 @@ async def start(client, message):
                 return await message.reply(f"<b>You Have Exceeded Your Daily Limit. Please Try After {time_difference} Hours, or  <a href=https://t.me/{temp.U_NAME}?start=upgrade>Upgrade</a> To Premium For Unlimited Request.</b>", disable_web_page_preview=True)
         
         # remove unwanted space and words from caption
-        if f_caption is None:
-            f_caption = f"{files.file_name}"
+        f_caption = f_caption if f_caption is not None else f"{files.file_name}"
         caption = re.sub(r'_|\n\n+', ' ', f_caption)
-
+        
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
@@ -276,8 +275,7 @@ async def start(client, message):
         files = files_[0]
         title = files.file_name
         f_caption=files.caption
-        if f_caption is None:
-            f_caption = f"{files.file_name}"
+        f_caption = f_caption if f_caption is not None else f"{files.file_name}"
         caption = re.sub(r'_|\n\n+', ' ', f_caption)
 
         premium_status = await db.is_premium_status(message.from_user.id)
