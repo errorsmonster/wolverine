@@ -277,8 +277,8 @@ async def start(client, message):
         title = files.file_name
         f_caption=files.caption
         if f_caption is None:
-            f_caption = f"{files.file_name}"
-        caption = re.sub(r'_|\n\n+', ' ', f_caption)
+            cap = f"{files.file_name}"
+            f_caption = re.sub(r'_|\n\n+', ' ', cap)
 
         premium_status = await db.is_premium_status(message.from_user.id)
         button = [[
@@ -292,7 +292,7 @@ async def start(client, message):
             chat_id=message.from_user.id,
             file_id=file_id,
 
-            caption=f"<code>{await replace_blacklist(caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{await replace_blacklist(f_caption, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
             reply_markup=InlineKeyboardMarkup(button)
             )
     
