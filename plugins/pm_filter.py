@@ -521,7 +521,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 query.from_user.id,
                 query.from_user.first_name
                 )
-            
+        
     elif query.data == "close_data":
         await query.message.delete()
     elif query.data == "request":
