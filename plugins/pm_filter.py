@@ -755,9 +755,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "maintenance":
         await toggle_config(query, "maintenance_mode", "Maintenance mode")
     elif query.data == "1link1file":
-        await toggle_config(query, "one_link", "1 time Ads in private")
+        await toggle_config(query, "one_link", "Single Ads in private")
     elif query.data == "1linkgroup":
-        await toggle_config(query, "one_link_one_file_group", "1 time Ads in group")
+        await toggle_config(query, "one_link_one_file_group", "Single Ads in group")
     elif query.data == "autoapprove":
         await toggle_config(query, "auto_accept", "Auto approve")
     elif query.data == "private_filter":
@@ -775,8 +775,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "one_time_ads":
         button=[
-            [InlineKeyboardButton("1 Time Ads in private ⚪️" if await mdb.get_configuration_value("one_link_one_file_group") else "1 Time Ads in private", callback_data="1link1file")],
-            [InlineKeyboardButton("1 Time Ads in Group ⚪️" if await mdb.get_configuration_value("one_link") else "1 Time Ads in Group", callback_data="1linkgroup")]
+            [InlineKeyboardButton("Single Ads in private ⚪️" if await mdb.get_configuration_value("1link1file") else "Single Ads in private", callback_data="1link1file")],
+            [InlineKeyboardButton("Single Ads in Group ⚪️" if await mdb.get_configuration_value("one_link_one_file_group") else "Single  Ads in Group", callback_data="1linkgroup")]
             ]
         reply_markup = InlineKeyboardMarkup(button)
         await query.message.edit(
