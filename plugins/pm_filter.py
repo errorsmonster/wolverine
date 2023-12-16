@@ -504,8 +504,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('📎 Refer', callback_data="refer"),
                     InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
                     ],[
-                    InlineKeyboardButton("Place Ads 🏷️", callback_data=f"place_ads"),
-                    InlineKeyboardButton("Rate Us 🌟",url=f"https://t.me/tlgrmcbot?start=flimrobot-review")
+                    InlineKeyboardButton("🏷️ Place Ads", callback_data=f"place_ads"),
+                    InlineKeyboardButton("🌟 Rate Us",url=f"https://t.me/tlgrmcbot?start=flimrobot-review")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🗣️ Request', callback_data="request")
@@ -521,7 +521,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 query.from_user.id,
                 query.from_user.first_name
                 )
-            
+        
     elif query.data == "close_data":
         await query.message.delete()
     elif query.data == "request":
