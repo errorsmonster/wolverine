@@ -82,7 +82,7 @@ async def filters_private_handlers(client, message):
             [InlineKeyboardButton("Try again", callback_data="checkjoin")]
         ]
         await message.reply_text(
-            f"<b>Due to overload only channel subscriber can use this bot.</b>\nPlease join my channel to use this bot",
+            f"<b>🐾 Due to overload only channel subscriber can use this bot.</b>\nPlease join my channel to use this bot",
             reply_markup=InlineKeyboardMarkup(btn),
         )
         return
@@ -565,6 +565,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer("Please join in my channel dude!", show_alert=True)
         else:
             await query.answer("Thanks for joining, Now you can continue searching", show_alert=True)
+            await query.message.delete()
 
     elif query.data == "refer":
         user_id = query.from_user.id
