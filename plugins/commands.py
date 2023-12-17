@@ -110,6 +110,9 @@ async def start(client, message):
         )
         return
     
+    if message.command[1] == "terms":
+        return await message.reply_text(text=script.TERMS)
+
     if message.command[1] == "topsearch":
         m = await message.reply_text(f"<b>Please Wait, Fetching Top Searches...</b>")
         top_messages = await mdb.get_top_messages(30)
