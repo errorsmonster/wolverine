@@ -1,6 +1,6 @@
 from info import BIN_CHANNEL, URL
 from utils import temp
-from web.utils.custom_dl import TGCustomYield
+from stream.utils.custom_dl import TGCustomYield
 from utils import get_size
 import urllib.parse
 import secrets

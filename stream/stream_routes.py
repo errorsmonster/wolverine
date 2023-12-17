@@ -5,8 +5,8 @@ import mimetypes
 from info import BIN_CHANNEL
 from utils import temp
 from aiohttp import web
-from web.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
-from web.utils.render_template import render_page
+from stream.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
+from stream.utils.render_template import render_page
 from urllib.parse import quote_plus
 
 routes = web.RouteTableDef()
@@ -42,8 +42,7 @@ home_template = """
 
 @routes.get("/", allow_head=True)
 async def root_route_handler(request):
-    raise web.HTTPFound('https://ryme.pages.dev')
-
+    raise web.HTTPFound(f"https://telegram.me/{temp.U_NAME}")
 
 @routes.get("/watch/{message_id}")
 async def stream_handler(request):
