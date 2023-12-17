@@ -539,9 +539,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     InlineKeyboardButton('💫 Pay', callback_data="confirm"),
                     InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
-        tc= f"<a href=https://t.me/{temp.U_NAME}?start=terms> (T&C apply)</a>"
+        tnc= f"<a href=https://t.me/{temp.U_NAME}?start=terms>T&C apply</a>"
         await query.message.edit(
-        text=script.REMADS_TEXT.format(tc),
+        text=script.REMADS_TEXT.format(tnc),
         reply_markup=InlineKeyboardMarkup(buttons),
         disable_web_page_preview=True,
         )
