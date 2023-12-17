@@ -251,8 +251,9 @@ async def upgrademsg(_, message):
                 InlineKeyboardButton('💫 Confirm', callback_data="confirm"),
                 InlineKeyboardButton('◀️ Back', callback_data="home")
             ]]
+    tnc= f"<a href=https://t.me/{temp.U_NAME}?start=terms>T&C apply</a>"
     await message.reply(
-        text=script.REMADS_TEXT,
+        text=script.REMADS_TEXT.format(tnc),
         reply_markup=InlineKeyboardMarkup(buttons),
         disable_web_page_preview=True,
         )
