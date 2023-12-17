@@ -10,3 +10,4 @@ cinemagoer
 aiohttp
 pytz
 demoji
+aiofiles

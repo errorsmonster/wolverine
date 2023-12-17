@@ -8,7 +8,7 @@ from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
 
 from aiohttp import web
-from plugins.web import web_server
+from stream.serve import web_server
 
 class Bot(Client):
 
@@ -33,17 +33,16 @@ class Bot(Client):
         temp.U_NAME = me.username
         temp.B_NAME = me.first_name
         self.username = '@' + me.username
-        print(f"Bot started")
-        #web-response
+        logging.info(f"Bot started")
+        #web-server
         app = web.AppRunner(await web_server())
         await app.setup()
-        bind_address = "0.0.0.0"
         port = "8080"
-        await web.TCPSite(app, bind_address, port).start()
+        await web.TCPSite(app, "0.0.0.0", port).start()
 
     async def stop(self, *args):
         await super().stop()
-        logging.info("Bot stopped. Bye.")
+        logging.info("Bot stopped.")
     
     async def iter_messages(
         self,

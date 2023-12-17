@@ -53,8 +53,8 @@ async def start(client, message):
                     InlineKeyboardButton('📎 Refer', callback_data="refer"),
                     InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
                     ],[
-                    InlineKeyboardButton("Place Ads 🏷️", callback_data=f"place_ads"),
-                    InlineKeyboardButton("Rate Us 🌟",url=f"https://t.me/tlgrmcbot?start=flimrobot-review")
+                    InlineKeyboardButton("🏷️ Place Ads", callback_data=f"place_ads"),
+                    InlineKeyboardButton("🌟 Rate Us",url=f"https://t.me/tlgrmcbot?start=flimrobot-review")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🗣️ Request', callback_data="request")
@@ -110,6 +110,9 @@ async def start(client, message):
         )
         return
     
+    if message.command[1] == "terms":
+        return await message.reply_text(text=script.TERMS)
+
     if message.command[1] == "topsearch":
         m = await message.reply_text(f"<b>Please Wait, Fetching Top Searches...</b>")
         top_messages = await mdb.get_top_messages(30)

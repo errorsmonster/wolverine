@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: ryu
-    env: python
-    build:
-      dockerfile: Dockerfile
-    port: 8080
