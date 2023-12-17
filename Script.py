@@ -23,7 +23,7 @@ class script(object):
     REQ_REPLY = """📍 **Your Request for** {} **has been submitted to the admins.**\n\n🚀 **Your Request Will Be Uploaded soon.**\n\n📌 **Please Note that Admins might be busy. So, this may take more time.**"""
 
     REMADS_TEXT = """
-    <b>Free</b>\nAds & no direct links.\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, no waiting time, web download and web streaming.\n\n<b>Plan Cost - \n₹29/Month, ₹149/6M & ₹279/Year </b>\nPrices may increase in the future.
+    <b>Free</b>\nAds & no direct links.\n\n<b>Premium</b>\nDirect files & no creepy ads, faster response time, no waiting time, web download and web streaming. {}\n\n<b>Plan Cost - \n₹29/Month, ₹149/6M & ₹279/Year </b>\nPrices may increase in the future.
     """
 
     CNFRM_TEXT = """
