@@ -40,6 +40,7 @@ class temp(object):
     U_NAME = None
     B_NAME = None
     SETTINGS = {}
+    BOT = None
 
 async def is_subscribed(bot, query):
     if not FORCESUB_CHANNEL:
