@@ -40,6 +40,7 @@ class temp(object):
     U_NAME = None
     B_NAME = None
     SETTINGS = {}
+    BOT = None
 
 async def is_subscribed(bot, query):
     if not FORCESUB_CHANNEL:
@@ -301,7 +302,7 @@ def humanbytes(size):
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
-async def replace_blacklist(file_name, blacklist, remove_special_chars=False, remove_links=True, remove_emoji=True, whitespace=True):
+async def replace_blacklist(file_name, blacklist, remove_special_chars=False, remove_links=True, remove_emoji=False, whitespace=True):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
     if remove_special_chars:

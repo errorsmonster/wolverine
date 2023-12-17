@@ -111,7 +111,9 @@ async def start(client, message):
         return
     
     if message.command[1] == "terms":
-        return await message.reply_text(text=script.TERMS)
+        button = [[InlineKeyboardButton('⛔️ Close', callback_data="close_data")]]
+        await message.reply_text(text=script.TERMS, reply_markup=InlineKeyboardMarkup(button), disable_web_page_preview=True)
+        return
 
     if message.command[1] == "topsearch":
         m = await message.reply_text(f"<b>Please Wait, Fetching Top Searches...</b>")
