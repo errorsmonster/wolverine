@@ -290,7 +290,6 @@ def remove_escapes(text: str) -> str:
             res += text[counter]
     return res
 
-
 def humanbytes(size):
     if not size:
         return ""
@@ -301,8 +300,6 @@ def humanbytes(size):
         size /= power
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
-
-
 
 async def replace_blacklist(file_name, blacklist, remove_special_chars=False, remove_links=True, remove_emoji=True, whitespace=True):
     for word in blacklist:
@@ -316,7 +313,6 @@ async def replace_blacklist(file_name, blacklist, remove_special_chars=False, re
     if whitespace:
         file_name = re.sub(r'_|\n\n+', ' ', file_name)
     return file_name 
-
 
 # To fetch random Quotes
 async def fetch_quote_content():
