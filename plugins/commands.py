@@ -53,8 +53,8 @@ async def start(client, message):
                     InlineKeyboardButton('📎 Refer', callback_data="refer"),
                     InlineKeyboardButton('🔥 Top Search', callback_data="topsearch")
                     ],[
-                    InlineKeyboardButton("Place Ads 🏷️", callback_data=f"place_ads"),
-                    InlineKeyboardButton("Rate Us 🌟",url=f"https://t.me/tlgrmcbot?start=flimrobot-review")
+                    InlineKeyboardButton("🏷️ Place Ads", callback_data=f"place_ads"),
+                    InlineKeyboardButton("🌟 Rate Us",url=f"https://t.me/tlgrmcbot?start=flimrobot-review")
                     ],[
                     InlineKeyboardButton('🎟️ Upgrade ', callback_data="remads"),
                     InlineKeyboardButton('🗣️ Request', callback_data="request")
