@@ -67,8 +67,8 @@ class Database:
             'advertisement': advertisement,
         }
     
-    async def update_advirtisment(self, string=None, short_string=None, expiry=None):
-        await self.config_col.update_one({}, {'$set': {'advertisement.string': string, 'advertisement.short_string': short_string, 'advertisement.expiry': expiry}}, upsert=True)
+    async def update_advirtisment(self, ads_id=None, ads_name=None, expiry=None, impression=None):
+        await self.config_col.update_one({}, {'$set': {'advertisement.ads_id': ads_id, 'advertisement.short_name': ads_name, 'advertisement.expiry': expiry, 'advertisement.impression_count': impression}}, upsert=True)
     
     async def get_advirtisment(self):
         configuration = await self.config_col.find_one({})
@@ -77,16 +77,17 @@ class Database:
             configuration = await self.config_col.find_one({})
         advertisement = configuration.get('advertisement', False)
         if advertisement:
-            return advertisement.get('string'), advertisement.get('short_string')
-        return None, None
+            return advertisement.get('ads_id'), advertisement.get('ads_name'), advertisement.get('impression_count')
+        return None, None, None
 
     async def reset_advertisement_if_expired(self):
         configuration = await self.config_col.find_one({})
         if configuration:
             advertisement = configuration.get('advertisement', False)
             if advertisement:
+                impression_count = advertisement.get('impression_count', 0)
                 expiry = advertisement.get('expiry', None)
-                if expiry and datetime.now() > expiry:
+                if (impression_count == 0) or (expiry and datetime.now() > expiry):
                     await self.config_col.update_one({}, {'$set': {'advertisement': None}})
     
     async def update_configuration(self, key, value):
