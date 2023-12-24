@@ -1,5 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from info import DATABASE_URI
+from datetime import datetime, timedelta
 
 class Database:
     def __init__(self, uri, db_name):
@@ -48,7 +49,8 @@ class Database:
             spoll_check=True,
             forcesub=True,
             shortner=None,
-            no_ads=False):
+            no_ads=False,
+            advertisement=None):
         
         return {
             'maintenance_mode': maintenance_mode,
@@ -62,8 +64,31 @@ class Database:
             'forcesub': forcesub,
             'shortner': shortner,
             'no_ads': no_ads,
+            'advertisement': advertisement,
         }
+    
+    async def update_advirtisment(self, string=None, short_string=None, expiry=None):
+        await self.config_col.update_one({}, {'$set': {'advertisement.string': string, 'advertisement.short_string': short_string, 'advertisement.expiry': expiry}}, upsert=True)
+    
+    async def get_advirtisment(self):
+        configuration = await self.config_col.find_one({})
+        if not configuration:
+            await self.config_col.insert_one(self.create_configuration_data())
+            configuration = await self.config_col.find_one({})
+        advertisement = configuration.get('advertisement', False)
+        if advertisement:
+            return advertisement.get('string'), advertisement.get('short_string')
+        return None, None
 
+    async def reset_advertisement_if_expired(self):
+        configuration = await self.config_col.find_one({})
+        if configuration:
+            advertisement = configuration.get('advertisement', False)
+            if advertisement:
+                expiry = advertisement.get('expiry', None)
+                if expiry and datetime.now() > expiry:
+                    await self.config_col.update_one({}, {'$set': {'advertisement': None}})
+    
     async def update_configuration(self, key, value):
         try:
             await self.config_col.update_one({}, {'$set': {key: value}}, upsert=True)
@@ -77,7 +102,6 @@ class Database:
             await self.config_col.insert_one(self.create_configuration_data())
             configuration = await self.config_col.find_one({})
         return configuration.get(key, False)
-
 
 
 mdb = Database(DATABASE_URI, "admin_database")
