@@ -563,7 +563,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "place_ads":
         button = [[
-            InlineKeyboardButton('📣 Help', url="https://t.me/caredeskbot"),
+            InlineKeyboardButton('📣 Support', url="https://t.me/caredeskbot"),
             InlineKeyboardButton('◀️ Back', callback_data="home")
         ]]
         await query.message.edit(
