@@ -71,9 +71,22 @@ class Database:
         if not config:
             await self.config_col.insert_one(self.create_configuration_data())
             config = await self.config_col.find_one({})
-        else:
-            await self.config_col.update_one({}, {'$set': {'advertisement.ads_string': ads_string, 'advertisement.ads_name': ads_name, 'advertisement.expiry': expiry, 'advertisement.impression_count': impression}}, upsert=True)
-    
+
+        advertisement = config.get('advertisement')
+
+        if advertisement is None:
+            # If 'advertisement' field is not present, create it
+            advertisement = {}
+            config['advertisement'] = advertisement
+
+        # Update the fields within the 'advertisement' field
+        advertisement['ads_string'] = ads_string
+        advertisement['ads_name'] = ads_name
+        advertisement['expiry'] = expiry
+        advertisement['impression_count'] = impression
+
+        await self.config_col.update_one({}, {'$set': {'advertisement': advertisement}}, upsert=True)
+
     async def update_advirtisment_impression(self, impression=None):
         await self.config_col.update_one({}, {'$set': {'advertisement.impression_count': impression}}, upsert=True)
 
