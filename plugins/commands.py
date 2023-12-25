@@ -126,7 +126,7 @@ async def start(client, message):
                 await mdb.update_advirtisment_impression(int(impression) - 1)
                 await db.update_value(message.from_user.id, "seen_ads", True)
         else:
-            await message.reply(f"<b>No Ads Found</b>")    
+            await message.reply(f"<b>No Ads Found</b>")
         await mdb.reset_advertisement_if_expired()
         if msg is None:
             await db.update_value(message.from_user.id, "seen_ads", False)
