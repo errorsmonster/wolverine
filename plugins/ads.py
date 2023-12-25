@@ -44,6 +44,9 @@ async def set_ads(client, message):
         if not reply:
             await message.reply_text(f"Reply to a message to set it as your advertisement.")
             return
+        if not reply.text:
+            await message.reply_text(f"Only text messages are supported.")
+            return
 
         await mdb.update_advirtisment(reply.text, f"{ads_name}", expiry_date, impression_count)
         await asyncio.sleep(3)
@@ -51,10 +54,10 @@ async def set_ads(client, message):
         await message.reply_text(f"Advertisement: '{name}' has been set.")
     except Exception as e:
         await message.reply_text(f"An error occurred: {str(e)}")
-        
+
 
 @Client.on_message(filters.private & filters.command("ads"))
-async def ads(client, message):
+async def ads(_, message):
     try:
         _, name, impression = await mdb.get_advirtisment()
         if not name:
@@ -64,5 +67,13 @@ async def ads(client, message):
             await message.reply_text(f"Advertisement: '{name}' has expired.")
             return
         await message.reply_text(f"Advertisement: '{name}' has {impression} impressions left.")
+    except Exception as e:
+        await message.reply_text(f"An error occurred: {str(e)}")
+
+@Client.on_message(filters.private & filters.command("del_ads") & filters.user(ADMINS))
+async def del_ads(_, message):
+    try:
+        await mdb.update_advirtisment()
+        await message.reply_text(f"Advertisement has been reseted.")
     except Exception as e:
         await message.reply_text(f"An error occurred: {str(e)}")
