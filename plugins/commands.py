@@ -118,7 +118,7 @@ async def start(client, message):
     if message.command[1] == "ads":
         msg, _, impression = await mdb.get_advirtisment()
         button = [[InlineKeyboardButton('⛔️ Close', callback_data="close_data")]]
-        await message.reply_text(text=f"🎐 Advirtisement:\n{msg}", reply_markup=InlineKeyboardMarkup(button), disable_web_page_preview=True)
+        await message.reply_text(text=f"🎐 <b>Advirtisement:</b>\n{msg}", reply_markup=InlineKeyboardMarkup(button), disable_web_page_preview=True)
         if impression is not None:
             await mdb.update_advirtisment_impression(int(impression) - 1)
         return
