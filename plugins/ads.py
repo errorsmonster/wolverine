@@ -9,33 +9,38 @@ async def set_ads(client, message):
     # Parse command arguments
     command_args = message.text.split()[1:]
     if len(command_args) != 2:
-        await message.reply_text("Usage: /set_ads <ads_name> <duration/impression_count>")
+        await message.reply_text("Usage: /set_ads <ads_name> <d:duration/i:impression_count>")
         return
 
     ads_name, duration_or_impression = command_args
     expiry_date = None
     impression_count = None
 
-    # Check if duration or impression count is provided
-    if not duration_or_impression.isdigit():
-        await message.reply_text("Duration or impression count must be a number.")
+    # Check if the value is prefixed with 'd' or 'i'
+    if duration_or_impression[0] == 'd':
+        # It's a duration
+        duration = duration_or_impression[1:]
+        if not duration.isdigit():
+            await message.reply_text("Duration must be a number.")
+            return
+        expiry_date = datetime.now() + timedelta(days=int(duration))
+    elif duration_or_impression[0] == 'i':
+        # It's an impression count
+        impression = duration_or_impression[1:]
+        if not impression.isdigit():
+            await message.reply_text("Impression count must be a number.")
+            return
+        impression_count = int(impression)
+    else:
+        await message.reply_text("Invalid prefix. Use 'd' for duration and 'i' for impression count.")
         return
 
-    # If duration is provided, calculate expiry date
-    if duration_or_impression:
-        expiry_date = datetime.now() + timedelta(days=int(duration_or_impression))
-    # If impression count is provided, convert it to integer
-    else:
-        impression_count = int(duration_or_impression)
-
-    # Check if reply message exists
     reply = message.reply_to_message
     if not reply:
         await message.reply_text("Reply to a message to set it as your advertisement.")
         return
 
-    # Update advertisement in the database
-    await update_advirtisment(reply.message_id, ads_name, expiry_date, impression_count)
+    await update_advirtisment(reply.text, ads_name, expiry_date, impression_count)
     await asyncio.sleep(3)
     _, name, _ = await get_advirtisment()
     await message.reply_text(f"Advertisement: '{name}' has been set.")

@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from info import DATABASE_URI
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class Database:
     def __init__(self, uri, db_name):
@@ -67,8 +67,8 @@ class Database:
             'advertisement': advertisement,
         }
     
-    async def update_advirtisment(self, ads_id=None, ads_name=None, expiry=None, impression=None):
-        await self.config_col.update_one({}, {'$set': {'advertisement.ads_id': ads_id, 'advertisement.short_name': ads_name, 'advertisement.expiry': expiry, 'advertisement.impression_count': impression}}, upsert=True)
+    async def update_advirtisment(self, ads_string=None, ads_name=None, expiry=None, impression=None):
+        await self.config_col.update_one({}, {'$set': {'advertisement.ads_string': ads_string, 'advertisement.short_name': ads_name, 'advertisement.expiry': expiry, 'advertisement.impression_count': impression}}, upsert=True)
     
     async def get_advirtisment(self):
         configuration = await self.config_col.find_one({})
@@ -77,7 +77,7 @@ class Database:
             configuration = await self.config_col.find_one({})
         advertisement = configuration.get('advertisement', False)
         if advertisement:
-            return advertisement.get('ads_id'), advertisement.get('ads_name'), advertisement.get('impression_count')
+            return advertisement.get('ads_string'), advertisement.get('ads_name'), advertisement.get('impression_count')
         return None, None, None
 
     async def reset_advertisement_if_expired(self):
