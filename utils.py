@@ -302,13 +302,13 @@ def humanbytes(size):
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
-async def replace_blacklist(file_name, blacklist, remove_special_chars=False, remove_links=True, remove_emoji=False, whitespace=True):
+async def replace_blacklist(file_name, blacklist, remove_special_chars=False, remove_links=True, remove_emoji=True, whitespace=True):
     for word in blacklist:
         file_name = re.sub(re.escape(word), "", file_name, flags=re.IGNORECASE)
     if remove_special_chars:
         file_name = re.sub(r'[^a-zA-Z0-9\s]', '', file_name)  
     if remove_links:
-        file_name = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', file_name)
+        file_name = re.sub(r'\b(?:http|ftp|https|mailto):\/\/.*\b', '', file_name)
     if remove_emoji:
         file_name = demoji.replace(file_name, "")
     if whitespace:
