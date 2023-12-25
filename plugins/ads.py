@@ -51,3 +51,18 @@ async def set_ads(client, message):
         await message.reply_text(f"Advertisement: '{name}' has been set.")
     except Exception as e:
         await message.reply_text(f"An error occurred: {str(e)}")
+        
+
+@Client.on_message(filters.private & filters.command("ads"))
+async def ads(client, message):
+    try:
+        _, name, impression = await mdb.get_advirtisment()
+        if not name:
+            await message.reply_text(f"No ads set.")
+            return
+        if impression == 0:
+            await message.reply_text(f"Advertisement: '{name}' has expired.")
+            return
+        await message.reply_text(f"Advertisement: '{name}' has {impression} impressions left.")
+    except Exception as e:
+        await message.reply_text(f"An error occurred: {str(e)}")
