@@ -67,7 +67,12 @@ class Database:
         }
     
     async def update_advirtisment(self, ads_string=None, ads_name=None, expiry=None, impression=None):
-        await self.config_col.update_one({}, {'$set': {'advertisement.ads_string': ads_string, 'advertisement.ads_name': ads_name, 'advertisement.expiry': expiry, 'advertisement.impression_count': impression}}, upsert=True)
+        config = await self.config_col.find_one({})
+        if not config:
+            await self.config_col.insert_one(self.create_configuration_data())
+            config = await self.config_col.find_one({})
+        else:
+            await self.config_col.update_one({}, {'$set': {'advertisement.ads_string': ads_string, 'advertisement.ads_name': ads_name, 'advertisement.expiry': expiry, 'advertisement.impression_count': impression}}, upsert=True)
     
     async def update_advirtisment_impression(self, impression=None):
         await self.config_col.update_one({}, {'$set': {'advertisement.impression_count': impression}}, upsert=True)
