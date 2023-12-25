@@ -46,3 +46,10 @@ By using our service, you confirm that you have read, understood, and agreed to 
                 'Telegram@alpacinodump', 'bollywood', "AllNewEnglishMovie", "7MovieRulz", "1TamilMV",
                 'Bazar', '_Corner20', 'CornersOfficial', 'support', 'iMediaShare', 'Uᴘʟᴏᴀᴅᴇᴅ', 'Bʏ', 'PFM', 'alpacinodump'
                 ]
+
+    # Ads placement
+    ADS_TEXT = """
+    <b>📢 Ads Placement</b>\n\n
+    You can place your ads in our bot in minimal cost, We Place impressions based ads in our bot, so means you'll be charged for the impressions (click) you get.\n\n
+    <b>📌 Price</b>\n1 impression = ₹0.5\n1K impressions = ₹500\n\n
+    """
