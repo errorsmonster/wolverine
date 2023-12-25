@@ -128,7 +128,7 @@ async def start(client, message):
         else:
             await message.reply(f"<b>No Ads Found</b>")
         await mdb.reset_advertisement_if_expired()
-        if msg is None:
+        if msg is None and seen_ads is True:
             await db.update_value(message.from_user.id, "seen_ads", False)
         return
         
