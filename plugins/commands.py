@@ -117,10 +117,10 @@ async def start(client, message):
     
     if message.command[1] == "ads":
         msg, _, impression = await mdb.get_advirtisment()
-        button = [[InlineKeyboardButton('⛔️ Close', callback_data="close_data")]]
-        await message.reply_text(text=f"{msg}\n<b>#Ads</b>", reply_markup=InlineKeyboardMarkup(button), disable_web_page_preview=True)
+        await message.reply_text(text=f"{msg}\n<b>#Ads</b>", disable_web_page_preview=True)
         if impression is not None:
             await mdb.update_advirtisment_impression(int(impression) - 1)
+        await mdb.reset_advertisement_if_expired()   
         return
         
     if message.command[1] == "topsearch":
