@@ -66,6 +66,7 @@ class Database:
             'advertisement': advertisement,
         }
     
+    
     async def update_advirtisment(self, ads_string=None, ads_name=None, expiry=None, impression=None):
         config = await self.config_col.find_one({})
         if not config:
@@ -109,6 +110,7 @@ class Database:
                 expiry = advertisement.get('expiry', None)
                 if (impression_count == 0) or (expiry and datetime.now() > expiry):
                     await self.config_col.update_one({}, {'$set': {'advertisement': None}})
+
     
     async def update_configuration(self, key, value):
         try:
