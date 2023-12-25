@@ -20,8 +20,9 @@ class Database:
             user_joined=False, 
             files_count=0, 
             lifetime_files=0, 
-            referral=0, 
+            referral=0,
             last_reset=datetime.now().strftime("%Y-%m-%d"),
+            seen_ads=False
             ban_status=dict(
                 is_banned=False,
                 ban_reason="",

@@ -117,10 +117,13 @@ async def start(client, message):
     
     if message.command[1] == "ads":
         msg, _, impression = await mdb.get_advirtisment()
+        user = await db.get_user(message.from_user.id)
+        seen_ads = user.get("seen_ads")
         if msg is not None:
             await message.reply_text(text=f"{msg}\n<b>#Ads</b>", disable_web_page_preview=True)
-            if impression is not None:
+            if impression is not None and seen_ads is not True:
                 await mdb.update_advirtisment_impression(int(impression) - 1)
+                await db.update_value(message.from_user.id, "seen_ads", True)
         else:
             await message.reply(f"<b>No Ads Found</b>")    
         await mdb.reset_advertisement_if_expired()
