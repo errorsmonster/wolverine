@@ -115,6 +115,7 @@ async def start(client, message):
         await message.reply_text(text=script.TERMS, reply_markup=InlineKeyboardMarkup(button), disable_web_page_preview=True)
         return
     
+    # showing ads
     if message.command[1] == "ads":
         msg, _, impression = await mdb.get_advirtisment()
         user = await db.get_user(message.from_user.id)
