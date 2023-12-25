@@ -114,7 +114,15 @@ async def start(client, message):
         button = [[InlineKeyboardButton('⛔️ Close', callback_data="close_data")]]
         await message.reply_text(text=script.TERMS, reply_markup=InlineKeyboardMarkup(button), disable_web_page_preview=True)
         return
-
+    
+    if message.command[1] == "ads":
+        msg, _, impression = await mdb.get_advirtisment()
+        button = [[InlineKeyboardButton('⛔️ Close', callback_data="close_data")]]
+        await message.reply_text(text=f"🎐 Advirtisement:\n{msg}", reply_markup=InlineKeyboardMarkup(button), disable_web_page_preview=True)
+        if impression is not None:
+            await mdb.update_advirtisment_impression(impression - 1)
+        return
+        
     if message.command[1] == "topsearch":
         m = await message.reply_text(f"<b>Please Wait, Fetching Top Searches...</b>")
         top_messages = await mdb.get_top_messages(30)
