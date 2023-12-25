@@ -44,4 +44,3 @@ async def set_ads(client, message):
     await asyncio.sleep(3)
     _, name, _ = await get_advirtisment()
     await message.reply_text(f"Advertisement: '{name}' has been set.")
-    
