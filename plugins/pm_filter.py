@@ -562,7 +562,15 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
 
     elif query.data == "place_ads":
-        await query.answer("Stay tune! Ads Placement will be implemented soon", show_alert=True)  
+        button = [[
+            InlineKeyboardButton('📣 Help', url="https://t.me/caredeskbot"),
+            InlineKeyboardButton('◀️ Back', callback_data="home")
+        ]]
+        await query.message.edit(
+            text=script.ADS_TEXT,
+            reply_markup=InlineKeyboardMarkup(button),
+            disable_web_page_preview=True
+        )
 
     elif query.data == "checkjoin":
         forcesub = await mdb.get_configuration_value("forcesub")

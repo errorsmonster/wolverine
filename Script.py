@@ -50,6 +50,8 @@ By using our service, you confirm that you have read, understood, and agreed to 
     # Ads placement
     ADS_TEXT = """
     <b>📢 Ads Placement</b>\n\n
-    You can place your ads in our bot in minimal cost, We Place impressions based ads in our bot, so means you'll be charged for the impressions (click) you get.\n\n
-    <b>📌 Price</b>\n1 impression = ₹0.5\n1K impressions = ₹500\n\n
+    You can place your ads in our bot in minimal cost, We Place impressions based ads in our bot, so means you'll be charged for the impressions (click) you get. <a href=https://graph.org/Ads-Placement-Screenshot-12-25-2>Screenshot</a>\n\n
+    <b>📌 Price</b>\n1 impression = ₹0.5 or 1K impressions = ₹500\n\n
+    <b>📌 Payment method</b> UPI, Google Pay, PhonePe, Paytm\n\n
+    <b>📌 Contact <a href=https://t.me/lemx4>L E M O N</a> to place your ads.\n\n
     """
