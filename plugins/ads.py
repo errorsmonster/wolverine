@@ -16,7 +16,6 @@ async def set_ads(client, message):
     expiry_date = None
     impression_count = None
 
-    # Check if the value is prefixed with 'd' or 'i'
     if duration_or_impression[0] == 'd':
         # It's a duration
         duration = duration_or_impression[1:]
