@@ -4,6 +4,7 @@ from database.config_db import update_advirtisment, get_advirtisment
 from info import ADMINS
 import asyncio
 
+
 @Client.on_message(filters.private & filters.command("set_ads") & filters.user(ADMINS))
 async def set_ads(client, message):
     # Parse command arguments
@@ -43,4 +44,3 @@ async def set_ads(client, message):
     await asyncio.sleep(3)
     _, name, _ = await get_advirtisment()
     await message.reply_text(f"Advertisement: '{name}' has been set.")
-    
