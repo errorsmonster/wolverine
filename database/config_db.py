@@ -37,7 +37,6 @@ class Database:
     async def delete_all_messages(self):
         await self.col.delete_many({})
 
-
     def create_configuration_data(
             self, maintenance_mode=False,
             auto_accept=True,
