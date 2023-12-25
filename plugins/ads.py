@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from datetime import datetime, timedelta
-from database.config_db import update_advirtisment, get_advirtisment
+from database.config_db import mdb
 from info import ADMINS
 import asyncio
 
@@ -40,7 +40,7 @@ async def set_ads(client, message):
         await message.reply_text("Reply to a message to set it as your advertisement.")
         return
 
-    await update_advirtisment(reply.text, ads_name, expiry_date, impression_count)
+    await mdb.update_advirtisment(reply.text, ads_name, expiry_date, impression_count)
     await asyncio.sleep(3)
-    _, name, _ = await get_advirtisment()
+    _, name, _ = await mdb.get_advirtisment()
     await message.reply_text(f"Advertisement: '{name}' has been set.")
