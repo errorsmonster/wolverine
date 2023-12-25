@@ -7,7 +7,7 @@ import asyncio
 
 @Client.on_message(filters.private & filters.command("set_ads") & filters.user(ADMINS))
 async def set_ads(client, message):
-    # Parse command arguments
+
     command_args = message.text.split()[1:]
     if len(command_args) != 2:
         await message.reply_text("Usage: /set_ads <ads_name> <d:duration/i:impression_count>")
