@@ -4,16 +4,17 @@ from database.config_db import mdb
 from info import ADMINS
 import asyncio
 
-
 @Client.on_message(filters.private & filters.command("set_ads") & filters.user(ADMINS))
 async def set_ads(client, message):
 
-    command_args = message.text.split()[1:]
-    if len(command_args) != 2:
-        await message.reply_text("Usage: /set_ads <ads_name> <d:duration/i:impression_count>")
+    command_args = message.text.split(maxsplit=1)[1]
+    if '#' not in command_args:
+        await message.reply_text(f"Usage: /set_ads <ads_name>#<d:duration/i:impression_count>")
         return
 
-    ads_name, duration_or_impression = command_args
+    ads_name, duration_or_impression = command_args.split('#', 1)
+    ads_name = ads_name.strip()
+
     expiry_date = None
     impression_count = None
 

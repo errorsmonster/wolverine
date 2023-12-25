@@ -325,6 +325,10 @@ async def next_page(bot, query):
 
     btn = []
     btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
+
+    ads, ads_name, _ = await mdb.get_advirtisment()
+    if ads is not None and ads_name is not None:
+        btn.append([InlineKeyboardButton(text=f"📢 {ads_name}", url=f"https://t.me/{temp.U_NAME}?start=ads")])
     
     if 0 < offset <= 10:
         off_set = 0

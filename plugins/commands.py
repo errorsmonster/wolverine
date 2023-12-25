@@ -117,10 +117,13 @@ async def start(client, message):
     
     if message.command[1] == "ads":
         msg, _, impression = await mdb.get_advirtisment()
-        await message.reply_text(text=f"{msg}\n<b>#Ads</b>", disable_web_page_preview=True)
-        if impression is not None:
-            await mdb.update_advirtisment_impression(int(impression) - 1)
-        await mdb.reset_advertisement_if_expired()   
+        if msg is not None:
+            await message.reply_text(text=f"{msg}\n<b>#Ads</b>", disable_web_page_preview=True)
+            if impression is not None:
+                await mdb.update_advirtisment_impression(int(impression) - 1)
+        else:
+            await message.reply(f"<b>No Ads Found</b>")    
+        await mdb.reset_advertisement_if_expired()
         return
         
     if message.command[1] == "topsearch":
