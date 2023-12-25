@@ -15,6 +15,10 @@ async def set_ads(client, message):
     ads_name, duration_or_impression = command_args.split('#', 1)
     ads_name = f"{ads_name.strip()}"
 
+    if len(ads_name) > 35:
+        await message.reply_text(f"Advertisement name should not exceed 35 characters.")
+        return
+
     expiry_date = None
     impression_count = None
 
