@@ -120,7 +120,7 @@ async def start(client, message):
         button = [[InlineKeyboardButton('⛔️ Close', callback_data="close_data")]]
         await message.reply_text(text=f"🎐 Advirtisement:\n{msg}", reply_markup=InlineKeyboardMarkup(button), disable_web_page_preview=True)
         if impression is not None:
-            await mdb.update_advirtisment_impression(impression - 1)
+            await mdb.update_advirtisment_impression(int(impression) - 1)
         return
         
     if message.command[1] == "topsearch":
