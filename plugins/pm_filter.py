@@ -96,7 +96,6 @@ async def filters_private_handlers(client, message):
     if last_reset != today:
         await db.reset_all_files_count()
         await mdb.delete_all_messages()
-        await db.update_value(message.from_user.id, "seen_ads", False)
     
     if maintenance_mode is True:
         await message.reply_text(f"<b>Sorry For The Inconvenience, We Are Under Maintenance. Please Try Again Later</b>", disable_web_page_preview=True)
