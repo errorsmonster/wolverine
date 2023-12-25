@@ -395,6 +395,11 @@ async def auto_filter(_, msg, spoll=False):
             InlineKeyboardButton("🔗 Refer", url=f"https://t.me/{temp.U_NAME}?start=refer")
         ])
     
+    # Ads Placement in auto filter
+    ads, ads_name, _ = await mdb.get_advirtisment()
+    if ads is not None and ads_name is not None:
+        btn.append([InlineKeyboardButton(text=f"📢 {ads_name}", url=f"https://t.me/{temp.U_NAME}?start=ads")])
+
     btn.append([InlineKeyboardButton("🔴 𝐇𝐎𝐖 𝐓𝐎 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 🔴", url="https://t.me/QuickAnnounce/5")])
     
     if offset != "":
@@ -557,7 +562,15 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
 
     elif query.data == "place_ads":
-        await query.answer("Stay tune! Ads Placement will be implemented soon", show_alert=True)  
+        button = [[
+            InlineKeyboardButton('📣 Support', url="https://t.me/caredeskbot"),
+            InlineKeyboardButton('◀️ Back', callback_data="home")
+        ]]
+        await query.message.edit(
+            text=script.ADS_TEXT,
+            reply_markup=InlineKeyboardMarkup(button),
+            disable_web_page_preview=True
+        )
 
     elif query.data == "checkjoin":
         forcesub = await mdb.get_configuration_value("forcesub")

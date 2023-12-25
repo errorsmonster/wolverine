@@ -114,7 +114,24 @@ async def start(client, message):
         button = [[InlineKeyboardButton('⛔️ Close', callback_data="close_data")]]
         await message.reply_text(text=script.TERMS, reply_markup=InlineKeyboardMarkup(button), disable_web_page_preview=True)
         return
-
+    
+    # showing ads
+    if message.command[1] == "ads":
+        msg, _, impression = await mdb.get_advirtisment()
+        user = await db.get_user(message.from_user.id)
+        seen_ads = user.get("seen_ads")
+        if msg is not None:
+            await message.reply_text(text=f"{msg}\n<b>#Ads</b>", disable_web_page_preview=True)
+            if impression is not None and seen_ads is not True:
+                await mdb.update_advirtisment_impression(int(impression) - 1)
+                await db.update_value(message.from_user.id, "seen_ads", True)
+        else:
+            await message.reply(f"<b>No Ads Found</b>")
+        await mdb.reset_advertisement_if_expired()
+        if msg is None and seen_ads is True:
+            await db.update_value(message.from_user.id, "seen_ads", False)
+        return
+        
     if message.command[1] == "topsearch":
         m = await message.reply_text(f"<b>Please Wait, Fetching Top Searches...</b>")
         top_messages = await mdb.get_top_messages(30)

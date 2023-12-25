@@ -1,5 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from info import DATABASE_URI
+from datetime import datetime
 
 class Database:
     def __init__(self, uri, db_name):
@@ -36,7 +37,6 @@ class Database:
     async def delete_all_messages(self):
         await self.col.delete_many({})
 
-
     def create_configuration_data(
             self, maintenance_mode=False,
             auto_accept=True,
@@ -48,7 +48,8 @@ class Database:
             spoll_check=True,
             forcesub=True,
             shortner=None,
-            no_ads=False):
+            no_ads=False,
+            advertisement=None):
         
         return {
             'maintenance_mode': maintenance_mode,
@@ -62,8 +63,55 @@ class Database:
             'forcesub': forcesub,
             'shortner': shortner,
             'no_ads': no_ads,
+            'advertisement': advertisement,
         }
+    
+    
+    async def update_advirtisment(self, ads_string=None, ads_name=None, expiry=None, impression=None):
+        config = await self.config_col.find_one({})
+        if not config:
+            await self.config_col.insert_one(self.create_configuration_data())
+            config = await self.config_col.find_one({})
 
+        advertisement = config.get('advertisement')
+
+        if advertisement is None:
+            # If 'advertisement' field is not present, create it
+            advertisement = {}
+            config['advertisement'] = advertisement
+
+        # Update the fields within the 'advertisement' field
+        advertisement['ads_string'] = ads_string
+        advertisement['ads_name'] = ads_name
+        advertisement['expiry'] = expiry
+        advertisement['impression_count'] = impression
+
+        await self.config_col.update_one({}, {'$set': {'advertisement': advertisement}}, upsert=True)
+
+    async def update_advirtisment_impression(self, impression=None):
+        await self.config_col.update_one({}, {'$set': {'advertisement.impression_count': impression}}, upsert=True)
+
+    async def get_advirtisment(self):
+        configuration = await self.config_col.find_one({})
+        if not configuration:
+            await self.config_col.insert_one(self.create_configuration_data())
+            configuration = await self.config_col.find_one({})
+        advertisement = configuration.get('advertisement', False)
+        if advertisement:
+            return advertisement.get('ads_string'), advertisement.get('ads_name'), advertisement.get('impression_count')
+        return None, None, None
+
+    async def reset_advertisement_if_expired(self):
+        configuration = await self.config_col.find_one({})
+        if configuration:
+            advertisement = configuration.get('advertisement', False)
+            if advertisement:
+                impression_count = advertisement.get('impression_count', 0)
+                expiry = advertisement.get('expiry', None)
+                if (impression_count == 0) or (expiry and datetime.now() > expiry):
+                    await self.config_col.update_one({}, {'$set': {'advertisement': None}})
+
+    
     async def update_configuration(self, key, value):
         try:
             await self.config_col.update_one({}, {'$set': {key: value}}, upsert=True)
@@ -77,7 +125,6 @@ class Database:
             await self.config_col.insert_one(self.create_configuration_data())
             configuration = await self.config_col.find_one({})
         return configuration.get(key, False)
-
 
 
 mdb = Database(DATABASE_URI, "admin_database")
