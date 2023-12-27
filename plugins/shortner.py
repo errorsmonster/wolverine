@@ -1,6 +1,6 @@
 import aiohttp
 from database.config_db import mdb
-
+from info import SHORTNER_SITE, SHORTNER_API
 
 async def shortlink(link):
     shortner = await mdb.get_configuration_value("shortner")
@@ -41,15 +41,14 @@ async def gplinks(link):
 async def adlinkfly(link):
     url = f"https://shortyfi.in/api"
     api_key = "ce34a5441431b6af2d82a88cb46fd8c0301e6ff2"
-    params = {'api': api_key, 'url': link, 'format': 'text'}
+    params = {'api': SHORTNER_API, 'url': SHORTNER_SITE, 'format': 'text'}
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params=params, raise_for_status=True) as response:
                 return await response.text()
     except Exception as e:
-        shortlink = f"{url}?api={api_key}&url={link}&format=text"
+        shortlink = f"{SHORTNER_SITE}?api={SHORTNER_API}&url={link}&format=text"
         return shortlink
-
 
 async def urlshare(link, linkpass=False):
     if linkpass:
