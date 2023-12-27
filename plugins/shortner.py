@@ -11,7 +11,6 @@ async def shortlink(link):
     if shortner == "adlinkfly":
         return await adlinkfly(link)
         
-
 async def shareus(link):
     url = f'https://api.shareus.io/easy_api'
     api_key = "uYnR5DeLGOT72EOmEAelPA8JY622"
@@ -24,7 +23,6 @@ async def shareus(link):
         shortlink = f"{url}?key={api_key}&link={link}"
         return shortlink
     
-
 async def gplinks(link):
     url = f'https://gplinks.in/api'
     api_key = "2578d98dd859758740ff88707e6a45d05213d131"
@@ -36,7 +34,6 @@ async def gplinks(link):
     except Exception as e:
         shortlink = f"{url}?api={api_key}&url={link}&format=text"
         return shortlink
-
 
 async def adlinkfly(link):
     url = f"https://shortyfi.in/api"
