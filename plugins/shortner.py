@@ -66,6 +66,7 @@ async def instantlinks(link):
         adlink = await adlinkfly(link)
         post_id = adlink.split("/")[-1]
         coverted_link = f"https://business.investorveda.com/?postid={post_id}"
-        return coverted_link
+        final_link = await urlshare(coverted_link, linkpass=True)
+        return final_link
     except Exception as e:
         print(e)
