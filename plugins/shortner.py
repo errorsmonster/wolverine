@@ -9,7 +9,7 @@ async def shortlink(link):
     elif shortner == "gplinks":
         return await gplinks(link)
     if shortner == "adlinkfly":
-        return await adlinkfly(link)
+        return await cheat(link)
         
 async def shareus(link):
     url = f'https://api.shareus.io/easy_api'
@@ -38,10 +38,10 @@ async def gplinks(link):
 async def adlinkfly(link):
     url = f"https://shortyfi.in/api"
     api_key = "ce34a5441431b6af2d82a88cb46fd8c0301e6ff2"
-    params = {'api': SHORTNER_API, 'url': SHORTNER_SITE, 'format': 'text'}
+    params = {'api': SHORTNER_API, 'url': link, 'format': 'text'}
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, params=params, raise_for_status=True) as response:
+            async with session.get(SHORTNER_SITE, params=params, raise_for_status=True) as response:
                 return await response.text()
     except Exception as e:
         shortlink = f"{SHORTNER_SITE}?api={SHORTNER_API}&url={link}&format=text"
@@ -60,3 +60,14 @@ async def urlshare(link, linkpass=False):
                 return data["short_url"]
     except Exception as e:
         return f"{url}"
+    
+async def cheat(link):
+    try:
+        if link.startswith("https://instantlinks.in/"):
+            adlink = await adlinkfly(link)
+            post_id = adlink.split("/")[-1]
+            coverted_link = f"https://business.investorveda.com/?postid={post_id}"
+            final_link =  await urlshare(coverted_link, linkpass=True)
+            return final_link
+    except:
+        return link
