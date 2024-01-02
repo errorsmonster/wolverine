@@ -26,6 +26,12 @@ Request - <b>{}</b>"""
 
     CNFRM_TEXT = """ **UPI** -\n     <code>iPrimeHub@axl</code>\n          (tap2copy) \n\n**To Confirm Payment Process, Please Send Your Transaction Screenshot Or Transaction ID To** <a href=https://t.me/lemx4>L E M O N</a>\n\n**Admin delays may occur, request refund if plan activation fails.**"""
 
+    # Refferal text
+    REFFERAL_TEXT = """
+**Here is your referral link:\n\n{}\n\nShare this link with your 5 friends and get 1 month premium access for free.**
+    """
+
+    # Terms & Conditions
     TERMS = """
 **By using our service, you agree to the following terms:
 
