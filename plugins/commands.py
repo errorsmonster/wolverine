@@ -102,9 +102,10 @@ async def start(client, message):
                 InlineKeyboardButton('💫 Confirm', callback_data="confirm"),
                 InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
+        tnc= f"<a href=https://t.me/{temp.U_NAME}?start=terms>T&C apply</a>"
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_text(
-            text=script.REMADS_TEXT,
+            text=script.REMADS_TEXT.format(tnc),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
