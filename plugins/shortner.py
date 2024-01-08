@@ -9,7 +9,7 @@ async def shortlink(link):
     elif shortner == "gplinks":
         return await gplinks(link)
     if shortner == "adlinkfly":
-        return await adlinkfly(link)
+        return await linkgen(link)
         
 async def shareus(link):
     url = f'https://api.shareus.io/easy_api'
@@ -61,12 +61,15 @@ async def urlshare(link, linkpass=False):
     except Exception as e:
         return f"{url}"
     
-async def instantlinks(link):
+
+async def linkgen(link):
     try:
+        if SHORTNER_SITE != "https://instantlinks.in/api":
+            return await adlinkfly(link)
+
         adlink = await adlinkfly(link)
         post_id = adlink.split("/")[-1]
         coverted_link = f"https://business.investorveda.com/?postid={post_id}"
-        final_link = await urlshare(coverted_link, linkpass=True)
-        return final_link
+        return await urlshare(coverted_link, linkpass=True)
     except Exception as e:
         print(e)
