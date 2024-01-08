@@ -13,7 +13,7 @@ def is_enabled(value, default):
 # Bot information
 API_ID = environ.get('API_ID', "11948995")
 API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
-BOT_TOKEN = environ.get('BOT_TOKEN', "5207489037:AAEtZTr6Ni-dUsmIC5Eh6ZqA_X46kqUYhvA")
+BOT_TOKEN = environ.get('BOT_TOKEN', "5600341219:AAH16Wh8SUL0O6YBw30yGsio2TNIYRfC5xs")
 
 # Admins, Channels & Users
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1247742004 2141736280').split()]
@@ -26,9 +26,9 @@ AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_chan
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://Prime:Prime@cluster0.tajxlrr.mongodb.net/?retryWrites=true&w=majority")
-DATABASE_NAME = environ.get('DATABASE_NAME', "Rajappan")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'netflimsbot')
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://rosi:rosi@rosi.zc9sl7q.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_NAME = environ.get('DATABASE_NAME', "rosi")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'rosi')
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
@@ -41,5 +41,5 @@ FORWARD_CHANNEL = int(environ.get('FORWARD_CHANNEL', "-1002123504264"))
 ACCESS_KEY = environ.get("LICENSE_ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0")
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")
 URL = environ.get("STREAM_URL", "https://linkrobot.onrender.com")
-SHORTNER_SITE = environ.get("SHORTNER_SITE", "https://instantlinks.in/api")
-SHORTNER_API = environ.get("SHORTNER_API", "d503f7f02a6aaf11e4fe2b1503283949168156a7")
+SHORTNER_SITE = environ.get("SHORTNER_SITE")
+SHORTNER_API = environ.get("SHORTNER_API")
