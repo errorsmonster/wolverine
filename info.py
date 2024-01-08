@@ -13,7 +13,7 @@ def is_enabled(value, default):
 # Bot information
 API_ID = environ.get('API_ID', "11948995")
 API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
-BOT_TOKEN = environ.get('BOT_TOKEN', "6007364006:AAEjhSOQduYQ0lEOkLs5IRe9-1bduiHDUEY")
+BOT_TOKEN = environ.get('BOT_TOKEN', "5600341219:AAH16Wh8SUL0O6YBw30yGsio2TNIYRfC5xs")
 
 # Admins, Channels & Users
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1247742004 2141736280').split()]
@@ -26,9 +26,9 @@ AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_chan
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://reen:reen@reen.0vz47kq.mongodb.net/?retryWrites=true&w=majority")
-DATABASE_NAME = environ.get('DATABASE_NAME', "reen")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'reen')
+DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://rosi:rosi@rosi.zc9sl7q.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_NAME = environ.get('DATABASE_NAME', "rosi")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'rosi')
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
