@@ -9,7 +9,7 @@ async def shortlink(link):
     elif shortner == "gplinks":
         return await gplinks(link)
     if shortner == "adlinkfly":
-        return await instantlinks(link)
+        return await adlinkfly(link)
         
 async def shareus(link):
     url = f'https://api.shareus.io/easy_api'
