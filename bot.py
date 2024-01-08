@@ -38,7 +38,7 @@ class Bot(Client):
         #web-server
         app = web.AppRunner(await web_server())
         await app.setup()
-        port = "8080"
+        port = "5054"
         await web.TCPSite(app, "0.0.0.0", port).start()
 
     async def stop(self, *args):
