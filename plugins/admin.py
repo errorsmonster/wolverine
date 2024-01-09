@@ -355,12 +355,10 @@ async def latests(_, message):
         if msg.lower() not in unique_messages and is_valid_string(msg):
             unique_messages.add(msg.lower())
 
-            files, _, _ = await get_search_results(msg.lower())
-            if files:
-                if len(msg) > 30:
-                    truncated_messages.append(msg[:30 - 3].lower() + "...")  # Convert to lowercase and add to list
-                else:
-                    truncated_messages.append(msg.lower())  # Convert to lowercase and add to list
+            if len(msg) > 30:
+                truncated_messages.append(msg[:30 - 3].lower().title() + "...")  # Convert to lowercase and add to list
+            else:
+                truncated_messages.append(msg.lower().title())  # Convert to lowercase and add to list
 
     keyboard = []
     for i in range(0, len(truncated_messages), 2):

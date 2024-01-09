@@ -139,12 +139,10 @@ async def start(client, message):
 
         truncated_messages = set()  # Use a set instead of a list
         for msg in top_messages:
-            files, _, _ = await get_search_results(msg.lower(), offset=0, filter=True)
-            if files:
-                if len(msg) > 30:
-                    truncated_messages.add(msg[:30 - 3].lower() + "...")  # Convert to lowercase and add to set
-                else:
-                    truncated_messages.add(msg.lower())  # Convert to lowercase and add to set
+            if len(msg) > 30:
+                truncated_messages.add(msg[:30 - 3].lower().title() + "...")  # Convert to lowercase, capitalize and add to set
+            else:
+                truncated_messages.add(msg.lower().title())  # Convert to lowercase, capitalize and add to set
 
         keyboard = []
         for i in range(0, len(truncated_messages), 2):
