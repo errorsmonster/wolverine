@@ -107,7 +107,7 @@ async def start(client, message):
         await message.reply_text(
             text=script.REMADS_TEXT.format(tnc),
             reply_markup=reply_markup,
-            parse_mode=enums.ParseMode.HTML
+            disable_web_page_preview=True
         )
         return
     

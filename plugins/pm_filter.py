@@ -391,8 +391,8 @@ async def auto_filter(_, msg, spoll=False):
 
     btn = []   
     btn.append([
-            InlineKeyboardButton("🪙 Upgrade", url=f"https://t.me/{temp.U_NAME}?start=upgrade"),
-            InlineKeyboardButton("🔗 Refer", url=f"https://t.me/{temp.U_NAME}?start=refer")
+            InlineKeyboardButton("🪙 Upgrade", callback_data="upgrade_call"),
+            InlineKeyboardButton("🔗 Refer", callback_data="refer_call")
         ])
     
     # Ads Placement in auto filter
@@ -600,7 +600,15 @@ async def cb_handler(client: Client, query: CallbackQuery):
         referral_points = await db.fetch_value(user_id, "referral")
         await query.answer(f"You have {referral_points} refferal points.", show_alert=True
         )
-
+    
+    elif query.data == "upgrade_call":
+        await query.answer(url=f"https://t.me/{temp.U_NAME}?start=upgrade")
+        return
+    
+    elif query.data == "refer_call":
+        await query.answer(url=f"https://t.me/{temp.U_NAME}?start=refer")
+        return
+    
     elif query.data == "terms":
         buttons = [[
                     InlineKeyboardButton("✅ Accept Terms", callback_data="home"),
