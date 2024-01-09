@@ -334,7 +334,6 @@ async def top(_, message):
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True, placeholder="Most searches of the day")
     await message.reply_text(f"<b>Top searches of the day</b>", reply_markup=reply_markup)
 
-
 @Client.on_message(filters.command('latest'))
 async def latests(_, message):
 
@@ -359,9 +358,9 @@ async def latests(_, message):
             files, _, _ = await get_search_results(msg.lower())
             if files:
                 if len(msg) > 30:
-                    truncated_messages.append(msg[:30 - 3])
+                    truncated_messages.append(msg[:30 - 3].lower() + "...")  # Convert to lowercase and add to list
                 else:
-                    truncated_messages.append(msg)
+                    truncated_messages.append(msg.lower())  # Convert to lowercase and add to list
 
     keyboard = []
     for i in range(0, len(truncated_messages), 2):
