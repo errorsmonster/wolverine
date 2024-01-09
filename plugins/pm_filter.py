@@ -537,7 +537,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         text=script.REQM,
         reply_markup=InlineKeyboardMarkup(buttons),
         disable_web_page_preview=True,
-        )                    
+        )                
     elif query.data == "remads":
         buttons = [[
                     InlineKeyboardButton('💫 Pay', callback_data="confirm"),
@@ -672,9 +672,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "confirm_no":
         await query.message.edit(text=f"<b>Deletion canceled.</b>", reply_markup=None)
 
-
     # Function for getting the top search results
     elif query.data == "topsearch":
+        await query.answer(url=f"https://t.me/{temp.U_NAME}?start=topsearch")
+        return
+     
+    elif query.data == "topsearches":
 
         def is_valid_string(string):
             return bool(re.match('^[a-zA-Z0-9 ]*$', string))
