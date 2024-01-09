@@ -354,7 +354,6 @@ async def latests(_, message):
     for msg in top_messages:
         if msg.lower() not in unique_messages and is_valid_string(msg):
             unique_messages.add(msg.lower())
-
             if len(msg) > 30:
                 truncated_messages.append(msg[:30 - 3].lower().title() + "...")  # Convert to lowercase and add to list
             else:
