@@ -9,7 +9,7 @@ from urllib.parse import quote
 from Script import script
 import aiohttp
 import ast
-from info import SLOW_MODE_DELAY, ADMINS, AUTH_GROUPS, FORCESUB_CHANNEL, WAIT_TIME, BIN_CHANNEL, URL, ACCESS_KEY
+from info import SLOW_MODE_DELAY, ADMINS, AUTH_GROUPS, FORCESUB_CHANNEL, WAIT_TIME, BIN_CHANNEL, URL, ACCESS_KEY, SUPPORT_GROUP
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters
 from database.users_chats_db import db
@@ -419,43 +419,7 @@ async def auto_filter(_, msg, spoll=False):
     await db.update_value(message.from_user.id, "timestamps", int(time.time()))
     return f"<b>{cap}\n\n{search_results_text}</b>", InlineKeyboardMarkup(btn)
 
-
-# callback autofilter
-async def callback_auto_filter(msg, query):
-    search=msg
-    files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
-    search_results_text = []
-    for file in files:
-        shortlink = await link_shortner(f"https://telegram.me/{temp.U_NAME}?start=file_{file.file_id}")
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
-        search_results_text.append(file_link)
-
-    search_results_text = "\n\n".join(search_results_text)
-    cap = f"Here is what i found for your query {search}"
-    if not search_results_text:
-        return
-    return f"<b>{cap}\n\n{search_results_text}</b>"
-
-# callback paidfilter
-async def callback_paid_filter(msg, query):
-    search=msg
-    files, _, _ = await get_search_results(search.lower(), max_results=15, offset=0, filter=True)
-    search_results_text = []
-    for file in files:
-        user_id = query.from_user.id
-        user_id_bytes = str(user_id).encode('utf-8')  # Convert to bytes
-        urlsafe_encoded_user_id = base64.urlsafe_b64encode(user_id_bytes).decode('utf-8')  # Encode and convert back to string
-        shortlink = f"https://telegram.me/{temp.U_NAME}?start={temp.U_NAME}-{urlsafe_encoded_user_id}_{file.file_id}"
-        file_link = f"🎬 [{get_size(file.file_size)} | {await replace_blacklist(file.file_name, script.BLACKLIST)}]({shortlink})"
-        search_results_text.append(file_link)
-
-    search_results_text = "\n\n".join(search_results_text)
-    cap = f"Here is what i found for your query {search}"
-    if not search_results_text:
-        return
-    return f"<b>{cap}\n\n{search_results_text}</b>"       
-
-
+   
 @Client.on_callback_query()
 async def cb_handler(client: Client, query: CallbackQuery):
     if query.data == "close_data":
@@ -489,7 +453,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         md_id=await client.send_cached_media(
             chat_id=query.from_user.id,
             file_id=file_id,
-            caption=f"<code>{await replace_blacklist(f_caption, script.BLACKLIST)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{await replace_blacklist(f_caption, script.BLACKLIST)}</code>",
         )
         del_msg = await client.send_message(
             text=f"<b>File will be deleted in 10 mins. Save or forward immediately.<b>",
@@ -530,7 +494,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.message.delete()
     elif query.data == "request":
         buttons = [[
-                    InlineKeyboardButton('📽️ Request Group', url="https://t.me/PrimehubReq"),
+                    InlineKeyboardButton('📽️ Request Group', url=f"https://t.me/{SUPPORT_GROUP}"),
                     InlineKeyboardButton('◀️ Back', callback_data="home")
                 ]]
         await query.message.edit(

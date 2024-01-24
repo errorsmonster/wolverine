@@ -6,7 +6,7 @@ from database.ia_filterdb import Media
 from utils import temp
 from Script import script
 from pyrogram.errors import ChatAdminRequired
-from info import ADMINS
+from info import ADMINS, SUPPORT_CHANNEL
 
 
 @Client.on_message(filters.new_chat_members & filters.group)
@@ -15,7 +15,7 @@ async def save_group(bot, message):
     if temp.ME in r_j_check:
         if message.chat.id in temp.BANNED_CHATS:
             buttons = [[
-                InlineKeyboardButton('Support', url=f'https://t.me/iPrimeHub')
+                InlineKeyboardButton('Support', url=f'https://t.me/{SUPPORT_CHANNEL}')
             ]]
             reply_markup=InlineKeyboardMarkup(buttons)
             k = await message.reply(
@@ -31,7 +31,7 @@ async def save_group(bot, message):
             return
         buttons = [[
             InlineKeyboardButton('ℹ️ Help', url=f"https://t.me/{temp.U_NAME}?start=help"),
-            InlineKeyboardButton('📢 Updates', url='https://t.me/iPrimeHub')
+            InlineKeyboardButton('📢 Updates', url=f"https://t.me/{SUPPORT_GROUP}")
         ]]
         reply_markup=InlineKeyboardMarkup(buttons)
         await message.reply_text(

@@ -8,9 +8,8 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyb
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from database.config_db import mdb
-from info import CHANNELS, ADMINS, FORCESUB_CHANNEL, WAIT_TIME
+from info import CHANNELS, ADMINS, FORCESUB_CHANNEL, WAIT_TIME, SUPPORT_GROUP, SUPPORT_CHANNEL
 from utils import is_subscribed, temp, replace_blacklist
-from database.ia_filterdb import get_search_results
 import re
 import base64
 import pytz
@@ -25,8 +24,8 @@ async def start(client, message):
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         buttons = [
             [
-                InlineKeyboardButton('Channel', url=f"https://t.me/iPrimeHub"),
-                InlineKeyboardButton('Group', url=f"https://t.me/PrimeHubReq")
+                InlineKeyboardButton('Channel', url=f"https://t.me/{SUPPORT_CHANNEL}"),
+                InlineKeyboardButton('Group', url=f"https://t.me/{SUPPORT_GROUP}")
             ]
             ]
 
@@ -200,7 +199,7 @@ async def start(client, message):
         premium_status = await db.is_premium_status(message.from_user.id)
         button = [[
             InlineKeyboardButton("Search", url=f"https://t.me/{temp.U_NAME}"),
-            InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
+            InlineKeyboardButton('Request', url=f"https://Telegram.me/{SUPPORT_GROUP}")
             ]]
         if premium_status is True:
             button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
@@ -211,7 +210,7 @@ async def start(client, message):
         media_id = await client.send_cached_media(
             chat_id=message.from_user.id,
             file_id=file_id,
-            caption=f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>\n@{SUPPORT_CHANNEL}",
             reply_markup=InlineKeyboardMarkup(button)
             )
         
@@ -294,7 +293,7 @@ async def start(client, message):
         premium_status = await db.is_premium_status(message.from_user.id)
         button = [[
             InlineKeyboardButton("Search", url=f"https://t.me/{temp.U_NAME}"),
-            InlineKeyboardButton('Request', url=f"https://Telegram.me/PrimeHubReq")
+            InlineKeyboardButton('Request', url=f"https://Telegram.me/{SUPPORT_GROUP}")
             ]]
         if premium_status is True:
             button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
@@ -303,7 +302,7 @@ async def start(client, message):
             chat_id=message.from_user.id,
             file_id=file_id,
 
-            caption=f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>\n<a href=https://t.me/iPrimeHub>©PrimeHub™</a>",
+            caption=f"<code>{await replace_blacklist(files.caption or files.file_name, blacklist)}</code>\n@{SUPPORT_CHANNEL}",
             reply_markup=InlineKeyboardMarkup(button)
             )
     

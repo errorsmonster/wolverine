@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from database.users_chats_db import db
 import asyncio
 from Script import script
-from info import LOG_CHANNEL, AUTH_GROUPS, BIN_CHANNEL, URL, ADMINS
+from info import LOG_CHANNEL, AUTH_GROUPS, BIN_CHANNEL, URL, ADMINS, SUPPORT_GROUP
 from utils import temp
 import re
 from datetime import datetime, timedelta
@@ -406,7 +406,7 @@ async def reply_stream(client, message):
     file_name = file_id.file_name.replace("_", " ").replace(".mp4", "").replace(".mkv", "").replace(".", " ")
 
     await message.reply_text(
-        text=f"<b>Here Is Your Streamable Link\n\nFile Name</b>:\n<code>{file_name}</code>\n\n<b>Powered By - <a href=https://t.me/iPRIMEHUB>©𝐏𝐫𝐢𝐦𝐞𝐇𝐮𝐛™</a></b>",
+        text=f"<b>Here Is Your Streamable Link\n\nFile Name</b>:\n<code>{file_name}</code>\n\n<b>Powered By - @{SUPPORT_GROUP}",
         reply_markup=InlineKeyboardMarkup(
             [
                 [

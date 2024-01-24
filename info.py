@@ -24,6 +24,8 @@ auth_channel = environ.get('AUTH_CHANNEL', '-1001596389161')
 auth_grp = environ.get('AUTH_GROUP', "-1001522024342")
 AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_channel) else None
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
+SUPPORT_CHANNEL = environ.get('CHANNEL_USERNAME')
+SUPPORT_GROUP = environ.get('GROUP_USERNAME')
 
 # MongoDB information
 DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://rosi:rosi@rosi.zc9sl7q.mongodb.net/?retryWrites=true&w=majority")
