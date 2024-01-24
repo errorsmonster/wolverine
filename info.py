@@ -11,37 +11,37 @@ def is_enabled(value, default):
         return default
 
 # Bot information
-API_ID = environ.get('API_ID', "11948995")
-API_HASH = environ.get('API_HASH', "cdae9279d0105638165415bf2769730d")
-BOT_TOKEN = environ.get('BOT_TOKEN', "5600341219:AAH16Wh8SUL0O6YBw30yGsio2TNIYRfC5xs")
+API_ID = environ.get('API_ID')
+API_HASH = environ.get('API_HASH')
+BOT_TOKEN = environ.get('BOT_TOKEN')
 
 # Admins, Channels & Users
-ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1247742004 2141736280').split()]
+ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS').split()]
 CHANNELS = [int(ch) if id_pattern.search(ch) else ch for ch in environ.get('CHANNELS', '0').split()]
 auth_users = [int(user) if id_pattern.search(user) else user for user in environ.get('AUTH_USERS', '').split()]
 AUTH_USERS = (auth_users + ADMINS) if auth_users else []
-auth_channel = environ.get('AUTH_CHANNEL', '-1001596389161')
-auth_grp = environ.get('AUTH_GROUP', "-1001522024342")
+auth_channel = environ.get('AUTH_CHANNEL')
+auth_grp = environ.get('AUTH_GROUP')
 AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_channel) else None
 AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 SUPPORT_CHANNEL = environ.get('CHANNEL_USERNAME')
 SUPPORT_GROUP = environ.get('GROUP_USERNAME')
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://rosi:rosi@rosi.zc9sl7q.mongodb.net/?retryWrites=true&w=majority")
-DATABASE_NAME = environ.get('DATABASE_NAME', "rosi")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'rosi')
+DATABASE_URI = environ.get('DATABASE_URI')
+DATABASE_NAME = environ.get('DATABASE_NAME', "wolve")
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'wolve')
 
 # Others
-LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1001770663662'))
-FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL', "-1001773614166"))
+LOG_CHANNEL = int(environ.get('LOG_CHANNEL'))
+FORCESUB_CHANNEL = int(environ.get('FORCESUB_CHANNEL'))
 SLOW_MODE_DELAY = int(environ.get('SLOW_MODE_DELAY', 60))
 WAIT_TIME = int(environ.get('AUTO_DELETE_WAIT_TIME', 600))
 FORWARD_CHANNEL = int(environ.get('FORWARD_CHANNEL', "-1002123504264"))
 
 # other
 ACCESS_KEY = environ.get("LICENSE_ACCESS_KEY", "PZUNTLGIZFE67MR0I0H0")
-BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1001935670400")
-URL = environ.get("STREAM_URL", "https://linkrobot.onrender.com")
+BIN_CHANNEL = environ.get("BIN_CHANNEL")
+URL = environ.get("STREAM_URL")
 SHORTNER_SITE = environ.get("SHORTNER_SITE")
 SHORTNER_API = environ.get("SHORTNER_API")
