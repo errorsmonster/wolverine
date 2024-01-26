@@ -196,7 +196,7 @@ async def start(client, message):
         premium_status = await db.is_premium_status(message.from_user.id)
         button = [[
             InlineKeyboardButton("Search", url=f"https://t.me/{temp.U_NAME}"),
-            InlineKeyboardButton('Request', url=f"https://Telegram.me/{SUPPORT_GROUP}")
+            InlineKeyboardButton('Request', url=f"https://t.me/+yea6oolZNRpjZjBl")
             ]]
         if premium_status is True:
             button.append([InlineKeyboardButton("Watch & Download", callback_data=f"download#{file_id}")])
