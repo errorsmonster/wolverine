@@ -220,7 +220,7 @@ async def start(client, message):
         
         await asyncio.sleep(waitime or 600)
         await media_id.delete()
-        await del_msg.edit("__⊘ This message was deleted__")
+        return await del_msg.edit("__⊘ This message was deleted__")
 
 
     # Referral sysytem
@@ -316,7 +316,7 @@ async def start(client, message):
     
         await asyncio.sleep(waitime or 600)
         await media_id.delete()
-        await del_msg.edit("__⊘ This message was deleted__")
+        return await del_msg.edit("__⊘ This message was deleted__")
     except Exception as e:
         logger.error(e)
 
