@@ -211,7 +211,6 @@ async def public_group_filter(client, message):
     finally:
         if WAIT_TIME is not None:
             await asyncio.sleep(WAIT_TIME)
-            await message.delete()
             if filter:
                 await filter.delete()
                 
