@@ -27,6 +27,9 @@ AUTH_GROUPS = [int(ch) for ch in auth_grp.split()] if auth_grp else None
 SUPPORT_CHANNEL = environ.get('CHANNEL_USERNAME')
 SUPPORT_GROUP = environ.get('GROUP_USERNAME')
 
+INDEX_USER = [int(environ.get('INDEX_USER', '1247742004'))]
+INDEX_USER.extend(ADMINS)
+
 # MongoDB information
 DATABASE_URI = environ.get('DATABASE_URI')
 DATABASE_NAME = environ.get('DATABASE_NAME', "wolve")

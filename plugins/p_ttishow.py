@@ -6,7 +6,7 @@ from database.ia_filterdb import Media
 from utils import temp
 from Script import script
 from pyrogram.errors import ChatAdminRequired
-from info import ADMINS, SUPPORT_CHANNEL
+from info import ADMINS, SUPPORT_CHANNEL, INDEX_USER
 
 
 @Client.on_message(filters.new_chat_members & filters.group)
@@ -38,7 +38,7 @@ async def save_group(bot, message):
             text=f"<b>Thankyou For Adding Me In {message.chat.title} ❣️\n\nIf you have any questions & doubts about using me contact support.</b>",
             reply_markup=reply_markup)
 
-@Client.on_message(filters.command('stats') & filters.incoming & filters.user(ADMINS))
+@Client.on_message(filters.command('stats') & filters.incoming & filters.user(INDEX_USER))
 async def get_ststs(bot, message):
     rju = await message.reply('Fetching stats..')
     total_users = await db.total_users_count()
